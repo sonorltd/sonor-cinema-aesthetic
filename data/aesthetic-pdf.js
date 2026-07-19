@@ -102,10 +102,40 @@
         ['Configuration', a.headline],
         ['Speaker layout', a.recipe],
         ['Main listening position', a.mlpDist ? mmTxt(a.mlpDist) + ' from the screen wall' : null],
-        ['Ear height (reference)', mmTxt(a.earHeight)],
-        ['Calibration', 'Full in-room calibration and level matching on commissioning']
+        ['Ear height (reference)', mmTxt(a.earHeight)]
       ];
-      lx.specRows(P, F, rows, lx.M, y, 300);
+      var b = lx.specRows(P, F, rows, lx.M, y, 300);
+      // channel-by-channel loudspeaker schedule (v0.3.0 — configured in-app)
+      if (a.channels && a.channels.length) {
+        var M = lx.M, A4 = lx.A4, COL = lx.COL;
+        var cy = b + 22;
+        P.tracked('LOUDSPEAKERS', M, cy, 6.5, F.r, COL.MUT, 1.5);
+        P.hline(M, A4.w - M, cy + 11, COL.GOLD, 0.8, 0.75);
+        cy += 27;
+        a.channels.forEach(function (c, i, arr) {
+          P.text(c.label, M, cy - 9, 10.5, F.r, COL.INK2);
+          P.right(c.qty + ' ×   ' + (c.model || 'TBC'), A4.w - M, cy - 9, 10.5, F.b, COL.INK);
+          if (i < arr.length - 1) P.hline(M, A4.w - M, cy + 6, COL.LINE, 0.5, 0.6);
+          cy += 21;
+        });
+        var elec = [];
+        if (a.processor) elec.push(['Processor / receiver', a.processor]);
+        if (a.amplifier) elec.push(['Power amplification', a.amplifier]);
+        if (elec.length) {
+          cy += 12;
+          P.tracked('ELECTRONICS', M, cy, 6.5, F.r, COL.MUT, 1.5);
+          P.hline(M, A4.w - M, cy + 11, COL.GOLD, 0.8, 0.75);
+          cy += 27;
+          elec.forEach(function (r, i, arr) {
+            P.text(r[0], M, cy - 9, 10.5, F.r, COL.INK2);
+            P.right(r[1], A4.w - M, cy - 9, 10.5, F.b, COL.INK);
+            if (i < arr.length - 1) P.hline(M, A4.w - M, cy + 6, COL.LINE, 0.5, 0.6);
+            cy += 21;
+          });
+        }
+        cy += 10;
+        P.text('Full in-room calibration and level matching on commissioning.', M, cy, 9, F.r, COL.MUT);
+      }
       lx.pageFoot(P, F);
     };
   }

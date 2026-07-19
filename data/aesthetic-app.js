@@ -18,6 +18,11 @@
     step: 1,
     scheme: { style: 'dark-classic', notes: '' },
     picks: {},                       // slotId -> itemId
+    // v0.3.0 — AV configuration (in-house). Hardware ids = device_catalogue model_id.
+    av: {
+      video: { type: 'projection-baffle', tvId: null, tvSizeIn: null, projectorId: null },
+      audio: { config: '5.1.4', picks: {}, subId: null, subQty: 2, processorId: null, ampId: null }
+    },
     fittings: {},                    // fittingTypeId -> true
     scenes: null,                    // null = defaults / brief-driven
     client: { name: '', project: '' },
@@ -35,6 +40,7 @@
   async function boot() {
     E = global.SonorAesthetic;
     await E.load();
+    E.avLoad().then(function () { if (cfg.step === 2 || cfg.step === 3) renderStep(); });   // AV hardware in background
     var note = $('sourceNote');
     if (note) {
       var s = E.source;
@@ -77,7 +83,111 @@
       next.onclick = cfg.step === STEPS.length ? savePdf : goNext;
     }
     var body = $('stepBody'); if (!body) return;
-    body.innerHTML = [renderScheme, renderMaterials, renderLighting, renderSummary][cfg.step - 1]();
+    body.innerHTML = [renderScheme, renderVideo, renderAudio, renderMaterials, renderLighting, renderSummary][cfg.step - 1]();
+  }
+
+  // ── AV helpers ───────────────────────────────────────────────────────────
+  function atmosCfg() { return (CFG.atmosConfigs || []).find(function (a) { return a.id === cfg.av.audio.config; }) || { id: cfg.av.audio.config, surrounds: 2, rears: 0, heights: 4 }; }
+  function avName(id) { var d = id && E.avItem(id); return d ? (d.make + ' ' + d.model) : null; }
+  function avSelectHtml(cat, path, current, allowNone) {
+    var items = E.avByCategory(cat);
+    if (!items.length) return '<div class="hint">Library device catalogue unavailable — connect once online.</div>';
+    var byMake = {};
+    items.forEach(function (d) { (byMake[d.make] = byMake[d.make] || []).push(d); });
+    var h = '<select onchange="AestheticApp.setAv(\'' + path + '\', this.value || null)" style="width:100%;background:var(--bg3);border:1px solid var(--brd2);border-radius:7px;color:var(--cream);padding:9px 10px;font-size:12.5px;font-family:inherit">';
+    h += '<option value=""' + (!current ? ' selected' : '') + '>' + (allowNone ? '— none / TBC —' : '— choose —') + '</option>';
+    Object.keys(byMake).sort().forEach(function (mk) {
+      h += '<optgroup label="' + esc(mk) + '">';
+      byMake[mk].forEach(function (d) {
+        h += '<option value="' + esc(d.model_id) + '"' + (current === d.model_id ? ' selected' : '') + '>' + esc(d.model) + '</option>';
+      });
+      h += '</optgroup>';
+    });
+    return h + '</select>';
+  }
+  function setAv(path, val) {
+    var parts = path.split('.'), o = cfg.av;
+    for (var i = 0; i < parts.length - 1; i++) o = o[parts[i]];
+    o[parts[parts.length - 1]] = (val === '' ? null : val);
+    if (path === 'video.type' || path === 'audio.config') renderStep(); else updateAvLive();
+  }
+  function updateAvLive() { var el = $('avLive'); if (el) el.innerHTML = avSummaryHtml(); }
+
+  // ── step 2 · video ───────────────────────────────────────────────────────
+  function renderVideo() {
+    var v = cfg.av.video;
+    var h = '<div class="lead"><h2>Video system.</h2><p>Choose the display route, then the hardware by manufacturer — options come live from the Sonor device library. Screen geometry stays owned by the Cinema Takeoff.</p></div>';
+    h += '<div class="cfg-grid"><div class="cfg-left">';
+    h += '<div class="panel"><div class="ptt">Display type</div><div class="mat-grid">';
+    (CFG.videoTypes || []).forEach(function (t) {
+      var on = v.type === t.id;
+      h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setAv(\'video.type\',\'' + t.id + '\')"><div class="mc-name">' + esc(t.label) + '</div><div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(t.note) + '</div></button>';
+    });
+    h += '</div></div>';
+    if (v.type === 'tv') {
+      h += '<div class="panel"><div class="ptt">Television <span class="opt-tag">· by manufacturer</span></div>' + avSelectHtml('tv', 'video.tvId', v.tvId) +
+        '<div class="lbl">Screen size</div><div class="opts">';
+      (CFG.tvSizes || []).forEach(function (s) {
+        h += '<button class="opt' + (v.tvSizeIn === s ? ' on' : '') + '" onclick="AestheticApp.setAv(\'video.tvSizeIn\',' + s + ')">' + s + '&quot;</button>';
+      });
+      h += '</div></div>';
+    } else {
+      h += '<div class="panel"><div class="ptt">Projector <span class="opt-tag">· by manufacturer</span></div>' + avSelectHtml('projector', 'video.projectorId', v.projectorId) +
+        '<div class="hint" style="margin-top:10px">' + (ctx.meta && ctx.meta.screen && ctx.meta.screen.w ? 'Screen from the takeoff: ' + ctx.meta.screen.w + ' × ' + ctx.meta.screen.h + ' mm' + (v.type === 'projection-baffle' ? ' · acoustically transparent, speakers behind' : '') : 'Screen size is set in the Cinema Takeoff for the active project.') + '</div></div>';
+    }
+    h += '</div>';
+    h += '<div class="panel sticky"><div class="ptt">Your AV selection</div><div id="avLive">' + avSummaryHtml() + '</div></div>';
+    h += '</div>';
+    return h;
+  }
+
+  // ── step 3 · audio ───────────────────────────────────────────────────────
+  function renderAudio() {
+    var a = cfg.av.audio, ac = atmosCfg();
+    var h = '<div class="lead"><h2>Audio system.</h2><p>Pick the immersive layout, then each channel group by manufacturer — fronts, centre, surrounds, heights and subs are chosen separately.</p></div>';
+    h += '<div class="cfg-grid"><div class="cfg-left">';
+    h += '<div class="panel"><div class="ptt">Immersive layout</div><div class="opts">';
+    (CFG.atmosConfigs || []).forEach(function (c) {
+      h += '<button class="opt' + (a.config === c.id ? ' on' : '') + '" onclick="AestheticApp.setAv(\'audio.config\',\'' + c.id + '\')">' + c.id + '</button>';
+    });
+    h += '</div><div class="hint" style="margin-top:8px">' + esc(ac.id) + ' — ' + (3 + ac.surrounds + ac.rears) + ' bed channels · ' + ac.heights + ' heights · LFE</div></div>';
+    (CFG.channelGroups || []).forEach(function (g) {
+      var qty = g.qty(ac);
+      if (!qty) return;
+      h += '<div class="panel"><div class="ptt">' + esc(g.label) + ' <span class="opt-tag">· ' + qty + '× · ' + esc(g.hint) + '</span></div>' + avSelectHtml(g.cat, 'audio.picks.' + g.id, a.picks[g.id], true) + '</div>';
+    });
+    h += '<div class="panel"><div class="ptt">Subwoofers <span class="opt-tag">· low-frequency foundation</span></div>' + avSelectHtml('subwoofer', 'audio.subId', a.subId, true) +
+      '<div class="lbl">Quantity</div><div class="opts">';
+    (CFG.subQtyOptions || []).forEach(function (q) {
+      h += '<button class="opt' + (a.subQty === q ? ' on' : '') + '" onclick="AestheticApp.setAv(\'audio.subQty\',' + q + ')">' + q + '</button>';
+    });
+    h += '</div></div>';
+    h += '<div class="panel"><div class="ptt">Electronics</div><div class="lbl">AV receiver / processor</div>' + avSelectHtml('receiver', 'audio.processorId', a.processorId, true) +
+      '<div class="lbl">Power amplifier</div>' + avSelectHtml('amplifier', 'audio.ampId', a.ampId, true) + '</div>';
+    h += '</div>';
+    h += '<div class="panel sticky"><div class="ptt">Your AV selection</div><div id="avLive">' + avSummaryHtml() + '</div></div>';
+    h += '</div>';
+    return h;
+  }
+
+  function avSummaryHtml() {
+    var v = cfg.av.video, a = cfg.av.audio, ac = atmosCfg();
+    var rows = [];
+    var vt = (CFG.videoTypes || []).find(function (t) { return t.id === v.type; });
+    rows.push(['Display', (vt ? vt.label : v.type) + (v.type === 'tv' && v.tvSizeIn ? ' · ' + v.tvSizeIn + '"' : '')]);
+    if (v.type === 'tv' && v.tvId) rows.push(['TV', avName(v.tvId)]);
+    if (v.type !== 'tv' && v.projectorId) rows.push(['Projector', avName(v.projectorId)]);
+    rows.push(['Layout', a.config]);
+    (CFG.channelGroups || []).forEach(function (g) {
+      var qty = g.qty(ac);
+      if (qty && a.picks[g.id]) rows.push([g.label, qty + '× ' + avName(a.picks[g.id])]);
+    });
+    if (a.subId) rows.push(['Subs', a.subQty + '× ' + avName(a.subId)]);
+    if (a.processorId) rows.push(['Processor', avName(a.processorId)]);
+    if (a.ampId) rows.push(['Amplification', avName(a.ampId)]);
+    return rows.map(function (r) {
+      return '<div style="padding:7px 0;border-bottom:1px solid var(--brd2)"><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">' + esc(r[0]) + '</div><div style="font-size:12.5px;color:var(--cream);margin-top:2px">' + esc(r[1] || '—') + '</div></div>';
+    }).join('');
   }
 
   // ── step 1 · scheme ──────────────────────────────────────────────────────
@@ -171,6 +281,8 @@
       h += '<div class="cellx"><div class="cl">' + esc(sl.label) + '</div><div style="display:flex;align-items:center;gap:9px;margin-top:6px">' + (hasSw ? '<span class="mc-sw" style="' + sw + ';width:22px;height:22px"></span>' : '') + '<span class="cv" style="font-size:13.5px;margin:0">' + esc(it.name) + '</span></div>' + (it.manufacturer ? '<div class="cn">' + esc(it.manufacturer) + '</div>' : '') + '</div>';
     });
     h += '</div>';
+    // AV summary
+    h += '<div class="panel" style="margin-bottom:18px"><div class="ptt">Video &amp; audio</div>' + avSummaryHtml() + '</div>';
     // lighting summary
     var fits = (CFG.fittingTypes || []).filter(function (f) { return cfg.fittings[f.id]; }).map(function (f) { return f.label; });
     h += '<div class="panel" style="margin-bottom:18px"><div class="ptt">Lighting</div><div style="font-size:13px;line-height:1.7">' + esc(fits.join(' · ') || '—') + '</div>' +
@@ -271,7 +383,7 @@
       var res = await db.from('aesthetic_configs').select('id,config').eq('id', id).single();
       if (res.data && res.data.config) {
         var c = res.data.config;
-        ['scheme', 'picks', 'fittings', 'scenes', 'client'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
+        ['scheme', 'picks', 'av', 'fittings', 'scenes', 'client'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
         cfg._savedId = res.data.id;
         cfg.step = STEPS.length; renderStep();
       }
@@ -303,6 +415,7 @@
   };
   function pdfModel() {
     var st = styleOf();
+    var av = cfg.av || { video: {}, audio: { picks: {} } };
     var meta = ctx.meta || {};
     var mv = meta.video || {}, ms = meta.screen || {}, ma = meta.audio || {}, mst = meta.seating || {}, mc = meta.coffer || {};
     var fits = (CFG.fittingTypes || []).filter(function (f) { return cfg.fittings[f.id]; });
@@ -320,20 +433,33 @@
       performanceLevel: meta.performanceLevel || null,
       introText: 'A dedicated home cinema, designed as one system — picture, sound, acoustics, lighting and interior finishes engineered together. This proposal sets out the design specification for your room; commercials follow on the formal quotation.',
       heroImage: (CFG.heroImage || null),
-      video: (mv.viewingDistance || ms.w || meta.videoType) ? {
-        display: VIDEO_TYPE_LABEL[meta.videoType] || (meta.videoType || null),
+      video: (av.video.type || mv.viewingDistance || ms.w || meta.videoType) ? {
+        display: (av.video.type === 'tv' && avName(av.video.tvId))
+          ? avName(av.video.tvId) + (av.video.tvSizeIn ? ' · ' + av.video.tvSizeIn + '" reference TV' : ' reference TV')
+          : (VIDEO_TYPE_LABEL[av.video.type || meta.videoType] || (meta.videoType || null)),
         screenW: ms.w || null, screenH: ms.h || null,
         bottomFromFloor: ms.bottomFromFloor || null,
         viewingDistance: mv.viewingDistance || mst.mlpDist || null,
         contentRes: mv.contentRes || null,
-        projector: meta.projector || null,
+        projector: (av.video.type !== 'tv' ? avName(av.video.projectorId) : null) || meta.projector || null,
         screenGain: mv.screenGain || null
       } : null,
-      audio: ma.atmosConfig ? {
-        headline: ma.atmosConfig + ' immersive audio',
+      audio: (av.audio.config || ma.atmosConfig) ? {
+        headline: (av.audio.config || ma.atmosConfig) + ' immersive audio',
         recipe: meta.speakerRecipe || null,
         mlpDist: mst.mlpDist || null,
-        earHeight: mst.earHeight || null
+        earHeight: mst.earHeight || null,
+        channels: (function () {
+          var ac = atmosCfg(), out = [];
+          (CFG.channelGroups || []).forEach(function (g) {
+            var qty = g.qty(ac);
+            if (qty && av.audio.picks[g.id]) out.push({ label: g.label, qty: qty, model: avName(av.audio.picks[g.id]) });
+          });
+          if (av.audio.subId) out.push({ label: 'Subwoofers', qty: av.audio.subQty || 1, model: avName(av.audio.subId) });
+          return out;
+        })(),
+        processor: avName(av.audio.processorId),
+        amplifier: avName(av.audio.ampId)
       } : null,
       lightingHeadline: fits.length ? fits.map(function (f) { return f.label; }).slice(0, 3).join(' · ') + (fits.length > 3 ? ' +' : '') : null,
       led: (has('led_perimeter') || has('riser_light') || has('shelf_light') || (mc.ledCove && mc.ledCove.enabled)) ? {
@@ -374,7 +500,7 @@
   global.AestheticApp = {
     boot: boot, enter: enter, backToIntro: backToIntro, goBack: goBack, jumpTo: jumpTo,
     setStyle: setStyle, pick: pick, toggleFitting: toggleFitting, setClient: setClient,
-    saveConfig: saveConfig, openSaved: openSaved, savePdf: savePdf,
+    saveConfig: saveConfig, openSaved: openSaved, savePdf: savePdf, setAv: setAv,
     _debug: function () { return { cfg: cfg, ctx: ctx }; }   // harness hook (headless render tests)
   };
 })(window);

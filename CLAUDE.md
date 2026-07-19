@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.2.0)
+# Cinema Aesthetic — Claude Code Context (v0.3.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -74,3 +74,12 @@ render-and-eyeball before shipping).
   wall fabrics + Diamond panels in `aesthetic_items` (no trade pricing). Ref SNR-CD-….
   Gotchas honoured: Gilroy ff/ffl ligature ban (no "coffer"/"baffle"/"off" in PDF text),
   truncate-vs-wrap on tile names, frame-edge rule.
+- v0.3.0 (2026-07-19) — **AV configurator (in-house).** New Video + Audio wizard steps:
+  display route (TV / projector / projector+AT wall) with hardware chosen by
+  manufacturer from the Library's `device_catalogue` (read-only, cached, discontinued
+  filtered); Atmos layout picker (5.1.2→9.1.6) with per-channel-group speaker selection
+  (fronts L+R, centre, surrounds, rears, heights), subs + qty, processor + power amp.
+  Live AV sidebar; selections saved in aesthetic_configs.config.av; proposal Audio page
+  gains the channel-by-channel LOUDSPEAKERS schedule + ELECTRONICS block; Video page
+  shows the chosen model. Screen geometry stays CT-owned. Client exposure HELD (Bryn:
+  in-house until nailed) — everything still behind the internal build.

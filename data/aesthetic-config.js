@@ -7,9 +7,35 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.2.0',
+    version: '0.3.0',
     buildDate: '2026-07-19',
-    steps: ['Scheme', 'Materials', 'Lighting', 'Summary'],
+    steps: ['Scheme', 'Video', 'Audio', 'Materials', 'Lighting', 'Summary'],
+
+    // ── AV configuration (v0.3.0 — in-house). Hardware options come LIVE from
+    //    the Library's device_catalogue (read-only); these are flow rules only. ──
+    videoTypes: [
+      { id: 'tv',                label: 'Reference TV',                 note: 'Wall-mounted OLED / MicroLED — simplest premium picture.' },
+      { id: 'projection',        label: 'Projector + screen',           note: 'Fixed-frame screen, projector to the rear — the big-picture route.' },
+      { id: 'projection-baffle', label: 'Projector + AT screen wall',   note: 'Acoustically transparent screen, speakers concealed behind — the full cinema build.' }
+    ],
+    tvSizes: [65, 75, 77, 83, 85, 97, 98, 100, 115],
+    atmosConfigs: [
+      { id: '5.1.2', surrounds: 2, rears: 0, heights: 2 },
+      { id: '5.1.4', surrounds: 2, rears: 0, heights: 4 },
+      { id: '7.1.4', surrounds: 2, rears: 2, heights: 4 },
+      { id: '7.1.6', surrounds: 2, rears: 2, heights: 6 },
+      { id: '9.1.4', surrounds: 4, rears: 2, heights: 4 },
+      { id: '9.1.6', surrounds: 4, rears: 2, heights: 6 }
+    ],
+    // channel groups — pickers appear per group; qty derived from the atmos config
+    channelGroups: [
+      { id: 'front_lr', label: 'Front L + R',      cat: 'speaker', qty: function (ac) { return 2; },            hint: 'Main left/right — behind the screen on AT builds' },
+      { id: 'centre',   label: 'Centre',           cat: 'speaker', qty: function (ac) { return 1; },            hint: 'Dialogue anchor below/behind the picture' },
+      { id: 'surround', label: 'Surrounds',        cat: 'speaker', qty: function (ac) { return ac.surrounds; }, hint: 'Side surrounds at the listening area' },
+      { id: 'rear',     label: 'Rear surrounds',   cat: 'speaker', qty: function (ac) { return ac.rears; },     hint: 'Rear wall pair (7.x/9.x layouts)' },
+      { id: 'height',   label: 'Atmos heights',    cat: 'speaker', qty: function (ac) { return ac.heights; },   hint: 'In-ceiling height layer' }
+    ],
+    subQtyOptions: [1, 2, 3, 4],
 
     // Style directions — seed the board's overall look. Data-light on purpose:
     // real content lives in the catalogue; these are curatorial groupings only.

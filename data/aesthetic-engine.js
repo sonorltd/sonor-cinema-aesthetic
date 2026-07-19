@@ -84,12 +84,56 @@
     ITEMS = []; source = 'inline'; _index(); return false;
   }
 
+  // ── AV hardware (v0.3.0, in-house) — read-only from the Library's
+  //    device_catalogue. 2-tier: Supabase → localStorage cache (no seed —
+  //    internal feature, needs the live Library at least once per browser). ──
+  var AV_CACHE = 'sonor_aesthetic_av_v1';
+  var AV_CATS = ['speaker', 'subwoofer', 'receiver', 'amplifier', 'projector', 'tv'];
+  var AV = { items: [], byId: {}, byCat: {}, source: 'none' };
+
+  function _avIndex() {
+    AV.byId = {}; AV.byCat = {};
+    AV.items.forEach(function (d) {
+      AV.byId[d.model_id] = d;
+      (AV.byCat[d.category] = AV.byCat[d.category] || []).push(d);
+    });
+    Object.keys(AV.byCat).forEach(function (c) {
+      AV.byCat[c].sort(function (a, b) { return String(a.make).localeCompare(b.make) || String(a.model).localeCompare(b.model); });
+    });
+  }
+  async function avLoad() {
+    try {
+      var db = global.__AESTHETIC_DB__ || (global.SonorDB ? new global.SonorDB() : null) || global.db;
+      if (db && db.client) {
+        var res = await db.client.from('device_catalogue')
+          .select('model_id,make,model,category,description,msrp_gbp,product_url,discontinued')
+          .in('category', AV_CATS);
+        if (!res.error && res.data && res.data.length) {
+          // discontinued filtered client-side (REST null-filter caveat) + model-name marker fallback
+          AV.items = res.data.filter(function (d) { return d.discontinued !== true && !/discontinued/i.test(d.model || ''); });
+          AV.source = 'supabase'; _avIndex();
+          try { localStorage.setItem(AV_CACHE, JSON.stringify({ t: Date.now(), items: AV.items })); } catch (e) {}
+          return true;
+        }
+      }
+    } catch (e) {}
+    try {
+      var raw = localStorage.getItem(AV_CACHE);
+      if (raw) { var c = JSON.parse(raw); if (c && c.items) { AV.items = c.items; AV.source = 'cache'; _avIndex(); return true; } }
+    } catch (e) {}
+    AV.items = []; AV.source = 'none'; _avIndex(); return false;
+  }
+
   global.SonorAesthetic = {
     load: load,
     get source() { return source; },
     all: function () { return ITEMS.slice(); },
     item: function (id) { return idx.byId[id] || null; },
     byCategory: function (cat) { return (idx.byCat[cat] || []).slice(); },
-    categories: function () { return Object.keys(idx.byCat); }
+    categories: function () { return Object.keys(idx.byCat); },
+    avLoad: avLoad,
+    get avSource() { return AV.source; },
+    avItem: function (id) { return AV.byId[id] || null; },
+    avByCategory: function (cat) { return (AV.byCat[cat] || []).slice(); }
   };
 })(window);

@@ -7,7 +7,7 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.4.0',
+    version: '0.5.0',
     buildDate: '2026-07-19',
     steps: ['Scheme', 'Video', 'Audio', 'Materials', 'Lighting', 'Summary'],
 
@@ -36,6 +36,19 @@
       { id: 'height',   label: 'Atmos heights',    cat: 'speaker', qty: function (ac) { return ac.heights; },   hint: 'In-ceiling height layer' }
     ],
     subQtyOptions: [1, 2, 3, 4],
+    // ── AV system grades (v0.5.0) — Bronze → Platinum electronics ladder.
+    //    brands[] soft-filters the electronics pickers to the grade's typical
+    //    marques (untickable); grade + description carry onto the proposal.
+    //    StormAudio + Wisdom Audio = Library asks (not in device_catalogue yet).
+    //    Grade TEMPLATES (pre-packaged picks per grade) come as saved boards /
+    //    Library data as the ranges firm up — structure reserved via `template`.
+    avGrades: [
+      { id: 'bronze',   label: 'Bronze',   note: 'Quality all-in-one AV receiver — processing and amplification in one box.', brands: { receiver: ['Yamaha'], amplifier: [], speaker: [] }, template: null },
+      { id: 'silver',   label: 'Silver',   note: 'Premium AV receiver with power-amp assist for the main channels.',          brands: { receiver: ['Denon', 'Arcam'], amplifier: ['Episode', 'Triad'], speaker: [] }, template: null },
+      { id: 'gold',     label: 'Gold',     note: 'Flagship processing with dedicated multi-channel power amplification.',     brands: { receiver: ['Anthem', 'Arcam'], amplifier: ['Triad', 'Sonance'], speaker: [] }, template: null },
+      { id: 'platinum', label: 'Platinum', note: 'Reference separates — StormAudio processing, Sonance / Triad amplification, Wisdom Audio loudspeakers.', brands: { receiver: ['StormAudio', 'Anthem'], amplifier: ['Sonance', 'Triad'], speaker: ['Wisdom Audio'] }, template: null,
+        tbc: 'Wisdom Audio loudspeaker range TBC — pending Habitech experience centre visit' }
+    ],
 
     // Style directions — seed the board's overall look. Data-light on purpose:
     // real content lives in the catalogue; these are curatorial groupings only.

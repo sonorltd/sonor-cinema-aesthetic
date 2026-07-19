@@ -100,6 +100,7 @@
       y = Math.max(y, 186);
       var a = m.audio;
       var rows = [
+        ['System grade', a.grade ? (a.grade.label + ' — ' + a.grade.note) : null],
         ['Configuration', a.headline],
         ['Speaker layout', a.recipe],
         ['Main listening position', a.mlpDist ? mmTxt(a.mlpDist) + ' from the screen wall' : null],

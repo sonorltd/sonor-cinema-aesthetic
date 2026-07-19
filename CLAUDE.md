@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.4.0)
+# Cinema Aesthetic — Claude Code Context (v0.5.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -8,6 +8,14 @@
 > **⚠ READ `/SEATING-SSOT-CONTRACT.md` before touching anything that reads seating data.**
 > This app is a READ-ONLY consumer of `seating_configs` (project seat context) and follows
 > the same Library-as-SSOT consumer rules for its own `aesthetic_*` domain.
+
+## OWNERSHIP — ONE SOURCE OF CONFIRMED SETTINGS (Bryn 2026-07-19)
+This app is the CONFIRMING SOURCE for the design + AV spec summary (client-faceable).
+Cinema Designer is the technical back end; CD + Cinema Takeoff CONSUME the confirmed
+spec — they never define it. On every board save the app publishes
+`projects.metadata.design_spec` atomically via `sonor_merge_project_metadata`
+(single-key merge; this app is the ONLY writer of that key). CD/CT read it for
+display + prefill. Geometry stays CT-owned; catalogue stays Library-owned.
 
 ## What this is
 Client-facing **cinema aesthetic configurator** — the LOOK counterpart to the Seating
@@ -97,3 +105,12 @@ render-and-eyeball before shipping).
   Catalogue: +sundry (8) and sconce (1) categories, all needs_review for Library
   curation. NOTE for Library: item names must avoid ff/ffl ligature words (Gilroy PDF
   break — "Coffee" → renamed "Side / Lounge Tables"); or supply a pdf-safe display name.
+- v0.5.0 (2026-07-19) — **AV grades + one-source feedback.** Bronze / Silver / Gold /
+  Platinum system grades (Yamaha AVR → Denon/Arcam → Anthem/Arcam + Triad/Sonance →
+  StormAudio + Sonance/Triad + Wisdom Audio speakers). Platinum carries a TBC banner
+  (Wisdom range pending Habitech experience centre visit). Grade soft-filters the
+  electronics pickers to its marques ("show all brands" escape). Grade templates
+  reserved (`avGrades[].template`) — packaged out as ranges firm up. Proposal Audio
+  page leads with SYSTEM GRADE. **publishDesignSpec()**: every board save merges the
+  confirmed spec into projects.metadata.design_spec (RPC, atomic) — the ONE source
+  CD/CT consume. Library asks: StormAudio + Wisdom Audio into device_catalogue.

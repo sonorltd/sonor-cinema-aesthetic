@@ -21,7 +21,7 @@
     // v0.3.0 — AV configuration (in-house). Hardware ids = device_catalogue model_id.
     av: {
       video: { type: 'projection-baffle', tvId: null, tvSizeIn: null, projectorId: null },
-      audio: { config: '5.1.4', picks: {}, subId: null, subQty: 2, processorId: null, ampId: null }
+      audio: { config: '5.1.4', grade: null, showAllBrands: false, picks: {}, subId: null, subQty: 2, processorId: null, ampId: null }
     },
     // v0.4.0 — full design scope
     design: {
@@ -101,9 +101,17 @@
   // ── AV helpers ───────────────────────────────────────────────────────────
   function atmosCfg() { return (CFG.atmosConfigs || []).find(function (a) { return a.id === cfg.av.audio.config; }) || { id: cfg.av.audio.config, surrounds: 2, rears: 0, heights: 4 }; }
   function avName(id) { var d = id && E.avItem(id); return d ? (d.make + ' ' + d.model) : null; }
+  function avGradeOf() { return (CFG.avGrades || []).find(function (g) { return g.id === cfg.av.audio.grade; }) || null; }
   function avSelectHtml(cat, path, current, allowNone) {
     var items = E.avByCategory(cat);
     if (!items.length) return '<div class="hint">Library device catalogue unavailable — connect once online.</div>';
+    // soft-filter electronics to the chosen grade's typical marques (current pick always kept)
+    var g = avGradeOf();
+    if (g && !cfg.av.audio.showAllBrands && (cat === 'receiver' || cat === 'amplifier') && g.brands[cat] && g.brands[cat].length) {
+      var keep = g.brands[cat];
+      var filtered = items.filter(function (d) { return keep.indexOf(d.make) >= 0 || d.model_id === current; });
+      if (filtered.length) items = filtered;
+    }
     var byMake = {};
     items.forEach(function (d) { (byMake[d.make] = byMake[d.make] || []).push(d); });
     var h = '<select onchange="AestheticApp.setAv(\'' + path + '\', this.value || null)" style="width:100%;background:var(--bg3);border:1px solid var(--brd2);border-radius:7px;color:var(--cream);padding:9px 10px;font-size:12.5px;font-family:inherit">';
@@ -156,13 +164,25 @@
   // ── step 3 · audio ───────────────────────────────────────────────────────
   function renderAudio() {
     var a = cfg.av.audio, ac = atmosCfg();
-    var h = '<div class="lead"><h2>Audio system.</h2><p>Pick the immersive layout, then each channel group by manufacturer — fronts, centre, surrounds, heights and subs are chosen separately.</p></div>';
+    var h = '<div class="lead"><h2>Audio system.</h2><p>Pick the system grade and immersive layout, then each channel group by manufacturer — fronts, centre, surrounds, heights and subs are chosen separately.</p></div>';
     h += '<div class="cfg-grid"><div class="cfg-left">';
+    // system grade — Bronze → Platinum electronics ladder
+    h += '<div class="panel"><div class="ptt">System grade <span class="opt-tag">· bronze to platinum — sets the electronics class</span></div><div class="mat-grid">';
+    (CFG.avGrades || []).forEach(function (g) {
+      var on = a.grade === g.id;
+      h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setAv(\'audio.grade\',\'' + g.id + '\')">' +
+        '<div class="mc-name">' + esc(g.label) + '</div>' +
+        '<div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(g.note) + '</div>' +
+        '<div class="mc-meta">' + esc([].concat(g.brands.receiver || [], g.brands.amplifier || []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }).join(' · ')) + '</div></button>';
+    });
+    h += '</div>' + (a.grade ? '<label class="toggle" style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" ' + (a.showAllBrands ? 'checked' : '') + ' onchange="AestheticApp.setAv(\'audio.showAllBrands\', this.checked); AestheticApp.jumpRefresh()"> Show all brands in the electronics pickers</label>' : '') + '</div>';
     h += '<div class="panel"><div class="ptt">Immersive layout</div><div class="opts">';
     (CFG.atmosConfigs || []).forEach(function (c) {
       h += '<button class="opt' + (a.config === c.id ? ' on' : '') + '" onclick="AestheticApp.setAv(\'audio.config\',\'' + c.id + '\')">' + c.id + '</button>';
     });
     h += '</div><div class="hint" style="margin-top:8px">' + esc(ac.id) + ' — ' + (3 + ac.surrounds + ac.rears) + ' bed channels · ' + ac.heights + ' heights · LFE</div></div>';
+    var gr = avGradeOf();
+    if (gr && gr.tbc) h += '<div class="fitwarn tight" style="border-radius:11px;padding:12px 15px;font-size:12px;background:rgba(224,160,90,.1);border:1px solid rgba(224,160,90,.4);color:#e8c9a0;margin-bottom:2px">' + esc(gr.tbc) + ' — speaker picks below stay provisional.</div>';
     (CFG.channelGroups || []).forEach(function (g) {
       var qty = g.qty(ac);
       if (!qty) return;
@@ -195,6 +215,8 @@
       if (qty && a.picks[g.id]) rows.push([g.label, qty + '× ' + avName(a.picks[g.id])]);
     });
     if (a.subId) rows.push(['Subs', a.subQty + '× ' + avName(a.subId)]);
+    var gr2 = avGradeOf();
+    if (gr2) rows.push(['System grade', gr2.label + (gr2.tbc ? ' · Wisdom TBC' : '')]);
     if (a.processorId) rows.push(['Processor', avName(a.processorId)]);
     if (a.ampId) rows.push(['Amplification', avName(a.ampId)]);
     return rows.map(function (r) {
@@ -477,7 +499,51 @@
       else res = await db.from('aesthetic_configs').insert(body).select('id').single();
       if (res.data) cfg._savedId = res.data.id;
       loadSavedList();
+      publishDesignSpec();   // ONE SOURCE: confirmed settings → projects.metadata.design_spec
     } catch (e) { console.warn('[aesthetic] save failed', e); }
+  }
+
+  // ── ONE SOURCE OF CONFIRMED SETTINGS ─────────────────────────────────────
+  // This app is the confirming source for the design + AV spec summary; Cinema
+  // Designer and the Takeoff CONSUME projects.metadata.design_spec (read-only).
+  // Written ONLY here, atomically via sonor_merge_project_metadata (single-key
+  // merge — the RPC that ended the cross-project metadata leak class).
+  async function publishDesignSpec() {
+    var db = dbc(); if (!db || CLIENT || !cfg.projectId) return;
+    try {
+      var pid = cfg.projectId;                 // captured once (leak-class guard)
+      var st = styleOf(), gr = avGradeOf(), ac = atmosCfg();
+      var av = cfg.av, d = cfg.design;
+      var channels = {};
+      (CFG.channelGroups || []).forEach(function (g) {
+        var qty = g.qty(ac);
+        if (qty && av.audio.picks[g.id]) channels[g.id] = { qty: qty, model_id: av.audio.picks[g.id], name: avName(av.audio.picks[g.id]) };
+      });
+      var spec = {
+        source: 'cinema-aesthetic', app_version: CFG.version,
+        config_id: cfg._savedId || null, updated_at: new Date().toISOString(),
+        style: st ? st.id : null,
+        ceiling: d.ceiling, riser: d.riser,
+        downlight_grade: d.downlightGrade,
+        led_zones: Object.keys(d.ledZones || {}),
+        sconces: !!d.sconces,
+        materials: (CFG.slots || []).filter(slotVisible).reduce(function (o, sl) { o[sl.id] = cfg.picks[sl.id] || null; return o; }, {}),
+        av: {
+          grade: av.audio.grade || null, grade_tbc: (gr && gr.tbc) || null,
+          video_type: av.video.type,
+          tv: av.video.tvId ? { model_id: av.video.tvId, name: avName(av.video.tvId), size_in: av.video.tvSizeIn } : null,
+          projector: av.video.projectorId ? { model_id: av.video.projectorId, name: avName(av.video.projectorId) } : null,
+          atmos: av.audio.config,
+          channels: channels,
+          sub: av.audio.subId ? { model_id: av.audio.subId, name: avName(av.audio.subId), qty: av.audio.subQty } : null,
+          processor: av.audio.processorId ? { model_id: av.audio.processorId, name: avName(av.audio.processorId) } : null,
+          amplifier: av.audio.ampId ? { model_id: av.audio.ampId, name: avName(av.audio.ampId) } : null
+        },
+        sundries: Object.keys(d.sundries || {})
+      };
+      var res = await db.rpc('sonor_merge_project_metadata', { p_project_id: pid, p_patch: { design_spec: spec } });
+      if (res.error) console.warn('[aesthetic] design_spec publish failed', res.error);
+    } catch (e) { console.warn('[aesthetic] design_spec publish error', e); }
   }
   async function loadSavedList() {
     var el = $('savedList'), db = dbc(); if (!el || !db) return;
@@ -566,6 +632,7 @@
         recipe: meta.speakerRecipe || null,
         mlpDist: mst.mlpDist || null,
         earHeight: mst.earHeight || null,
+        grade: (function () { var g = avGradeOf(); return g ? { label: g.label, note: g.note + (g.tbc ? ' (' + g.tbc + ')' : '') } : null; })(),
         channels: (function () {
           var ac = atmosCfg(), out = [];
           (CFG.channelGroups || []).forEach(function (g) {

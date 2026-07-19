@@ -7,7 +7,7 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.5.1',
+    version: '0.6.0',
     buildDate: '2026-07-19',
     steps: ['Scheme', 'Video', 'Audio', 'Materials', 'Lighting', 'Summary'],
 
@@ -58,10 +58,23 @@
     // real content lives in the catalogue; these are curatorial groupings only.
     styles: [
       { id: 'dark-classic', label: 'Dark Classic', note: 'Charcoal fabric walls, black ceiling, deep carpet — the reference Sonor cinema look.' },
+      { id: 'dark-blue',    label: 'Dark Blue',    note: 'Deep navy walls and cabinetry, brass accents, warm halo light — boutique cinema bar feel.' },
       { id: 'contemporary', label: 'Contemporary', note: 'Cleaner lines, grey tones, slatted timber accents, minimal pattern.' },
       { id: 'warm-fabric', label: 'Warm Fabric', note: 'Softer warm greys and taupes, brass-toned fittings, gentle contrast.' },
       { id: 'art-deco', label: 'Art Deco', note: 'Richer colour, fluted panels, feature lighting, brass and velvet.' }
     ],
+
+    // ── Section blurbs (v0.6.0) — standards + quality context per proposal
+    //    section. PDF-rendered: every word must be ff/ffl-ligature safe. ──
+    sectionBlurbs: {
+      concepts: 'Concept renders for the scheme — these set the direction and feel of the room. They are visual intent, not construction drawings; the technical plans govern the build.',
+      video: 'A reference-grade picture is engineered, not just bought: image size, mounting height and seating distance are set together to the SMPTE and CEDIA viewing-angle recommendations, so 4K HDR material resolves full detail with no visible pixel structure and no neck strain from any seat.',
+      audio: 'Dolby Atmos places sound as objects in three-dimensional space — a bed of speakers around the room plus height channels above. The layout below is engineered to the CEDIA/CTA RP22 recommended practice: every channel is aimed at the listening area, matched in level and distance, then calibrated in-room on commissioning.',
+      lighting: 'Warm white (2700K) throughout, every circuit dimmable via Rako scenes. Lighting is layered — architectural downlights, concealed linear LED and feature accents — so the room moves from welcome to full blackout in one press.',
+      led: 'Concealed linear LED provides the glow that gives a cinema its depth. Every run is hidden in a recess or cove — the light is seen, the source never is. Warm white, dimmable to 1%, no RGB.',
+      star: 'A fibre-optic star field brings the ceiling to life without a single visible fitting — invisible by day, a night sky at the touch of a scene.',
+      materials: 'One pick per surface from the Sonor aesthetic library. Physical samples are provided for approval before any order is placed — photographic reproduction and fabric batches can vary.'
+    },
 
     // Material slots — one pick per slot from the matching catalogue category.
     // optional:true adds "None / existing" + "Painted finish" pseudo-options.

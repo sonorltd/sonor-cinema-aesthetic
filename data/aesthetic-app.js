@@ -42,7 +42,7 @@
     _savedId: null,
     _lastRef: null
   };
-  var ctx = { room: null, seating: null, brief: null, meta: null };   // live cross-app context
+  var ctx = { room: null, seating: null, brief: null, meta: null, renders: null };   // live cross-app context
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -102,6 +102,7 @@
   function atmosCfg() { return (CFG.atmosConfigs || []).find(function (a) { return a.id === cfg.av.audio.config; }) || { id: cfg.av.audio.config, surrounds: 2, rears: 0, heights: 4 }; }
   function avName(id) { var d = id && E.avItem(id); return d ? (d.make + ' ' + d.model) : null; }
   function avGradeOf() { return (CFG.avGrades || []).find(function (g) { return g.id === cfg.av.audio.grade; }) || null; }
+  function avLinks(id) { var d = id && E.avItem(id); return d ? { url: d.product_url || null, datasheet: d.datasheet_url || null, img: d.img || null } : {}; }
   function avSelectHtml(cat, path, current, allowNone) {
     var items = E.avByCategory(cat);
     if (!items.length) return '<div class="hint">Library device catalogue unavailable — connect once online.</div>';
@@ -459,7 +460,7 @@
   }
   async function onProject(detail) {
     cfg.projectId = detail && detail.currentId || null;
-    ctx.room = null; ctx.seating = null; ctx.brief = null; ctx.meta = null; cfg.scenes = null;
+    ctx.room = null; ctx.seating = null; ctx.brief = null; ctx.meta = null; ctx.renders = null; cfg.scenes = null;
     var p = detail && detail.project;
     if (p) {
       cfg.client.name = p.client_name || cfg.client.name;
@@ -482,10 +483,11 @@
       var s = await db.from('seating_configs').select('label,range_id,updated_at').eq('project_id', cfg.projectId).eq('archived', false).order('updated_at', { ascending: false }).limit(1).maybeSingle();
       if (s.data) ctx.seating = (s.data.label || s.data.range_id || '').toString();
     } catch (e) {}
-    try {   // client brief (lighting concept presence)
+    try {   // client brief + design renders
       var b = await db.from('projects').select('metadata').eq('id', cfg.projectId).maybeSingle();
-      var brief = b.data && b.data.metadata && b.data.metadata.brief;
-      if (brief) { ctx.brief = brief; }
+      var md = (b.data && b.data.metadata) || {};
+      if (md.brief) ctx.brief = md.brief;
+      ctx.renders = Array.isArray(md.design_renders) ? md.design_renders : null;   // [{url, caption}]
     } catch (e) {}
   }
 
@@ -617,10 +619,12 @@
       performanceLevel: meta.performanceLevel || null,
       introText: 'A dedicated home cinema, designed as one system — picture, sound, acoustics, lighting and interior finishes engineered together. This proposal sets out the design specification for your room; commercials follow on the formal quotation.',
       heroImage: (CFG.heroImage || null),
+      renders: ctx.renders || null,
       video: (av.video.type || mv.viewingDistance || ms.w || meta.videoType) ? {
         display: (av.video.type === 'tv' && avName(av.video.tvId))
           ? avName(av.video.tvId) + (av.video.tvSizeIn ? ' · ' + av.video.tvSizeIn + '" reference TV' : ' reference TV')
           : (VIDEO_TYPE_LABEL[av.video.type || meta.videoType] || (meta.videoType || null)),
+        displayLinks: av.video.type === 'tv' ? avLinks(av.video.tvId) : avLinks(av.video.projectorId),
         screenW: ms.w || null, screenH: ms.h || null,
         bottomFromFloor: ms.bottomFromFloor || null,
         viewingDistance: mv.viewingDistance || mst.mlpDist || null,
@@ -634,17 +638,24 @@
         mlpDist: mst.mlpDist || null,
         earHeight: mst.earHeight || null,
         grade: (function () { var g = avGradeOf(); return g ? { label: g.label, note: g.note + (g.tbc ? ' (' + g.tbc + ')' : '') } : null; })(),
+        // channel maths — bed = LCR + surrounds (+ rears); heights on top; LFE separate
+        channelSummary: (function () {
+          var ac = atmosCfg();
+          var bed = 3 + (ac.surrounds || 0) + (ac.rears || 0);
+          var total = bed + (ac.heights || 0);
+          return total + ' amplified speaker channels (' + bed + ' bed + ' + (ac.heights || 0) + ' height) + LFE — processing and amplification sized for ' + ac.id + ' or larger';
+        })(),
         channels: (function () {
           var ac = atmosCfg(), out = [];
           (CFG.channelGroups || []).forEach(function (g) {
             var qty = g.qty(ac);
-            if (qty && av.audio.picks[g.id]) out.push({ label: g.label, qty: qty, model: avName(av.audio.picks[g.id]) });
+            if (qty && av.audio.picks[g.id]) out.push(Object.assign({ label: g.label, qty: qty, model: avName(av.audio.picks[g.id]) }, avLinks(av.audio.picks[g.id])));
           });
-          if (av.audio.subId) out.push({ label: 'Subwoofers', qty: av.audio.subQty || 1, model: avName(av.audio.subId) });
+          if (av.audio.subId) out.push(Object.assign({ label: 'Subwoofers', qty: av.audio.subQty || 1, model: avName(av.audio.subId) }, avLinks(av.audio.subId)));
           return out;
         })(),
-        processor: avName(av.audio.processorId),
-        amplifier: avName(av.audio.ampId)
+        processor: av.audio.processorId ? Object.assign({ model: avName(av.audio.processorId) }, avLinks(av.audio.processorId)) : null,
+        amplifier: av.audio.ampId ? Object.assign({ model: avName(av.audio.ampId) }, avLinks(av.audio.ampId)) : null
       } : null,
       lightingHeadline: (function () {
         var g = gradeOf(), bits = [];

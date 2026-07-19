@@ -244,12 +244,14 @@
   }
 
   // ── section header on a cream page (eyebrow + big title + optional note) ──
+  // v1.0.1 — note wraps to 4 lines max (was 3 — long standards blurbs clipped
+  // mid-sentence); returned y always clears the painted lines.
   function sectionHead(P, F, eyebrow, title, note) {
     P.tracked(String(eyebrow || '').toUpperCase(), M, 92, 8.5, F.r, COL.GOLD, 2.6);
     P.text(title || '', M - 1, 106, 26, F.b, COL.INK);
     var y = 148;
     if (note) {
-      wrap(note, F.r, 10.5, A4.w - M * 2).slice(0, 3).forEach(function (ln, i) {
+      wrap(note, F.r, 10.5, A4.w - M * 2).slice(0, 4).forEach(function (ln, i) {
         P.text(ln, M, 142 + i * 14, 10.5, F.r, COL.INK2); y = 142 + (i + 1) * 14 + 6;
       });
     }
@@ -257,7 +259,7 @@
   }
 
   global.SonorPdfLuxury = {
-    __version: '1.0.0',
+    __version: '1.0.1',
     A4: A4, M: M, COL: COL, HOUSE: HOUSE, WA: WA,
     col: col, hexRgb: hexRgb, fadePngDataUrl: fadePngDataUrl,
     fetchBytes: fetchBytes, loadImage: loadImage,

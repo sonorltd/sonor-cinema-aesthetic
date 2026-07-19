@@ -106,7 +106,7 @@
       var db = global.__AESTHETIC_DB__ || (global.SonorDB ? new global.SonorDB() : null) || global.db;
       if (db && db.client) {
         var res = await db.client.from('device_catalogue')
-          .select('model_id,make,model,category,description,msrp_gbp,product_url,discontinued')
+          .select('model_id,make,model,category,description,msrp_gbp,product_url,discontinued,datasheet_url:metadata->>datasheet_url,img:metadata->>img')
           .in('category', AV_CATS);
         if (!res.error && res.data && res.data.length) {
           // discontinued filtered client-side (REST null-filter caveat) + model-name marker fallback

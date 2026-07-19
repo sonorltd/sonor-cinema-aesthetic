@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.5.1)
+# Cinema Aesthetic — Claude Code Context (v0.6.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -118,3 +118,14 @@ render-and-eyeball before shipping).
   Yamaha AVRs, Gold/Platinum = StormAudio processing, **Wisdom = 5th tier beyond
   platinum** (full Wisdom Audio system, TBC pending Habitech visit). Grade filter now
   applies to the PROCESSOR picker only — amps (Sonance/Triad/others) always manual.
+- v0.6.0 (2026-07-19) — **Design concepts + dark blue + WeQuote-style AV lines.**
+  New DESIGN CONCEPTS proposal section rendering projects.metadata.design_renders
+  ({url,caption}[] — hero + 2 tiles); 'Dark Blue' style direction + navy catalogue kit
+  (wf-midnight re-enabled, cp-navy, cu-navy-velvet, jo-navy-brass, ce-navy); 1387
+  seeded with the Dark Blue board. AV lines carry per-line Product page + Datasheet
+  links (device_catalogue product_url + metadata.datasheet_url/img — Library fills);
+  CHANNELS REQUIRED maths on the Audio page (bed + heights + LFE, min processor size);
+  standards blurbs per section (config sectionBlurbs, ff-safe): SMPTE/CEDIA viewing
+  angles, Dolby Atmos + RP22, 2700K Rako layering. Shared master v1.0.1 (4-line
+  section blurbs). NOTE: the hallway-bar hero render needs uploading as a FILE
+  (chat-pasted images not exportable) → seating-assets/aesthetic/ + design_renders.

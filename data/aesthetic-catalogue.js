@@ -1,4 +1,4 @@
-/* Sonor Cinema Aesthetic — Tier-3 offline seed (GENERATED 2026-07-19, v0.4.0)
+/* Sonor Cinema Aesthetic — Tier-3 offline seed (GENERATED 2026-07-19, v0.6.0)
    window.__AESTHETIC_SEED__ — snapshot of v_aesthetic_catalogue. Regenerate: bash data/build-seed.sh.
    NO trade pricing in this seed (seating-library-ssot §4).
 */
@@ -67,6 +67,254 @@
   "sort_order": 30
  },
  {
+  "id": "opt-acoustic_treatment-bass-traps",
+  "category": "acoustic_treatment",
+  "name": "Bass traps",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Corner low-frequency traps",
+  "metadata": {
+   "group": "acoustic_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-acoustic_treatment-diffusers",
+  "category": "acoustic_treatment",
+  "name": "Diffusers",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Rear-wall diffusion",
+  "metadata": {
+   "group": "acoustic_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-acoustic_treatment-first-reflection-absorbers",
+  "category": "acoustic_treatment",
+  "name": "First-reflection absorbers",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Side-wall absorption",
+  "metadata": {
+   "group": "acoustic_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-acoustic_treatment-ceiling-clouds",
+  "category": "acoustic_treatment",
+  "name": "Ceiling clouds",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Overhead absorption",
+  "metadata": {
+   "group": "acoustic_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-acoustic_treatment-floating-floor",
+  "category": "acoustic_treatment",
+  "name": "Floating floor",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 4,
+  "note": "Isolated floor build-up",
+  "metadata": {
+   "group": "acoustic_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
+  "id": "opt-cabinetry-media-wall-bar-unit",
+  "category": "cabinetry",
+  "name": "Media wall / bar unit",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Feature media + bar joinery",
+  "metadata": {
+   "group": "cabinetry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-cabinetry-av-rack-cupboard",
+  "category": "cabinetry",
+  "name": "AV rack cupboard",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Ventilated equipment cupboard",
+  "metadata": {
+   "group": "cabinetry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-cabinetry-drinks-station-fridge-housing",
+  "category": "cabinetry",
+  "name": "Drinks station / fridge housing",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Bar fridge + glass storage",
+  "metadata": {
+   "group": "cabinetry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-cabinetry-popcorn-station-joinery",
+  "category": "cabinetry",
+  "name": "Popcorn station joinery",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Housing for popcorn machine",
+  "metadata": {
+   "group": "cabinetry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-cabinetry-storage-display-shelving",
+  "category": "cabinetry",
+  "name": "Storage / display shelving",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Display + storage",
+  "metadata": {
+   "group": "cabinetry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
+  "id": "opt-cabinetry-ticket-booth-entrance-feature",
+  "category": "cabinetry",
+  "name": "Ticket booth / entrance feature",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 4,
+  "note": "Cinema entrance feature",
+  "metadata": {
+   "group": "cabinetry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 60
+ },
+ {
+  "id": "opt-cabinetry-acoustic-door",
+  "category": "cabinetry",
+  "name": "Acoustic door",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Heavy acoustic-rated door",
+  "metadata": {
+   "group": "cabinetry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 70
+ },
+ {
+  "id": "opt-cabinetry-bespoke-see-notes",
+  "category": "cabinetry",
+  "name": "Bespoke — see notes",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Free-text joinery notes",
+  "metadata": {
+   "group": "cabinetry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "notes_field": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 80
+ },
+ {
   "id": "cp-lightgrey",
   "category": "carpet",
   "name": "Light Grey Plush",
@@ -80,6 +328,21 @@
    "needs_review": true
   },
   "sort_order": 10
+ },
+ {
+  "id": "cp-navy",
+  "category": "carpet",
+  "name": "Navy Plush",
+  "manufacturer": null,
+  "hex": "#232a3a",
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Deep-pile navy — dark blue schemes",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 15
  },
  {
   "id": "cp-charcoal",
@@ -112,6 +375,26 @@
   "sort_order": 30
  },
  {
+  "id": "opt-ceiling-none",
+  "category": "ceiling",
+  "name": "None",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Existing ceiling",
+  "metadata": {
+   "group": "ceiling",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true,
+   "exclusive_group": "ceiling"
+  },
+  "sort_order": 10
+ },
+ {
   "id": "ce-black-panel",
   "category": "ceiling",
   "name": "Black Acoustic Panels",
@@ -125,6 +408,41 @@
    "needs_review": true
   },
   "sort_order": 10
+ },
+ {
+  "id": "ce-navy",
+  "category": "ceiling",
+  "name": "Deep Navy — Painted/Fabric",
+  "manufacturer": null,
+  "hex": "#1c2230",
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Near-black navy ceiling tone",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 15
+ },
+ {
+  "id": "opt-ceiling-painted",
+  "category": "ceiling",
+  "name": "Painted",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Plain painted ceiling",
+  "metadata": {
+   "group": "ceiling",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true,
+   "exclusive_group": "ceiling"
+  },
+  "sort_order": 20
  },
  {
   "id": "ce-fabric",
@@ -142,6 +460,163 @@
   "sort_order": 20
  },
  {
+  "id": "opt-ceiling-acoustic-panels-black",
+  "category": "ceiling",
+  "name": "Acoustic panels (black)",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Matt black acoustic ceiling",
+  "metadata": {
+   "group": "ceiling",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true,
+   "exclusive_group": "ceiling"
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-ceiling-stretched-fabric",
+  "category": "ceiling",
+  "name": "Stretched fabric",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Full stretched-fabric ceiling w/ cove",
+  "metadata": {
+   "group": "ceiling",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true,
+   "exclusive_group": "ceiling"
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-ceiling-coffered-bulkhead",
+  "category": "ceiling",
+  "name": "Coffered bulkhead",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Dropped perimeter bulkhead / coffer",
+  "metadata": {
+   "group": "ceiling",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true,
+   "exclusive_group": "ceiling"
+  },
+  "sort_order": 50
+ },
+ {
+  "id": "opt-ceiling-star-ceiling-fibre-optic",
+  "category": "ceiling",
+  "name": "Star ceiling (fibre-optic)",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Fibre-optic star field — excludes painted/acoustic",
+  "metadata": {
+   "group": "ceiling",
+   "source": "cowork-design-scope-2026-07",
+   "excludes": "painted,acoustic",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true,
+   "exclusive_group": "ceiling"
+  },
+  "sort_order": 60
+ },
+ {
+  "id": "opt-control-basic-keypad",
+  "category": "control",
+  "name": "Basic keypad",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Simple scene keypad",
+  "metadata": {
+   "group": "control",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-control-lutron",
+  "category": "control",
+  "name": "Lutron",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 4,
+  "note": "Lutron scene control",
+  "metadata": {
+   "group": "control",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-control-control4-scenes",
+  "category": "control",
+  "name": "Control4 scenes",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "C4 scene integration",
+  "metadata": {
+   "group": "control",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-control-rti",
+  "category": "control",
+  "name": "RTI",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "RTI control",
+  "metadata": {
+   "group": "control",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
   "id": "cu-darkgrey",
   "category": "curtain",
   "name": "Heavy Weave — Dark Grey",
@@ -155,6 +630,21 @@
    "needs_review": true
   },
   "sort_order": 10
+ },
+ {
+  "id": "cu-navy-velvet",
+  "category": "curtain",
+  "name": "Velvet — Midnight Navy",
+  "manufacturer": null,
+  "hex": "#1f2637",
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Navy velvet drape — dark blue schemes",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 15
  },
  {
   "id": "cu-velvet",
@@ -172,6 +662,163 @@
   "sort_order": 20
  },
  {
+  "id": "opt-downlight_grade-aurora-entry",
+  "category": "downlight_grade",
+  "name": "Aurora (entry)",
+  "manufacturer": "Aurora",
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Aurora / builder-grade downlight",
+  "metadata": {
+   "group": "downlight_grade",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "grade_rank": 1,
+   "select_mode": "grade",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-downlight_grade-collingwood-dld-mid",
+  "category": "downlight_grade",
+  "name": "Collingwood / DLD (mid)",
+  "manufacturer": "Collingwood",
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Mid-range low-glare",
+  "metadata": {
+   "group": "downlight_grade",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "grade_rank": 2,
+   "select_mode": "grade",
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-downlight_grade-lighting-of-london-premium",
+  "category": "downlight_grade",
+  "name": "Lighting of London (premium)",
+  "manufacturer": "Lighting of London",
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 4,
+  "note": "Premium architectural downlight",
+  "metadata": {
+   "group": "downlight_grade",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "grade_rank": 3,
+   "select_mode": "grade",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-downlight_grade-orluna-high-end",
+  "category": "downlight_grade",
+  "name": "Orluna (high-end)",
+  "manufacturer": "Orluna",
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 5,
+  "note": "High-end trimless / adjustable",
+  "metadata": {
+   "group": "downlight_grade",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "grade_rank": 4,
+   "select_mode": "grade",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-front_wall-at-fabric-baffle-wall",
+  "category": "front_wall",
+  "name": "AT fabric baffle wall",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 4,
+  "note": "LCR behind acoustically-transparent fabric",
+  "metadata": {
+   "group": "front_wall",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true,
+   "acoustically_transparent": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-front_wall-solid-front-wall-on-wall-lcr",
+  "category": "front_wall",
+  "name": "Solid front wall (on-wall LCR)",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Speakers on/beside the wall",
+  "metadata": {
+   "group": "front_wall",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-front_wall-painted",
+  "category": "front_wall",
+  "name": "Painted",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Plain painted front wall",
+  "metadata": {
+   "group": "front_wall",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-front_wall-none",
+  "category": "front_wall",
+  "name": "None",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "No dedicated front-wall treatment",
+  "metadata": {
+   "group": "front_wall",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
   "id": "jo-charcoal-oak",
   "category": "joinery",
   "name": "Charcoal Oak",
@@ -185,6 +832,21 @@
    "needs_review": true
   },
   "sort_order": 10
+ },
+ {
+  "id": "jo-navy-brass",
+  "category": "joinery",
+  "name": "Navy Shaker + Brass",
+  "manufacturer": null,
+  "hex": "#232c3e",
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Navy cabinetry with brass hardware — cinema bar look",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 15
  },
  {
   "id": "jo-black-matt",
@@ -215,6 +877,254 @@
    "needs_review": true
   },
   "sort_order": 30
+ },
+ {
+  "id": "opt-led_coffer-led-coffer",
+  "category": "led_coffer",
+  "name": "LED coffer",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Concealed RGBW strip to bulkhead",
+  "metadata": {
+   "group": "led_coffer",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "requires": "ceiling=Coffered bulkhead",
+   "select_mode": "toggle",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-led_zone-coffer",
+  "category": "led_zone",
+  "name": "Coffer",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Bulkhead / ceiling coffer",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-led_zone-pilaster",
+  "category": "led_zone",
+  "name": "Pilaster",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Vertical wall pilasters",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-led_zone-step-nose-aisle",
+  "category": "led_zone",
+  "name": "Step nose / aisle",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Step-edge marker lighting",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-led_zone-riser-wash",
+  "category": "led_zone",
+  "name": "Riser wash",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Wash to riser front",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-led_zone-cove-perimeter",
+  "category": "led_zone",
+  "name": "Cove / perimeter",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Perimeter cove strip",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
+  "id": "opt-led_zone-wall-wash-accents",
+  "category": "led_zone",
+  "name": "Wall wash / accents",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Accent wall wash",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 60
+ },
+ {
+  "id": "opt-led_zone-backlit-movie-posters",
+  "category": "led_zone",
+  "name": "Backlit movie posters",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Illuminated poster frames",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 70
+ },
+ {
+  "id": "opt-led_zone-star-field",
+  "category": "led_zone",
+  "name": "Star field",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Fibre-optic stars",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 80
+ },
+ {
+  "id": "opt-led_zone-plinth-floating-base",
+  "category": "led_zone",
+  "name": "Plinth / floating base",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Under-plinth glow",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 90
+ },
+ {
+  "id": "opt-led_zone-screen-wall-wash",
+  "category": "led_zone",
+  "name": "Screen wall wash",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Bias light behind screen",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 100
+ },
+ {
+  "id": "opt-led_zone-bar-back-light",
+  "category": "led_zone",
+  "name": "Bar back-light",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Illuminated bar / drinks station",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 110
+ },
+ {
+  "id": "opt-led_zone-toe-kick-floating-floor",
+  "category": "led_zone",
+  "name": "Toe-kick / floating floor",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Under-seat platform glow",
+  "metadata": {
+   "group": "led_zone",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 120
  },
  {
   "id": "lt-downlight",
@@ -344,6 +1254,217 @@
   "sort_order": 10
  },
  {
+  "id": "opt-screen-none-by-others",
+  "category": "screen",
+  "name": "None / by others",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Screen supplied elsewhere",
+  "metadata": {
+   "group": "screen",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "group_title": "Screen",
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-screen-fixed-frame-woven-at",
+  "category": "screen",
+  "name": "Fixed-frame (woven AT)",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Acoustically-transparent, speakers behind",
+  "metadata": {
+   "group": "screen",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true,
+   "acoustically_transparent": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-screen-fixed-frame-matt-white",
+  "category": "screen",
+  "name": "Fixed-frame (matt white)",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Non-AT, speakers around screen",
+  "metadata": {
+   "group": "screen",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-screen-motorised-masking-4-way",
+  "category": "screen",
+  "name": "Motorised masking (4-way)",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 5,
+  "note": "Aspect-ratio masking system",
+  "metadata": {
+   "group": "screen",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-screen-motorised-drop-down",
+  "category": "screen",
+  "name": "Motorised drop-down",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Tab-tensioned electric screen",
+  "metadata": {
+   "group": "screen",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
+  "id": "opt-seating_option-tiered-seating-riser-platform",
+  "category": "seating_option",
+  "name": "Tiered seating (riser platform)",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Raised rear rows on riser",
+  "metadata": {
+   "group": "seating_option",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-seating_option-second-tier-row",
+  "category": "seating_option",
+  "name": "Second tier / row",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Additional raised row",
+  "metadata": {
+   "group": "seating_option",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-seating_option-rear-bar-seating-stools",
+  "category": "seating_option",
+  "name": "Rear bar seating / stools",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "High stools at rear bar",
+  "metadata": {
+   "group": "seating_option",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-seating_option-kids-row-bean-bags",
+  "category": "seating_option",
+  "name": "Kids row / bean bags",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Casual front row",
+  "metadata": {
+   "group": "seating_option",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-seating_option-riser-step-lighting",
+  "category": "seating_option",
+  "name": "Riser step + lighting",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Step access w/ marker lights",
+  "metadata": {
+   "group": "seating_option",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
+  "id": "opt-sundry-popcorn-machine",
+  "category": "sundry",
+  "name": "Popcorn machine",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Countertop / cart popcorn maker",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
   "id": "su-popcorn",
   "category": "sundry",
   "name": "Popcorn Machine",
@@ -357,6 +1478,25 @@
    "needs_review": true
   },
   "sort_order": 10
+ },
+ {
+  "id": "opt-sundry-side-coffee-tables",
+  "category": "sundry",
+  "name": "Side / coffee tables",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Between-seat tables",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 20
  },
  {
   "id": "su-drinks-fridge",
@@ -389,6 +1529,25 @@
   "sort_order": 30
  },
  {
+  "id": "opt-sundry-cup-holders",
+  "category": "sundry",
+  "name": "Cup holders",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Integrated / add-on holders",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
   "id": "su-side-tables",
   "category": "sundry",
   "name": "Side / Lounge Tables",
@@ -404,6 +1563,44 @@
   "sort_order": 40
  },
  {
+  "id": "opt-sundry-drinks-fridge",
+  "category": "sundry",
+  "name": "Drinks fridge",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Under-counter fridge",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-sundry-pick-n-mix-candy-station",
+  "category": "sundry",
+  "name": "Pick'n'mix / candy station",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Sweet station",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
   "id": "su-bar-stools",
   "category": "sundry",
   "name": "Bar Stools",
@@ -417,6 +1614,25 @@
    "needs_review": true
   },
   "sort_order": 50
+ },
+ {
+  "id": "opt-sundry-blankets-throws",
+  "category": "sundry",
+  "name": "Blankets / throws",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Comfort throws",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 60
  },
  {
   "id": "su-poster-frames",
@@ -449,6 +1665,25 @@
   "sort_order": 70
  },
  {
+  "id": "opt-sundry-directors-chair",
+  "category": "sundry",
+  "name": "Director's chair",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Decor seating",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 70
+ },
+ {
   "id": "su-throws",
   "category": "sundry",
   "name": "Throws & Cushions",
@@ -462,6 +1697,101 @@
    "needs_review": true
   },
   "sort_order": 80
+ },
+ {
+  "id": "opt-sundry-clapperboard-decor-props",
+  "category": "sundry",
+  "name": "Clapperboard / decor props",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Themed decor",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 80
+ },
+ {
+  "id": "opt-sundry-framed-backlit-posters",
+  "category": "sundry",
+  "name": "Framed backlit posters",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Illuminated poster frames",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 90
+ },
+ {
+  "id": "opt-sundry-aisle-marker-lights",
+  "category": "sundry",
+  "name": "Aisle marker lights",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Floor path lighting",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 100
+ },
+ {
+  "id": "opt-sundry-acoustic-entrance-curtain",
+  "category": "sundry",
+  "name": "Acoustic entrance curtain",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Sound-lock drape",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 110
+ },
+ {
+  "id": "opt-sundry-neon-led-signage",
+  "category": "sundry",
+  "name": "Neon / LED signage",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Cinema / name sign",
+  "metadata": {
+   "group": "sundry",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 120
  },
  {
   "id": "wf-cineca-alcantara",
@@ -498,6 +1828,21 @@
    "acoustically_transparent": false
   },
   "sort_order": 20
+ },
+ {
+  "id": "wf-midnight",
+  "category": "wall_fabric",
+  "name": "Midnight Blue",
+  "manufacturer": null,
+  "hex": "#232a3a",
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Deep blue feature colour — dark blue schemes",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 30
  },
  {
   "id": "wf-cineca-emerald",
@@ -714,6 +2059,140 @@
    "acoustically_transparent": true
   },
   "sort_order": 140
+ },
+ {
+  "id": "opt-wall_light-wall-lights-sconces-tbc",
+  "category": "wall_light",
+  "name": "Wall lights / sconces (TBC)",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Placeholder — confirm fitting per project",
+  "metadata": {
+   "tbc": true,
+   "group": "wall_light",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "toggle",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-wall_treatment-none",
+  "category": "wall_treatment",
+  "name": "None",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Bare / decorated by others",
+  "metadata": {
+   "group": "wall_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "opt-wall_treatment-painted",
+  "category": "wall_treatment",
+  "name": "Painted",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 1,
+  "note": "Painted plaster",
+  "metadata": {
+   "group": "wall_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "opt-wall_treatment-acoustic-fabric-panels",
+  "category": "wall_treatment",
+  "name": "Acoustic fabric panels",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Fabric-wrapped absorbers (see Cineca fabric + acoustic panel ranges)",
+  "metadata": {
+   "group": "wall_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "opt-wall_treatment-full-fabric-wrapped-walls",
+  "category": "wall_treatment",
+  "name": "Full fabric-wrapped walls",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 4,
+  "note": "Stretched fabric wall system",
+  "metadata": {
+   "group": "wall_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "opt-wall_treatment-upholstered-quilted-panels",
+  "category": "wall_treatment",
+  "name": "Upholstered / quilted panels",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 4,
+  "note": "Padded feature panels",
+  "metadata": {
+   "group": "wall_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
+  "id": "opt-wall_treatment-fluted-slatted-timber",
+  "category": "wall_treatment",
+  "name": "Fluted / slatted timber",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Timber over acoustic felt",
+  "metadata": {
+   "group": "wall_treatment",
+   "source": "cowork-design-scope-2026-07",
+   "proposed": true,
+   "select_mode": "one",
+   "needs_review": true
+  },
+  "sort_order": 60
  }
 ]
   };

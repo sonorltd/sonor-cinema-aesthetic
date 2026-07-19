@@ -66,14 +66,67 @@
     };
   }
 
+  function blurb(key, fallback) {
+    var b = (global.__AESTHETIC_CONFIG__ || {}).sectionBlurbs || {};
+    return b[key] || fallback;
+  }
+
+  // ── DESIGN CONCEPTS — render page (hero + tiles from projects.metadata.design_renders) ──
+  function secConcepts(m, renderImgs) {
+    if (!m.renders || !m.renders.length) return null;
+    var lx = L();
+    return function (P, F, pageNo, TOTAL) {
+      var M = lx.M, A4 = lx.A4, COL = lx.COL;
+      lx.pageHead(P, F, 'DESIGN CONCEPTS', pageNo, TOTAL, DOC_LABEL);
+      var y = lx.sectionHead(P, F, (m.styleLabel || 'THE SCHEME'), 'Design concepts', blurb('concepts'));
+      y = Math.max(y, 190);
+      var hero = renderImgs[0];
+      var capH = 18;
+      if (hero) {
+        var w = A4.w - M * 2, h = hero.height * (w / hero.width);
+        var hMax = (m.renders.length > 1) ? 330 : 470;
+        if (h > hMax) { h = hMax; w = hero.width * (h / hero.height); }
+        var hx = M + (A4.w - M * 2 - w) / 2;
+        P.image(hero, hx, y, w, h, 1);
+        P.rectB(hx, y, w, h, COL.LINE, 0.8);
+        var cap = (m.renders[0] && m.renders[0].caption) || '';
+        if (cap) P.tracked(cap.toUpperCase(), hx, y + h + 8, 6.5, F.r, COL.MUT, 1.5);
+        y += h + capH + 14;
+      }
+      // additional render tiles, two-up
+      var rest = renderImgs.slice(1).filter(Boolean);
+      if (rest.length) {
+        var gap = 14, tw = (A4.w - M * 2 - gap) / 2;
+        rest.slice(0, 2).forEach(function (img, i) {
+          var th = img.height * (tw / img.width), thMax = 200;
+          var dw = tw, dh = th;
+          if (dh > thMax) { dh = thMax; dw = img.width * (dh / img.height); }
+          var cx = M + i * (tw + gap) + (tw - dw) / 2;
+          P.image(img, cx, y, dw, dh, 1);
+          P.rectB(cx, y, dw, dh, COL.LINE, 0.8);
+          var cap2 = (m.renders[i + 1] && m.renders[i + 1].caption) || '';
+          if (cap2) P.tracked(cap2.toUpperCase(), M + i * (tw + gap), y + dh + 8, 6, F.r, COL.MUT, 1.3);
+        });
+      }
+      lx.pageFoot(P, F);
+    };
+  }
+
+  // per-line links row (WeQuote-style: every line carries its references)
+  function lineLinks(P, F, lx, x, y, links) {
+    var drawn = 0, cx = x;
+    if (links && links.url) { cx += P.link('Product page', cx, y, 7.5, F.r, lx.COL.GDEEP, links.url) + 16; drawn++; }
+    if (links && links.datasheet) { cx += P.link('Datasheet', cx, y, 7.5, F.r, lx.COL.GDEEP, links.datasheet) + 16; drawn++; }
+    return drawn;
+  }
+
   function secVideo(m) {
     if (!m.video || (!m.video.display && !m.video.screenW)) return null;
     var lx = L();
     return function (P, F, pageNo, TOTAL) {
       lx.pageHead(P, F, 'VIDEO SYSTEM', pageNo, TOTAL, DOC_LABEL);
-      var y = lx.sectionHead(P, F, 'REFERENCE PICTURE', 'Video system',
-        'Sized and positioned for the room — image size, mounting height and viewing distance are engineered together so every seat gets the reference picture.');
-      y = Math.max(y, 186);
+      var y = lx.sectionHead(P, F, 'REFERENCE PICTURE', 'Video system', blurb('video'));
+      y = Math.max(y, 196);
       var v = m.video;
       var diag = inchDiag(v.screenW, v.screenH);
       var rows = [
@@ -85,7 +138,10 @@
         ['Projector', v.projector],
         ['Screen gain', v.screenGain && v.screenGain !== 1 ? String(v.screenGain) : null]
       ];
-      lx.specRows(P, F, rows, lx.M, y, 300);
+      var b = lx.specRows(P, F, rows, lx.M, y, 300);
+      if (v.displayLinks && (v.displayLinks.url || v.displayLinks.datasheet)) {
+        lineLinks(P, F, lx, lx.M, b + 8, v.displayLinks);
+      }
       lx.pageFoot(P, F);
     };
   }
@@ -95,30 +151,35 @@
     var lx = L();
     return function (P, F, pageNo, TOTAL) {
       lx.pageHead(P, F, 'AUDIO SYSTEM', pageNo, TOTAL, DOC_LABEL);
-      var y = lx.sectionHead(P, F, 'IMMERSIVE SOUND', 'Audio system',
-        'Speaker layout engineered to the CEDIA RP22 recommended practice — every channel placed for the listening area, not just the room.');
-      y = Math.max(y, 186);
+      var y = lx.sectionHead(P, F, 'IMMERSIVE SOUND', 'Audio system', blurb('audio'));
+      y = Math.max(y, 200);
       var a = m.audio;
       var rows = [
         ['System grade', a.grade ? (a.grade.label + ' — ' + a.grade.note) : null],
         ['Configuration', a.headline],
-        ['Speaker layout', a.recipe],
+        ['Channels required', a.channelSummary],
         ['Main listening position', a.mlpDist ? mmTxt(a.mlpDist) + ' from the screen wall' : null],
         ['Ear height (reference)', mmTxt(a.earHeight)]
       ];
-      var b = lx.specRows(P, F, rows, lx.M, y, 300);
-      // channel-by-channel loudspeaker schedule (v0.3.0 — configured in-app)
+      var b = lx.specRows(P, F, rows, lx.M, y, 320);
+      // channel-by-channel loudspeaker schedule — WeQuote-style: one line per
+      // position, qty × model, per-line product/datasheet links underneath
       if (a.channels && a.channels.length) {
         var M = lx.M, A4 = lx.A4, COL = lx.COL;
-        var cy = b + 22;
+        var cy = b + 20;
         P.tracked('LOUDSPEAKERS', M, cy, 6.5, F.r, COL.MUT, 1.5);
         P.hline(M, A4.w - M, cy + 11, COL.GOLD, 0.8, 0.75);
         cy += 27;
         a.channels.forEach(function (c, i, arr) {
           P.text(c.label, M, cy - 9, 10.5, F.r, COL.INK2);
           P.right(c.qty + ' ×   ' + (c.model || 'TBC'), A4.w - M, cy - 9, 10.5, F.b, COL.INK);
-          if (i < arr.length - 1) P.hline(M, A4.w - M, cy + 6, COL.LINE, 0.5, 0.6);
-          cy += 21;
+          var extra = 0;
+          if (c.url || c.datasheet) {           // links row — advance accounted (truncate-vs-wrap rule)
+            lineLinks(P, F, lx, M + 12, cy + 5, c);
+            extra = 13;
+          }
+          if (i < arr.length - 1) P.hline(M, A4.w - M, cy + 6 + extra, COL.LINE, 0.5, 0.6);
+          cy += 21 + extra;
         });
         var elec = [];
         if (a.processor) elec.push(['Processor / receiver', a.processor]);
@@ -130,9 +191,11 @@
           cy += 27;
           elec.forEach(function (r, i, arr) {
             P.text(r[0], M, cy - 9, 10.5, F.r, COL.INK2);
-            P.right(r[1], A4.w - M, cy - 9, 10.5, F.b, COL.INK);
-            if (i < arr.length - 1) P.hline(M, A4.w - M, cy + 6, COL.LINE, 0.5, 0.6);
-            cy += 21;
+            P.right(r[1].model, A4.w - M, cy - 9, 10.5, F.b, COL.INK);
+            var extra = 0;
+            if (r[1].url || r[1].datasheet) { lineLinks(P, F, lx, M + 12, cy + 5, r[1]); extra = 13; }
+            if (i < arr.length - 1) P.hline(M, A4.w - M, cy + 6 + extra, COL.LINE, 0.5, 0.6);
+            cy += 21 + extra;
           });
         }
         cy += 10;
@@ -147,7 +210,7 @@
     var lx = L();
     return function (P, F, pageNo, TOTAL) {
       lx.pageHead(P, F, 'LIGHTING', pageNo, TOTAL, DOC_LABEL);
-      var y = lx.sectionHead(P, F, 'WARM · CALM · PREMIUM', 'Lighting design', m.colourTemp);
+      var y = lx.sectionHead(P, F, 'WARM · CALM · PREMIUM', 'Lighting design', blurb('lighting', m.colourTemp));
       y = Math.max(y, 178);
       var M = lx.M, A4 = lx.A4, COL = lx.COL;
       P.tracked('FITTINGS', M, y, 6.5, F.r, COL.MUT, 1.5);
@@ -189,8 +252,7 @@
     return function (P, F, pageNo, TOTAL) {
       var M = lx.M, A4 = lx.A4, COL = lx.COL;
       lx.pageHead(P, F, 'LED LIGHTING', pageNo, TOTAL, DOC_LABEL);
-      var y = lx.sectionHead(P, F, 'CONCEALED LINEAR LIGHT', 'LED lighting',
-        'Every LED run is concealed — light is seen as a glow, never as a fitting. Warm white, fully dimmable, no RGB.');
+      var y = lx.sectionHead(P, F, 'CONCEALED LINEAR LIGHT', 'LED lighting', blurb('led'));
       y = Math.max(y, 186);
       P.tracked('LED ZONES', M, y, 6.5, F.r, COL.MUT, 1.5);
       P.hline(M, A4.w - M, y + 11, COL.GOLD, 0.8, 0.75);
@@ -255,8 +317,7 @@
       lx.pageHead(P, F, 'STAR CEILING', pageNo, TOTAL, DOC_LABEL);
       // NOTE: Gilroy's 'ff' ligature renders broken (cinema-pdf-luxury §4) — the
       // word "coffer" is banned on these pages; "ceiling recess" is used instead.
-      var y = lx.sectionHead(P, F, 'FIBRE-OPTIC NIGHT SKY', 'Star ceiling',
-        'A fibre-optic star field set into the recessed acoustic ceiling — invisible by day, a night sky when the lights go down.');
+      var y = lx.sectionHead(P, F, 'FIBRE-OPTIC NIGHT SKY', 'Star ceiling', blurb('star'));
       y = Math.max(y, 186);
       var s = m.star;
       var rows = [
@@ -277,8 +338,7 @@
     return function (P, F, pageNo, TOTAL) {
       var M = lx.M, A4 = lx.A4, COL = lx.COL;
       lx.pageHead(P, F, 'MATERIALS & FINISHES', pageNo, TOTAL, DOC_LABEL);
-      lx.sectionHead(P, F, (m.styleLabel || 'SCHEME'), 'Materials & finishes',
-        'One pick per surface from the Sonor aesthetic library. Physical samples are provided for approval before any order is placed.');
+      lx.sectionHead(P, F, (m.styleLabel || 'SCHEME'), 'Materials & finishes', blurb('materials'));
       P.hline(M, A4.w - M, 192, COL.GOLD, 0.8, 0.75);
       var cols = 3, gap = 14, tw = (A4.w - M * 2 - gap * (cols - 1)) / cols, th = 112;
       var y = 208;
@@ -367,10 +427,18 @@
       if (s.swatchImg) { try { im = await lx.loadImage(doc, s.swatchImg); } catch (e) {} }
       swatchImgs.push(im);
     }
+    // design concept renders (projects.metadata.design_renders)
+    var renderImgs = [];
+    for (var ri = 0; ri < (m.renders || []).length && ri < 3; ri++) {
+      var rr = m.renders[ri]; var rim = null;
+      if (rr && rr.url) { try { rim = await lx.loadImage(doc, rr.url); } catch (e) {} }
+      renderImgs.push(rim);
+    }
 
     // assemble sections (nulls dropped), then paint with true page numbers
     var sections = [
       { label: 'Introduction', draw: secIntro(m) },
+      { label: 'Design concepts', draw: secConcepts(m, renderImgs) },
       { label: 'Video system', draw: secVideo(m) },
       { label: 'Audio system', draw: secAudio(m) },
       { label: 'Lighting', draw: secLighting(m) },

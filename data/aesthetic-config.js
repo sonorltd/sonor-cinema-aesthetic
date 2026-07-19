@@ -7,7 +7,7 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.5.0',
+    version: '0.5.1',
     buildDate: '2026-07-19',
     steps: ['Scheme', 'Video', 'Audio', 'Materials', 'Lighting', 'Summary'],
 
@@ -42,12 +42,16 @@
     //    StormAudio + Wisdom Audio = Library asks (not in device_catalogue yet).
     //    Grade TEMPLATES (pre-packaged picks per grade) come as saved boards /
     //    Library data as the ranges firm up — structure reserved via `template`.
+    //    Ladder (Bryn 2026-07-19): Yamaha = bronze/silver · StormAudio = gold/platinum
+    //    · Wisdom = the 5th tier beyond platinum (TBC pending Habitech visit).
+    //    Amps (Sonance / Triad / others) are chosen MANUALLY — never grade-locked.
     avGrades: [
-      { id: 'bronze',   label: 'Bronze',   note: 'Quality all-in-one AV receiver — processing and amplification in one box.', brands: { receiver: ['Yamaha'], amplifier: [], speaker: [] }, template: null },
-      { id: 'silver',   label: 'Silver',   note: 'Premium AV receiver with power-amp assist for the main channels.',          brands: { receiver: ['Denon', 'Arcam'], amplifier: ['Episode', 'Triad'], speaker: [] }, template: null },
-      { id: 'gold',     label: 'Gold',     note: 'Flagship processing with dedicated multi-channel power amplification.',     brands: { receiver: ['Anthem', 'Arcam'], amplifier: ['Triad', 'Sonance'], speaker: [] }, template: null },
-      { id: 'platinum', label: 'Platinum', note: 'Reference separates — StormAudio processing, Sonance / Triad amplification, Wisdom Audio loudspeakers.', brands: { receiver: ['StormAudio', 'Anthem'], amplifier: ['Sonance', 'Triad'], speaker: ['Wisdom Audio'] }, template: null,
-        tbc: 'Wisdom Audio loudspeaker range TBC — pending Habitech experience centre visit' }
+      { id: 'bronze',   label: 'Bronze',   note: 'Quality Yamaha AV receiver — processing and amplification in one box.',            brands: { receiver: ['Yamaha'] }, template: null },
+      { id: 'silver',   label: 'Silver',   note: 'Flagship Yamaha AV receiver — stronger processing and amplification, pre-outs for power amps.', brands: { receiver: ['Yamaha'] }, template: null },
+      { id: 'gold',     label: 'Gold',     note: 'StormAudio immersive processor with dedicated multi-channel power amplification.', brands: { receiver: ['StormAudio'] }, template: null },
+      { id: 'platinum', label: 'Platinum', note: 'Reference StormAudio separates — per-channel amplification, expanded channel counts.', brands: { receiver: ['StormAudio'] }, template: null },
+      { id: 'wisdom',   label: 'Wisdom',   note: 'Beyond platinum — the full Wisdom Audio system, engineered end to end.',           brands: { receiver: ['StormAudio'], speaker: ['Wisdom Audio'] }, template: null,
+        tbc: 'Wisdom Audio system TBC — pending Habitech experience centre visit' }
     ],
 
     // Style directions — seed the board's overall look. Data-light on purpose:

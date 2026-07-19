@@ -105,9 +105,10 @@
   function avSelectHtml(cat, path, current, allowNone) {
     var items = E.avByCategory(cat);
     if (!items.length) return '<div class="hint">Library device catalogue unavailable — connect once online.</div>';
-    // soft-filter electronics to the chosen grade's typical marques (current pick always kept)
+    // soft-filter the PROCESSOR picker only to the grade's marques (current pick kept).
+    // Amps are always a free manual choice (Sonance / Triad / others) — never grade-locked.
     var g = avGradeOf();
-    if (g && !cfg.av.audio.showAllBrands && (cat === 'receiver' || cat === 'amplifier') && g.brands[cat] && g.brands[cat].length) {
+    if (g && !cfg.av.audio.showAllBrands && cat === 'receiver' && g.brands[cat] && g.brands[cat].length) {
       var keep = g.brands[cat];
       var filtered = items.filter(function (d) { return keep.indexOf(d.make) >= 0 || d.model_id === current; });
       if (filtered.length) items = filtered;
@@ -173,7 +174,7 @@
       h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setAv(\'audio.grade\',\'' + g.id + '\')">' +
         '<div class="mc-name">' + esc(g.label) + '</div>' +
         '<div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(g.note) + '</div>' +
-        '<div class="mc-meta">' + esc([].concat(g.brands.receiver || [], g.brands.amplifier || []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }).join(' · ')) + '</div></button>';
+        '<div class="mc-meta">' + esc([].concat(g.brands.receiver || [], g.brands.speaker || []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }).join(' · ')) + '</div></button>';
     });
     h += '</div>' + (a.grade ? '<label class="toggle" style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" ' + (a.showAllBrands ? 'checked' : '') + ' onchange="AestheticApp.setAv(\'audio.showAllBrands\', this.checked); AestheticApp.jumpRefresh()"> Show all brands in the electronics pickers</label>' : '') + '</div>';
     h += '<div class="panel"><div class="ptt">Immersive layout</div><div class="opts">';

@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.5.0)
+# Cinema Aesthetic — Claude Code Context (v0.5.1)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -114,3 +114,7 @@ render-and-eyeball before shipping).
   page leads with SYSTEM GRADE. **publishDesignSpec()**: every board save merges the
   confirmed spec into projects.metadata.design_spec (RPC, atomic) — the ONE source
   CD/CT consume. Library asks: StormAudio + Wisdom Audio into device_catalogue.
+- v0.5.1 (2026-07-19) — grade ladder restructure per Bryn: FIVE tiers — Bronze/Silver =
+  Yamaha AVRs, Gold/Platinum = StormAudio processing, **Wisdom = 5th tier beyond
+  platinum** (full Wisdom Audio system, TBC pending Habitech visit). Grade filter now
+  applies to the PROCESSOR picker only — amps (Sonance/Triad/others) always manual.

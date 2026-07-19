@@ -21,8 +21,12 @@
     // v0.3.0 — AV configuration (in-house). Hardware ids = device_catalogue model_id.
     av: {
       video: { type: 'projection-baffle', tvId: null, tvSizeIn: null, projectorId: null },
-      audio: { config: '5.1.4', grade: null, showAllBrands: false, picks: {}, subId: null, subQty: 2, processorId: null, ampId: null }
+      audio: { config: '5.1.4', grade: null, showAllBrands: false, picks: {}, subId: null, subQty: 2, processorId: null, ampId: null },
+      // v0.7.0 — PER-ASPECT grades (silver projector + gold speakers is valid).
+      // audio.grade kept only as a legacy field for saved-board migration.
+      grades: { video: null, speakers: null, electronics: null }
     },
+    options: {},                     // v0.7.0 — dynamic Library option groups: cat -> id | {id:true}
     // v0.4.0 — full design scope
     design: {
       ceiling: 'star',               // ceilingTreatments id — MUTUALLY EXCLUSIVE
@@ -72,6 +76,20 @@
       if (!cfg.picks[sl.id]) { var it = E.byCategory(sl.cat)[0]; if (it) cfg.picks[sl.id] = it.id; }
     });
     if (!Object.keys(cfg.fittings).length) { cfg.fittings = { downlight: true, led_perimeter: true, riser_light: true }; }
+    normalizeDesign();   // v0.7.0 — adopt Library ids for zones / downlight grades
+  }
+  // v0.7.0 — migrate saved boards: legacy single av.audio.grade → per-aspect grades
+  function migrateCfg(c) {
+    if (!c) return;
+    if (!c.options) c.options = {};
+    if (c.av) {
+      if (!c.av.grades) c.av.grades = { video: null, speakers: null, electronics: null };
+      var legacy = c.av.audio && c.av.audio.grade;
+      if (legacy && !c.av.grades.speakers && !c.av.grades.electronics) {
+        c.av.grades.speakers = legacy;
+        c.av.grades.electronics = legacy === 'wisdom' ? 'platinum' : legacy;
+      }
+    }
   }
 
   // ── wizard nav ───────────────────────────────────────────────────────────
@@ -101,7 +119,34 @@
   // ── AV helpers ───────────────────────────────────────────────────────────
   function atmosCfg() { return (CFG.atmosConfigs || []).find(function (a) { return a.id === cfg.av.audio.config; }) || { id: cfg.av.audio.config, surrounds: 2, rears: 0, heights: 4 }; }
   function avName(id) { var d = id && E.avItem(id); return d ? (d.make + ' ' + d.model) : null; }
-  function avGradeOf() { return (CFG.avGrades || []).find(function (g) { return g.id === cfg.av.audio.grade; }) || null; }
+  // v0.7.0 — per-aspect grade resolution
+  function gradeDef(aspect) {
+    var id = cfg.av.grades && cfg.av.grades[aspect];
+    return id ? ((CFG.avGrades || []).find(function (g) { return g.id === id; }) || null) : null;
+  }
+  function gradesForAspect(aspect) {
+    var allow = (CFG.avGradeAspects || {})[aspect];
+    return (CFG.avGrades || []).filter(function (g) { return !allow || allow.indexOf(g.id) >= 0; });
+  }
+  function gradeColour(id) { return (CFG.avGradeColours || {})[id] || '#8a8a8a'; }
+  function gradeAspectNote(aspect, id) { var n = (CFG.avGradeAspectNotes || {})[aspect]; return (n && n[id]) || ''; }
+  // legacy shim — the receiver soft-filter + Wisdom TBC now key on their aspects
+  function avGradeOf() { return gradeDef('electronics'); }
+  function wisdomOn() { return (cfg.av.grades && cfg.av.grades.speakers) === 'wisdom'; }
+  function gradeChipsHtml(aspect) {
+    var cur = cfg.av.grades[aspect];
+    var h = '<div class="gr-row">';
+    gradesForAspect(aspect).forEach(function (g) {
+      var on = cur === g.id;
+      h += '<button class="gr-chip' + (on ? ' on' : '') + '" style="--tier:' + gradeColour(g.id) + '" ' +
+        'onclick="AestheticApp.setAv(\'grades.' + aspect + '\',' + (on ? 'null' : '\'' + g.id + '\'') + ')">' +
+        '<span class="gr-dot"></span>' + esc(g.label) + '</button>';
+    });
+    h += '</div>';
+    var note = cur ? gradeAspectNote(aspect, cur) : '';
+    h += '<div class="hint" style="margin-top:7px;min-height:14px">' + (note ? esc(note) : 'Optional — pick the class this aspect is specified to.') + '</div>';
+    return h;
+  }
   function avLinks(id) { var d = id && E.avItem(id); return d ? { url: d.product_url || null, datasheet: d.datasheet_url || null, img: d.img || null } : {}; }
   function avSelectHtml(cat, path, current, allowNone) {
     var items = E.avByCategory(cat);
@@ -131,9 +176,76 @@
     var parts = path.split('.'), o = cfg.av;
     for (var i = 0; i < parts.length - 1; i++) o = o[parts[i]];
     o[parts[parts.length - 1]] = (val === '' ? null : val);
-    if (path === 'video.type' || path === 'audio.config') renderStep(); else updateAvLive();
+    if (path === 'video.type' || path === 'audio.config' || path.indexOf('grades.') === 0) renderStep(); else updateAvLive();
   }
   function updateAvLive() { var el = $('avLive'); if (el) el.innerHTML = avSummaryHtml(); }
+
+  // ── v0.7.0 — dynamic Library option groups ──────────────────────────────
+  // Rows carrying metadata.select_mode are OPTION rows (one|multi|toggle|grade);
+  // rows without stay finish/swatch entries. Menus filter on this so the new
+  // Library data lands in the right place — and legacy/new duplicates dedupe
+  // by normalised name, preferring the Library's new opt-* rows.
+  function normName(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+  function dedupePreferOpt(items) {
+    var byName = {};
+    items.forEach(function (it) {
+      var k = normName(it.name), prev = byName[k];
+      if (!prev) { byName[k] = it; return; }
+      var newOpt = String(it.id).indexOf('opt-') === 0, oldOpt = String(prev.id).indexOf('opt-') === 0;
+      if (newOpt && !oldOpt) byName[k] = it;   // Library's curated opt-* row wins
+    });
+    return items.filter(function (it) { return byName[normName(it.name)] === it; });
+  }
+  function selectMode(it) { return (it.metadata && it.metadata.select_mode) || null; }
+  function libOpts(cat) { return dedupePreferOpt(E.byCategory(cat).filter(function (it) { return !!selectMode(it); })); }
+  function libFinishes(cat) { return dedupePreferOpt(E.byCategory(cat).filter(function (it) { return !selectMode(it); })); }
+
+  function optionGroupHtml(gr) {
+    var items = libOpts(gr.cat);
+    if (!items.length) return '';
+    var mode = selectMode(items[0]) || 'one';
+    var h = '<div class="panel" style="margin-bottom:14px"><div class="ptt">' + esc(gr.label) + ' <span class="opt-tag">· ' + esc(gr.hint || '') + '</span></div>';
+    if (mode === 'one') {
+      h += '<div class="mat-grid">';
+      items.forEach(function (it) {
+        var on = cfg.options[gr.cat] === it.id;
+        h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setOption(\'' + gr.cat + '\',' + (on ? 'null' : '\'' + it.id + '\'') + ')">' +
+          '<div class="mc-name">' + esc(it.name) + '</div>' +
+          (it.note ? '<div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(it.note) + '</div>' : '') + '</button>';
+      });
+      h += '</div>';
+    } else {   // multi / toggle → checklist
+      items.forEach(function (it) {
+        var sel = cfg.options[gr.cat];
+        var on = !!(sel && typeof sel === 'object' && sel[it.id]);
+        h += '<label class="fin"><input type="checkbox" ' + (on ? 'checked' : '') + ' onchange="AestheticApp.toggleOption(\'' + gr.cat + '\',\'' + it.id + '\',this.checked)">' +
+          '<span class="fin-b"><span class="fin-n">' + esc(it.name) + '</span><span class="fin-d">' + esc(it.note || '') + '</span></span></label>';
+      });
+    }
+    return h + '</div>';
+  }
+  function optionGroupsFor(step) {
+    return (CFG.optionGroups || []).filter(function (g) { return g.step === step; }).map(optionGroupHtml).join('');
+  }
+  function setOption(cat, id) { if (id == null) delete cfg.options[cat]; else cfg.options[cat] = id; renderStep(); }
+  function toggleOption(cat, id, on) {
+    var sel = cfg.options[cat];
+    if (!sel || typeof sel !== 'object') sel = cfg.options[cat] = {};
+    if (on) sel[id] = true; else delete sel[id];
+    if (!Object.keys(sel).length) delete cfg.options[cat];
+  }
+  // selections resolved to library items — for summary/PDF
+  function optionSelections() {
+    var out = [];
+    (CFG.optionGroups || []).forEach(function (gr) {
+      var sel = cfg.options[gr.cat];
+      if (!sel) return;
+      var ids = typeof sel === 'object' ? Object.keys(sel) : [sel];
+      var names = ids.map(function (id) { var it = E.item(id); return it ? it.name : null; }).filter(Boolean);
+      if (names.length) out.push({ cat: gr.cat, label: gr.label, names: names });
+    });
+    return out;
+  }
 
   // ── step 2 · video ───────────────────────────────────────────────────────
   function renderVideo() {
@@ -157,6 +269,9 @@
       h += '<div class="panel"><div class="ptt">Projector <span class="opt-tag">· by manufacturer</span></div>' + avSelectHtml('projector', 'video.projectorId', v.projectorId) +
         '<div class="hint" style="margin-top:10px">' + (ctx.meta && ctx.meta.screen && ctx.meta.screen.w ? 'Screen from the takeoff: ' + ctx.meta.screen.w + ' × ' + ctx.meta.screen.h + ' mm' + (v.type === 'projection-baffle' ? ' · acoustically transparent, speakers behind' : '') : 'Screen size is set in the Cinema Takeoff for the active project.') + '</div></div>';
     }
+    // v0.7.0 — per-aspect video grade (a Silver projector can sit with Gold speakers)
+    h += '<div class="panel"><div class="ptt">Video grade <span class="opt-tag">· the class this aspect is specified to</span></div>' + gradeChipsHtml('video') + '</div>';
+    h += optionGroupsFor('video');
     h += '</div>';
     h += '<div class="panel sticky"><div class="ptt">Your AV selection</div><div id="avLive">' + avSummaryHtml() + '</div></div>';
     h += '</div>';
@@ -168,23 +283,17 @@
     var a = cfg.av.audio, ac = atmosCfg();
     var h = '<div class="lead"><h2>Audio system.</h2><p>Pick the system grade and immersive layout, then each channel group by manufacturer — fronts, centre, surrounds, heights and subs are chosen separately.</p></div>';
     h += '<div class="cfg-grid"><div class="cfg-left">';
-    // system grade — Bronze → Platinum electronics ladder
-    h += '<div class="panel"><div class="ptt">System grade <span class="opt-tag">· bronze to platinum — sets the electronics class</span></div><div class="mat-grid">';
-    (CFG.avGrades || []).forEach(function (g) {
-      var on = a.grade === g.id;
-      h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setAv(\'audio.grade\',\'' + g.id + '\')">' +
-        '<div class="mc-name">' + esc(g.label) + '</div>' +
-        '<div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(g.note) + '</div>' +
-        '<div class="mc-meta">' + esc([].concat(g.brands.receiver || [], g.brands.speaker || []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }).join(' · ')) + '</div></button>';
-    });
-    h += '</div>' + (a.grade ? '<label class="toggle" style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" ' + (a.showAllBrands ? 'checked' : '') + ' onchange="AestheticApp.setAv(\'audio.showAllBrands\', this.checked); AestheticApp.jumpRefresh()"> Show all brands in the electronics pickers</label>' : '') + '</div>';
+    // v0.7.0 — loudspeaker grade (per-aspect; Wisdom = 5th tier, speakers only)
+    h += '<div class="panel"><div class="ptt">Loudspeaker grade <span class="opt-tag">· bronze to wisdom — the speaker package class</span></div>' + gradeChipsHtml('speakers') + '</div>';
     h += '<div class="panel"><div class="ptt">Immersive layout</div><div class="opts">';
     (CFG.atmosConfigs || []).forEach(function (c) {
       h += '<button class="opt' + (a.config === c.id ? ' on' : '') + '" onclick="AestheticApp.setAv(\'audio.config\',\'' + c.id + '\')">' + c.id + '</button>';
     });
     h += '</div><div class="hint" style="margin-top:8px">' + esc(ac.id) + ' — ' + (3 + ac.surrounds + ac.rears) + ' bed channels · ' + ac.heights + ' heights · LFE</div></div>';
-    var gr = avGradeOf();
-    if (gr && gr.tbc) h += '<div class="fitwarn tight" style="border-radius:11px;padding:12px 15px;font-size:12px;background:rgba(224,160,90,.1);border:1px solid rgba(224,160,90,.4);color:#e8c9a0;margin-bottom:2px">' + esc(gr.tbc) + ' — speaker picks below stay provisional.</div>';
+    if (wisdomOn()) {
+      var wg = (CFG.avGrades || []).find(function (g) { return g.id === 'wisdom'; });
+      h += '<div class="fitwarn tight" style="border-radius:11px;padding:12px 15px;font-size:12px;background:rgba(224,160,90,.1);border:1px solid rgba(224,160,90,.4);color:#e8c9a0;margin-bottom:2px">' + esc((wg && wg.tbc) || 'Wisdom Audio system TBC') + ' — speaker picks below stay provisional.</div>';
+    }
     (CFG.channelGroups || []).forEach(function (g) {
       var qty = g.qty(ac);
       if (!qty) return;
@@ -196,7 +305,10 @@
       h += '<button class="opt' + (a.subQty === q ? ' on' : '') + '" onclick="AestheticApp.setAv(\'audio.subQty\',' + q + ')">' + q + '</button>';
     });
     h += '</div></div>';
-    h += '<div class="panel"><div class="ptt">Electronics</div><div class="lbl">AV receiver / processor</div>' + avSelectHtml('receiver', 'audio.processorId', a.processorId, true) +
+    h += '<div class="panel"><div class="ptt">Electronics <span class="opt-tag">· grade soft-filters the processor picker — amps stay a free choice</span></div>' +
+      gradeChipsHtml('electronics') +
+      (cfg.av.grades.electronics ? '<label class="toggle" style="margin:8px 0 2px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" ' + (a.showAllBrands ? 'checked' : '') + ' onchange="AestheticApp.setAv(\'audio.showAllBrands\', this.checked); AestheticApp.jumpRefresh()"> Show all brands in the electronics pickers</label>' : '') +
+      '<div class="lbl">AV receiver / processor</div>' + avSelectHtml('receiver', 'audio.processorId', a.processorId, true) +
       '<div class="lbl">Power amplifier</div>' + avSelectHtml('amplifier', 'audio.ampId', a.ampId, true) + '</div>';
     h += '</div>';
     h += '<div class="panel sticky"><div class="ptt">Your AV selection</div><div id="avLive">' + avSummaryHtml() + '</div></div>';
@@ -217,13 +329,19 @@
       if (qty && a.picks[g.id]) rows.push([g.label, qty + '× ' + avName(a.picks[g.id])]);
     });
     if (a.subId) rows.push(['Subs', a.subQty + '× ' + avName(a.subId)]);
-    var gr2 = avGradeOf();
-    if (gr2) rows.push(['System grade', gr2.label + (gr2.tbc ? ' · Wisdom TBC' : '')]);
     if (a.processorId) rows.push(['Processor', avName(a.processorId)]);
     if (a.ampId) rows.push(['Amplification', avName(a.ampId)]);
-    return rows.map(function (r) {
+    var h = rows.map(function (r) {
       return '<div style="padding:7px 0;border-bottom:1px solid var(--brd2)"><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">' + esc(r[0]) + '</div><div style="font-size:12.5px;color:var(--cream);margin-top:2px">' + esc(r[1] || '—') + '</div></div>';
     }).join('');
+    // v0.7.0 — per-aspect grade badges
+    var chips = (CFG.gradeAspects || []).map(function (asp) {
+      var g = gradeDef(asp.id);
+      if (!g) return '';
+      return '<span class="gr-chip mini on" style="--tier:' + gradeColour(g.id) + '"><span class="gr-dot"></span>' + esc(asp.label.replace(' grade', '')) + ' · ' + esc(g.label) + (g.id === 'wisdom' ? ' (TBC)' : '') + '</span>';
+    }).filter(Boolean).join('');
+    if (chips) h += '<div style="padding:8px 0 3px"><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Grades</div><div class="gr-row">' + chips + '</div></div>';
+    return h;
   }
 
   // ── step 1 · scheme ──────────────────────────────────────────────────────
@@ -256,6 +374,7 @@
         '<div class="mc-name">' + esc(r.label) + '</div><div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(r.note) + '</div></button>';
     });
     h += '</div></div>';
+    h += '<div style="margin-top:14px">' + optionGroupsFor('scheme') + '</div>';
     return h;
   }
   function contextHtml() {
@@ -284,7 +403,7 @@
     var h = '<div class="lead"><h2>Fabrics &amp; finishes.</h2><p>One pick per surface — or none / painted where that is the right answer. Swatches come from the Sonor aesthetic library; physical samples follow before anything is ordered.</p></div>';
     (CFG.slots || []).forEach(function (sl) {
       if (!slotVisible(sl)) return;
-      var items = E.byCategory(sl.cat);
+      var items = libFinishes(sl.cat);   // v0.7.0 — option rows (select_mode) stay out of finish menus
       h += '<div class="panel" style="margin-bottom:14px"><div class="ptt">' + esc(sl.label) + ' <span class="opt-tag">· ' + esc(sl.hint || '') + '</span></div>';
       if (!items.length && !sl.optional) { h += '<div class="hint">No library entries yet for this surface.</div></div>'; return; }
       h += '<div class="mat-grid">';
@@ -309,13 +428,16 @@
       });
       h += '</div></div>';
     });
+    // v0.7.0 — dynamic Library option groups (wall treatment, acoustics, cabinetry)
+    h += optionGroupsFor('materials');
     // joinery & cabinetry notes
     h += '<div class="panel" style="margin-bottom:14px"><div class="ptt">Joinery &amp; cabinetry notes <span class="opt-tag">· media wall, shelving, counters — free notes for the design pack</span></div>' +
       '<textarea rows="3" style="width:100%;background:var(--bg3);border:1px solid var(--brd2);border-radius:7px;color:var(--cream);padding:10px 12px;font-size:12.5px;font-family:inherit;resize:vertical" ' +
       'placeholder="e.g. full-height media wall in charcoal oak, shelf recesses with LED, hidden equipment cupboard…" ' +
       'onchange="AestheticApp.setDesign(\'joineryNotes\', this.value)">' + esc(cfg.design.joineryNotes || '') + '</textarea></div>';
     // sundries & accessories — Library 'sundry' category when curated, config fallback
-    var sundries = E.byCategory('sundry');
+    // (v0.7.0: legacy su-* rows dedupe against the Library's new opt-* rows)
+    var sundries = dedupePreferOpt(E.byCategory('sundry'));
     var list = sundries.length ? sundries.map(function (it) { return { id: it.id, label: it.name, hint: it.note || '' }; }) : (CFG.sundries || []);
     h += '<div class="panel"><div class="ptt">Sundries &amp; accessories <span class="opt-tag">· the finishing kit — tick everything in scope</span></div>';
     list.forEach(function (s) {
@@ -329,13 +451,48 @@
   }
 
   // ── lighting ─────────────────────────────────────────────────────────────
+  // v0.7.0 — downlight grades + LED zones PREFER the Library's curated rows
+  // (downlight_grade / led_zone categories); config lists stay as fallback.
+  function dlSrc() {
+    var lib = E.byCategory('downlight_grade').filter(function (it) { return !!selectMode(it); });
+    if (!lib.length) return CFG.downlightGrades || [];
+    return lib.slice().sort(function (a, b) { return (a.tier || 0) - (b.tier || 0); }).map(function (it) {
+      var mch = /^(.*?)\s*\(([^)]+)\)\s*$/.exec(it.name || '');
+      var tierTxt = mch ? (mch[2].charAt(0).toUpperCase() + mch[2].slice(1)) : (it.tier ? 'Tier ' + it.tier : '');
+      return { id: it.id, label: mch ? mch[1] : it.name, tier: tierTxt, note: it.note || '' };
+    });
+  }
+  function zonesSrc() {
+    var lib = libOpts('led_zone');
+    if (!lib.length) return CFG.ledZones || [];
+    return lib.map(function (it) { return { id: it.id, label: it.name, hint: it.note || '' }; });
+  }
+  function normalizeDesign() {
+    // remap config-era default ids onto Library ids once the curated rows exist
+    var zs = zonesSrc();
+    if (zs.length && !zs.some(function (z) { return cfg.design.ledZones[z.id]; })) {
+      var map = { coffer: /cove|coffer/i, pilaster: /pilaster/i, step_nose: /step/i, accent: /accent|wash/i, backlit_poster: /poster/i, shelf: /shelf|display/i, riser_front: /riser/i };
+      var nz = {};
+      Object.keys(cfg.design.ledZones).forEach(function (k) {
+        var re = map[k]; if (!re) return;
+        var hit = zs.find(function (z) { return re.test(z.label); });
+        if (hit) nz[hit.id] = true;
+      });
+      if (Object.keys(nz).length) cfg.design.ledZones = nz;
+    }
+    var dg = dlSrc();
+    if (dg.length && !dg.some(function (g) { return g.id === cfg.design.downlightGrade; })) {
+      var hitG = dg.find(function (g) { return /orluna/i.test(g.label); }) || dg[dg.length - 1];
+      cfg.design.downlightGrade = hitG.id;
+    }
+  }
   function renderLighting() {
     var d = cfg.design;
     var h = '<div class="lead"><h2>Lighting.</h2><p>Downlight grade, LED zones, fittings and scenes — warm, calm and dimmable throughout. ' + esc(CFG.colourTemp || '') + '</p></div>';
     h += '<div class="cfg-grid"><div class="cfg-left">';
     // downlight grade ladder
     h += '<div class="panel"><div class="ptt">Downlight grade <span class="opt-tag">· essential to bespoke</span></div><div class="mat-grid">';
-    (CFG.downlightGrades || []).forEach(function (g) {
+    dlSrc().forEach(function (g) {
       var on = d.downlightGrade === g.id;
       h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setDesign(\'downlightGrade\',\'' + g.id + '\')">' +
         '<div class="mc-name">' + esc(g.label) + '</div><div class="mc-meta">' + esc(g.tier) + '</div>' +
@@ -344,7 +501,7 @@
     h += '</div></div>';
     // LED zones checklist
     h += '<div class="panel"><div class="ptt">LED zones <span class="opt-tag">· concealed linear runs — tick all in scope</span></div>';
-    (CFG.ledZones || []).forEach(function (z) {
+    zonesSrc().forEach(function (z) {
       var on = !!d.ledZones[z.id];
       h += '<label class="fin"><input type="checkbox" ' + (on ? 'checked' : '') + ' onchange="AestheticApp.toggleZone(\'' + z.id + '\',this.checked)">' +
         '<span class="fin-b"><span class="fin-n">' + esc(z.label) + '</span><span class="fin-d">' + esc(z.hint || '') + '</span></span></label>';
@@ -363,7 +520,9 @@
       h += '<label class="fin"><input type="checkbox" ' + (on ? 'checked' : '') + ' onchange="AestheticApp.toggleFitting(\'' + ft.id + '\',this.checked)">' +
         '<span class="fin-b"><span class="fin-n">' + esc(ft.label) + '</span><span class="fin-d">' + esc(ft.hint || '') + '</span></span></label>';
     });
-    h += '</div></div>';
+    h += '</div>';
+    h += optionGroupsFor('lighting');   // v0.7.0 — control system etc.
+    h += '</div>';
     h += '<div class="panel sticky"><div class="ptt">Scenes' + (ctx.brief ? ' <span class="opt-tag">· from the client brief</span>' : '') + '</div>';
     scenes().forEach(function (sc) {
       h += '<div style="padding:9px 0;border-bottom:1px solid var(--brd2)"><div class="fin-n" style="color:var(--gold)">' + esc(sc.label) + '</div><div class="fin-d">' + esc(sc.note) + '</div></div>';
@@ -407,6 +566,7 @@
       (cfg.design.sconces ? '<div><span style="color:var(--muted)">Sconces · </span>Included — TBC at design development</div>' : '') +
       (sn.length ? '<div><span style="color:var(--muted)">Sundries · </span>' + esc(sn.map(function (s) { return s.label; }).join(', ')) + '</div>' : '') +
       (cfg.design.joineryNotes ? '<div><span style="color:var(--muted)">Joinery · </span>' + esc(cfg.design.joineryNotes) + '</div>' : '') +
+      optionSelections().map(function (o) { return '<div><span style="color:var(--muted)">' + esc(o.label) + ' · </span>' + esc(o.names.join(', ')) + '</div>'; }).join('') +
       '</div></div>';
     // AV summary
     h += '<div class="panel" style="margin-bottom:18px"><div class="ptt">Video &amp; audio</div>' + avSummaryHtml() + '</div>';
@@ -437,10 +597,10 @@
   function setClient(k, v) { cfg.client[k] = v; }
   function styleOf() { return (CFG.styles || []).find(function (s) { return s.id === cfg.scheme.style; }) || null; }
   function itemOf(id) { return (id && PSEUDO_ITEMS[id]) || E.item(id); }
-  function gradeOf() { return (CFG.downlightGrades || []).find(function (g) { return g.id === cfg.design.downlightGrade; }) || null; }
-  function zonesList() { return (CFG.ledZones || []).filter(function (z) { return cfg.design.ledZones[z.id]; }); }
+  function gradeOf() { return dlSrc().find(function (g) { return g.id === cfg.design.downlightGrade; }) || null; }
+  function zonesList() { return zonesSrc().filter(function (z) { return cfg.design.ledZones[z.id]; }); }
   function sundriesList() {
-    var lib = E.byCategory('sundry');
+    var lib = dedupePreferOpt(E.byCategory('sundry'));
     var src = lib.length ? lib.map(function (it) { return { id: it.id, label: it.name }; }) : (CFG.sundries || []);
     return src.filter(function (s) { return cfg.design.sundries[s.id]; });
   }
@@ -531,8 +691,17 @@
         led_zones: Object.keys(d.ledZones || {}),
         sconces: !!d.sconces,
         materials: (CFG.slots || []).filter(slotVisible).reduce(function (o, sl) { o[sl.id] = cfg.picks[sl.id] || null; return o; }, {}),
+        // v0.7.0 — per-aspect grades + dynamic Library options are the spec now;
+        // av.grade stays as a legacy alias (= electronics) for early consumers.
+        grades: {
+          video: av.grades.video || null,
+          speakers: av.grades.speakers || null,
+          electronics: av.grades.electronics || null
+        },
+        options: optionSelections().map(function (o) { return { category: o.cat, label: o.label, names: o.names }; }),
         av: {
-          grade: av.audio.grade || null, grade_tbc: (gr && gr.tbc) || null,
+          grade: av.grades.electronics || null,
+          grade_tbc: wisdomOn() ? 'Wisdom Audio system TBC — pending Habitech experience centre visit' : null,
           video_type: av.video.type,
           tv: av.video.tvId ? { model_id: av.video.tvId, name: avName(av.video.tvId), size_in: av.video.tvSizeIn } : null,
           projector: av.video.projectorId ? { model_id: av.video.projectorId, name: avName(av.video.projectorId) } : null,
@@ -567,7 +736,9 @@
       var res = await db.from('aesthetic_configs').select('id,config').eq('id', id).single();
       if (res.data && res.data.config) {
         var c = res.data.config;
-        ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
+        ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client', 'options'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
+        migrateCfg(cfg);        // v0.7.0 — legacy single grade → per-aspect
+        normalizeDesign();
         cfg._savedId = res.data.id;
         cfg.step = STEPS.length; renderStep();
       }
@@ -592,6 +763,38 @@
   }
   // NOTE: Gilroy's ff/ffl ligatures render broken in pdf-lib (cinema-pdf-luxury §4)
   // — no "baffle"/"off"/"coffer" in P.text strings destined for the PDF.
+  // v0.7.0 — the Library now feeds dynamic names into the PDF ("Coffer",
+  // "Coffered bulkhead", "Side / coffee tables"…), so every string in the PDF
+  // model runs through a safe-name pass: dictionary rewrites first, then a
+  // last-resort 'ff' → 'f f' split so a broken glyph can never ship.
+  function caseKeep(to) { return function (mch) { return mch.charAt(0) === mch.charAt(0).toUpperCase() ? to.charAt(0).toUpperCase() + to.slice(1) : to; }; }
+  var PDF_SAFE = [
+    [/ceiling\s+coffer/gi, caseKeep('ceiling cove')],
+    [/coffered/gi, caseKeep('recessed')],
+    [/coffer/gi, caseKeep('cove')],
+    [/coffee/gi, caseKeep('lounge')],
+    [/baffle\s*wall/gi, caseKeep('speaker wall')],
+    [/baffle/gi, caseKeep('speaker wall')],
+    [/″/g, '"']
+  ];
+  function pdfSafe(s) {
+    var out = String(s);
+    PDF_SAFE.forEach(function (r) { out = out.replace(r[0], r[1]); });
+    return out.replace(/ff/g, 'f f').replace(/FF/g, 'F F').replace(/Ff/g, 'F f');
+  }
+  var SAFE_SKIP_KEYS = /url|img|image|filename|hex|datasheet|swatch/i;
+  function deepSafe(o) {
+    if (o == null) return o;
+    if (typeof o === 'string') return pdfSafe(o);
+    if (Array.isArray(o)) return o.map(deepSafe);
+    if (typeof o === 'object') {
+      Object.keys(o).forEach(function (k) {
+        if (SAFE_SKIP_KEYS.test(k)) return;                 // links + assets untouched
+        o[k] = deepSafe(o[k]);
+      });
+    }
+    return o;
+  }
   var VIDEO_TYPE_LABEL = {
     'tv': 'Wall-mounted reference TV',
     'projection': 'Projector + fixed-frame screen',
@@ -620,6 +823,29 @@
       introText: 'A dedicated home cinema, designed as one system — picture, sound, acoustics, lighting and interior finishes engineered together. This proposal sets out the design specification for your room; commercials follow on the formal quotation.',
       heroImage: (CFG.heroImage || null),
       renders: ctx.renders || null,
+      // v0.7.0 — per-aspect grade badges (rendered in the app AND the PDF)
+      grades: (function () {
+        var o = {};
+        (CFG.gradeAspects || []).forEach(function (asp) {
+          var g = gradeDef(asp.id);
+          if (g) o[asp.id] = { id: g.id, label: g.label, badgeHex: gradeColour(g.id), note: gradeAspectNote(asp.id, g.id), tbc: g.id === 'wisdom' };
+        });
+        return o;
+      })(),
+      // dynamic Library option selections → Design Scope section
+      optionGroups: optionSelections().map(function (o) { return { label: o.label, names: o.names.slice() }; }),
+      // conditional brand pages — ONLY when that system is actually selected
+      brandPages: (function () {
+        var spk = [], elec = [];
+        Object.keys(av.audio.picks || {}).forEach(function (k) { var d = av.audio.picks[k] && E.avItem(av.audio.picks[k]); if (d) spk.push(d.make); });
+        var ds = av.audio.subId && E.avItem(av.audio.subId); if (ds) spk.push(ds.make);
+        [av.audio.processorId, av.audio.ampId].forEach(function (id) { var d = id && E.avItem(id); if (d) elec.push(d.make); });
+        var all = spk.concat(elec), out = [];
+        if (spk.some(function (mk) { return /m\s*&\s*k|mk\s*sound|miller/i.test(mk || ''); })) out.push('mk');
+        if (all.some(function (mk) { return /sonance/i.test(mk || ''); })) out.push('sonance');
+        if (wisdomOn() || all.some(function (mk) { return /wisdom/i.test(mk || ''); })) out.push('wisdom');
+        return out;
+      })(),
       video: (av.video.type || mv.viewingDistance || ms.w || meta.videoType) ? {
         display: (av.video.type === 'tv' && avName(av.video.tvId))
           ? avName(av.video.tvId) + (av.video.tvSizeIn ? ' · ' + av.video.tvSizeIn + '" reference TV' : ' reference TV')
@@ -698,6 +924,7 @@
       termsLines: CFG.termsLines || [],
       dateText: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     };
+    deepSafe(m);   // v0.7.0 — ligature-safe pass over every dynamic string
     m.filename = 'sonor-cinema-proposal-' + (m.quoteRef || 'draft') + '.pdf';
     return m;
   }
@@ -715,6 +942,7 @@
     setStyle: setStyle, pick: pick, toggleFitting: toggleFitting, setClient: setClient,
     saveConfig: saveConfig, openSaved: openSaved, savePdf: savePdf, setAv: setAv,
     setDesign: setDesign, toggleZone: toggleZone, toggleSundry: toggleSundry, jumpRefresh: jumpRefresh,
+    setOption: setOption, toggleOption: toggleOption,
     _debug: function () { return { cfg: cfg, ctx: ctx }; }   // harness hook (headless render tests)
   };
 })(window);

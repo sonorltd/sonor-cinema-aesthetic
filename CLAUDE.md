@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.6.0)
+# Cinema Aesthetic — Claude Code Context (v0.7.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -129,3 +129,30 @@ render-and-eyeball before shipping).
   angles, Dolby Atmos + RP22, 2700K Rako layering. Shared master v1.0.1 (4-line
   section blurbs). NOTE: the hallway-bar hero render needs uploading as a FILE
   (chat-pasted images not exportable) → seating-assets/aesthetic/ + design_renders.
+- v0.7.0 (2026-07-19) — **Per-aspect grade medals + brand pages + dynamic Library options.**
+  Grades are now PER ASPECT (cfg.av.grades {video,speakers,electronics} — silver
+  projector + gold speakers is valid; legacy av.audio.grade migrates on open:
+  speakers+electronics, wisdom→platinum electronics). Medal badge chips (config
+  avGradeColours) in the app AND as PDF pills (top-right of Video/Audio sections
+  + grade spec rows; P.rrect is border-only → pill = rect + dot end-caps).
+  Conditional BRAND pages (MK Sound / Sonance / Wisdom Audio): brochure page w/
+  typographic wordmark hero + story + fact rows, rendered ONLY when that system
+  is selected (MK: any speaker/sub pick; Sonance: any electronics pick; Wisdom:
+  speakers grade wisdom or any Wisdom pick). No logo assets in the catalogue yet
+  — Library ask; a curated 'brand' row with img drops in as the hero later.
+  Dynamic Library option groups (config optionGroups): rows with
+  metadata.select_mode (one|multi|toggle) render as panels on the mapped step
+  (screen/front_wall→Video, seating_option→Scheme, wall_treatment/acoustic_
+  treatment/cabinetry→Materials, control→Lighting) into cfg.options; rows WITHOUT
+  select_mode stay finish/swatch entries — slot menus filter on this (fixes
+  opt-ceiling-* leaking into the Ceiling Finish swatches). led_zone /
+  downlight_grade / sundry now PREFER Library rows (config lists = fallback;
+  default ids remap by name on load). Legacy su-* vs new opt-* dupes dedupe by
+  normalised name preferring opt-*. NEW: PDF safe-name pass (pdfSafe/deepSafe in
+  aesthetic-app.js) — dictionary rewrites (coffer→cove, coffee→lounge,
+  baffle→speaker wall…) + last-resort ff→'f f' over EVERY dynamic string, so
+  Library names can never ship the broken Gilroy ff glyph. New DESIGN SCOPE PDF
+  section (two-column option summary); design_spec now carries grades{} +
+  options[] (av.grade kept as legacy alias = electronics). 1387 design_renders →
+  3 images (concept board + hallway bar + renders, uploaded to
+  seating-assets/aesthetic/). Ceiling treatments + 'Recessed Bulkhead' option.

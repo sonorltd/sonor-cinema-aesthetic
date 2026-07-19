@@ -7,7 +7,7 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.6.0',
+    version: '0.7.0',
     buildDate: '2026-07-19',
     steps: ['Scheme', 'Video', 'Audio', 'Materials', 'Lighting', 'Summary'],
 
@@ -53,6 +53,45 @@
       { id: 'wisdom',   label: 'Wisdom',   note: 'Beyond platinum — the full Wisdom Audio system, engineered end to end.',           brands: { receiver: ['StormAudio'], speaker: ['Wisdom Audio'] }, template: null,
         tbc: 'Wisdom Audio system TBC — pending Habitech experience centre visit' }
     ],
+    // ── v0.7.0 — PER-ASPECT grades. One medal per aspect: a Silver projector can
+    //    sit alongside Gold speakers (Bryn 2026-07-19). Wisdom = speakers only.
+    //    Colours drive the badge graphics in the app AND the PDF.
+    gradeAspects: [
+      { id: 'video',       label: 'Video grade',       hint: 'Display / projection class' },
+      { id: 'speakers',    label: 'Loudspeaker grade', hint: 'Speaker package class' },
+      { id: 'electronics', label: 'Electronics grade', hint: 'Processing + amplification class' }
+    ],
+    avGradeColours: {
+      bronze:   '#a06a3c',
+      silver:   '#9aa4ae',
+      gold:     '#c2a14d',
+      platinum: '#c9ced6',
+      wisdom:   '#2f4468'
+    },
+    // which grades apply per aspect (wisdom is a loudspeaker-system tier)
+    avGradeAspects: { video: ['bronze','silver','gold','platinum'], speakers: ['bronze','silver','gold','platinum','wisdom'], electronics: ['bronze','silver','gold','platinum'] },
+    // per-aspect meaning of each medal — short, PDF-rendered (ligature-safe copy)
+    avGradeAspectNotes: {
+      video: {
+        bronze:   'Premium large-format TV or quality 4K projector',
+        silver:   'Flagship TV or lamp-free 4K laser projector',
+        gold:     'Native 4K laser projection',
+        platinum: 'Reference laser projection with video processing'
+      },
+      speakers: {
+        bronze:   'Quality in-wall / on-wall loudspeaker package',
+        silver:   'MK Sound monitor-grade package',
+        gold:     'MK Sound THX reference package',
+        platinum: 'Flagship MK Sound reference system',
+        wisdom:   'Wisdom Audio planar line-source system — beyond platinum'
+      },
+      electronics: {
+        bronze:   'Quality Yamaha AV receiver',
+        silver:   'Flagship Yamaha AVENTAGE receiver',
+        gold:     'StormAudio processor + multi-channel amplification',
+        platinum: 'Reference StormAudio separates — per-channel amplification'
+      }
+    },
 
     // Style directions — seed the board's overall look. Data-light on purpose:
     // real content lives in the catalogue; these are curatorial groupings only.
@@ -95,7 +134,21 @@
       { id: 'panels',  label: 'Acoustic Panels',    note: 'Fabric-wrapped acoustic ceiling panels — finish chosen in Materials.' },
       { id: 'fabric',  label: 'Stretched Fabric',   note: 'Full stretched-fabric ceiling with concealed services.' },
       { id: 'painted', label: 'Painted',            note: 'Decorated plasterboard — colour from the scheme palette.' },
+      { id: 'bulkhead',label: 'Recessed Bulkhead',  note: 'Perimeter bulkhead with concealed cove LED — panel or fabric infill within.' },
       { id: 'none',    label: 'None / Existing',    note: 'Retain the existing ceiling.' }
+    ],
+    // ── v0.7.0 — dynamic Library option groups. Rendered straight from
+    //    aesthetic_items rows carrying metadata.select_mode (one|multi|toggle);
+    //    placement maps each category onto a wizard step. Rows WITHOUT a
+    //    select_mode stay finish/swatch entries (slot menus filter on this).
+    optionGroups: [
+      { cat: 'screen',             label: 'Projection Screen',   step: 'video',     hint: 'Screen build — geometry stays in the Cinema Takeoff' },
+      { cat: 'front_wall',         label: 'Front Wall Build',    step: 'video',     hint: 'The screen-wall construction route' },
+      { cat: 'seating_option',     label: 'Seating Options',     step: 'scheme',    hint: 'Tiers, rows and extras — tick all in scope' },
+      { cat: 'wall_treatment',     label: 'Wall Treatment',      step: 'materials', hint: 'The overall wall build — fabric picks below' },
+      { cat: 'acoustic_treatment', label: 'Acoustic Treatment',  step: 'materials', hint: 'Performance treatment — tick all in scope' },
+      { cat: 'cabinetry',          label: 'Cabinetry',           step: 'materials', hint: 'Joinery scope — detail in the notes below' },
+      { cat: 'control',            label: 'Control System',      step: 'lighting',  hint: 'How the room is driven' }
     ],
     // Tiered seating (design intent — geometry stays owned by the Cinema Takeoff)
     riserOptions: [

@@ -1,4 +1,4 @@
-/* Sonor Cinema Aesthetic — Tier-3 offline seed (GENERATED 2026-07-19, v0.6.0)
+/* Sonor Cinema Aesthetic — Tier-3 offline seed (GENERATED 2026-07-19)
    window.__AESTHETIC_SEED__ — snapshot of v_aesthetic_catalogue. Regenerate: bash data/build-seed.sh.
    NO trade pricing in this seed (seating-library-ssot §4).
 */

@@ -112,6 +112,37 @@
     };
   }
 
+  // ── v0.7.0 — per-aspect grade badges (medal pills: tier colour + label).
+  //    P.rrect is border-only, so the pill fill = rect body + circle end-caps. ──
+  function pillW(F, t) { return F.b.widthOfTextAtSize(t, 7) + (t.length - 1) * 1.2 + 22; }
+  function pill(P, F, lx, x, y, t, hex) {
+    var rgb = lx.hexRgb(hex), h = 15, w = pillW(F, t);
+    P.dot(x + h / 2, y + h / 2, h / 2, rgb);
+    P.dot(x + w - h / 2, y + h / 2, h / 2, rgb);
+    P.rect(x + h / 2, y, w - h, h, rgb, 1);
+    P.tracked(t, x + 11, y + 4.2, 7, F.b, [255, 255, 255], 1.2);
+    return w;
+  }
+  function badge(P, F, lx, x, y, label, hex) { return pill(P, F, lx, x, y, String(label).toUpperCase(), hex); }
+  // right-aligned row of aspect badges (e.g. "VIDEO · SILVER  SPEAKERS · GOLD")
+  function badgeRow(P, F, lx, y, entries) {
+    if (!entries || !entries.length) return;
+    var x = lx.A4.w - lx.M;
+    entries.slice().reverse().forEach(function (e) {
+      var t = (e.aspect + ' · ' + e.label).toUpperCase();
+      x -= pillW(F, t);
+      pill(P, F, lx, x, y, t, e.hex);
+      x -= 8;
+    });
+  }
+  function gradeEntries(m, aspects) {
+    var LBL = { video: 'Video', speakers: 'Speakers', electronics: 'Electronics' };
+    return aspects.map(function (a) {
+      var g = m.grades && m.grades[a];
+      return g ? { aspect: LBL[a], label: g.label, hex: g.badgeHex } : null;
+    }).filter(Boolean);
+  }
+
   // per-line links row (WeQuote-style: every line carries its references)
   function lineLinks(P, F, lx, x, y, links) {
     var drawn = 0, cx = x;
@@ -126,10 +157,13 @@
     return function (P, F, pageNo, TOTAL) {
       lx.pageHead(P, F, 'VIDEO SYSTEM', pageNo, TOTAL, DOC_LABEL);
       var y = lx.sectionHead(P, F, 'REFERENCE PICTURE', 'Video system', blurb('video'));
+      badgeRow(P, F, lx, 103, gradeEntries(m, ['video']));   // v0.7.0 — medal badge
       y = Math.max(y, 196);
       var v = m.video;
       var diag = inchDiag(v.screenW, v.screenH);
+      var g = m.grades && m.grades.video;
       var rows = [
+        ['Video grade', g ? (g.label + (g.note ? ' — ' + g.note : '')) : null],
         ['Display', v.display],
         ['Image size', v.screenW ? (mmTxt(v.screenW) + ' × ' + mmTxt(v.screenH) + (diag ? '  ·  ' + diag + '" diagonal' : '')) : null],
         ['Image bottom (AFL)', mmTxt(v.bottomFromFloor)],
@@ -152,10 +186,13 @@
     return function (P, F, pageNo, TOTAL) {
       lx.pageHead(P, F, 'AUDIO SYSTEM', pageNo, TOTAL, DOC_LABEL);
       var y = lx.sectionHead(P, F, 'IMMERSIVE SOUND', 'Audio system', blurb('audio'));
+      badgeRow(P, F, lx, 103, gradeEntries(m, ['speakers', 'electronics']));   // v0.7.0 — medals
       y = Math.max(y, 200);
       var a = m.audio;
+      var gs = m.grades && m.grades.speakers, ge = m.grades && m.grades.electronics;
       var rows = [
-        ['System grade', a.grade ? (a.grade.label + ' — ' + a.grade.note) : null],
+        ['Loudspeaker grade', gs ? (gs.label + (gs.note ? ' — ' + gs.note : '') + (gs.tbc ? ' · TBC' : '')) : null],
+        ['Electronics grade', ge ? (ge.label + (ge.note ? ' — ' + ge.note : '')) : null],
         ['Configuration', a.headline],
         ['Channels required', a.channelSummary],
         ['Main listening position', a.mlpDist ? mmTxt(a.mlpDist) + ' from the screen wall' : null],
@@ -382,6 +419,119 @@
     };
   }
 
+  // ── v0.7.0 — DESIGN SCOPE: dynamic Library option selections, two columns ──
+  function secScope(m) {
+    if (!m.optionGroups || !m.optionGroups.length) return null;
+    var lx = L();
+    return function (P, F, pageNo, TOTAL) {
+      var M = lx.M, A4 = lx.A4, COL = lx.COL;
+      lx.pageHead(P, F, 'DESIGN SCOPE', pageNo, TOTAL, DOC_LABEL);
+      var y0 = lx.sectionHead(P, F, 'THE FULL PICTURE', 'Design scope',
+        'Everything in scope for the room build — chosen from the Sonor design library and confirmed with this proposal. Free-form detail is carried in the joinery notes.');
+      y0 = Math.max(y0, 186);
+      var colW = (A4.w - M * 2 - 28) / 2;
+      var x = M, y = y0, maxY = A4.h - M * 0.62 - 40;
+      (m.optionGroups || []).forEach(function (gr) {
+        var need = 26 + gr.names.length * 18 + 16;
+        if (y + need > maxY && x === M) { x = M + colW + 28; y = y0; }
+        P.tracked(String(gr.label).toUpperCase(), x, y, 6.5, F.r, COL.MUT, 1.5);
+        P.hline(x, x + colW, y + 11, COL.GOLD, 0.8, 0.75);
+        y += 26;
+        gr.names.forEach(function (n, i, arr) {
+          P.dot(x + 3, y - 4, 2.2, COL.GOLD);
+          P.text(n, x + 14, y - 9, 10, F.b, COL.INK);
+          if (i < arr.length - 1) P.hline(x, x + colW, y + 4, COL.LINE, 0.5, 0.6);
+          y += 18;
+        });
+        y += 16;
+      });
+      lx.pageFoot(P, F);
+    };
+  }
+
+  // ── v0.7.0 — BRAND PAGES (MK Sound / Sonance / Wisdom Audio) ──────────────
+  // Brochure-style: typographic wordmark hero (no official logo assets in the
+  // Library yet — Library ask logged; drops in automatically once curated as a
+  // 'brand' catalogue row with an image), brief story + fact rows. Every page
+  // renders ONLY when that system is actually selected. All copy ligature-safe.
+  var BRANDS = {
+    mk: {
+      name: 'MK Sound', wordmark: 'MK SOUND', strap: 'THE STUDIO REFERENCE · SINCE 1974',
+      eyebrow: 'BRAND STORY',
+      intro: 'Miller & Kreisel created the powered subwoofer and the satellite-sub system in Los Angeles in 1974 — and their monitors became the reference in the dubbing stages where films are actually mixed.',
+      paras: [
+        'Films, series and games are mixed on MK Sound monitors every day. Choosing MK for your cinema means the soundtrack plays back on the same voicing it was created on — dialogue, dynamics and detail exactly as the mixer intended.',
+        'Precise imaging, high dynamic capability and push-pull dual-driver subwoofers are the MK signature — engineered for reference level in real rooms, not just the lab.'
+      ],
+      facts: [
+        ['Founded', '1974 · Los Angeles, California'],
+        ['Heritage', 'Studio monitor reference — THX pioneer'],
+        ['Signature', 'Push-pull dual-driver subwoofers · precise imaging'],
+        ['In your cinema', 'Loudspeaker package across the channel groups']
+      ]
+    },
+    sonance: {
+      name: 'Sonance', wordmark: 'SONANCE', strap: 'ARCHITECTURAL AUDIO · SINCE 1983',
+      eyebrow: 'BRAND STORY',
+      intro: 'Sonance pioneered architectural audio from San Clemente, California in 1983 — loudspeakers and amplification designed to disappear into the room while the sound fills it.',
+      paras: [
+        'Sonance amplification pairs high-current Class-D power with cool, quiet, rack-mounted engineering — driving every channel with headroom to spare and total reliability over long sessions.',
+        'In a dedicated cinema, Sonance power amplification partners the processor to deliver clean, unstrained level to each loudspeaker — matched, calibrated and invisible.'
+      ],
+      facts: [
+        ['Founded', '1983 · San Clemente, California'],
+        ['Heritage', 'The original architectural audio marque'],
+        ['Signature', 'High-current amplification · engineered to disappear'],
+        ['In your cinema', 'Power amplification behind the loudspeaker system']
+      ]
+    },
+    wisdom: {
+      name: 'Wisdom Audio', wordmark: 'WISDOM AUDIO', strap: 'PLANAR MAGNETIC LINE SOURCE · CARSON CITY, NEVADA',
+      eyebrow: 'BRAND STORY',
+      intro: 'Wisdom Audio hand-builds planar magnetic line-source loudspeakers in Carson City, Nevada — systems that live inside the wall and energise the whole seating area evenly, at reference level, without strain.',
+      paras: [
+        'A line source behaves unlike a conventional speaker: level stays even from the front row to the back, and the room fades away. Combined with dedicated system engineering, a Wisdom cinema is specified end to end for the room it serves.',
+        'This is the tier beyond platinum — the loudspeaker system the rest of the design is built around.'
+      ],
+      facts: [
+        ['Founded', '1996 · Carson City, Nevada'],
+        ['Heritage', 'Planar magnetic line-source pioneer'],
+        ['Signature', 'In-wall line sources · even level at every seat'],
+        ['Status', 'System selection TBC — pending the Habitech experience centre visit']
+      ]
+    }
+  };
+  function secBrand(m, key) {
+    if (!m.brandPages || m.brandPages.indexOf(key) < 0) return null;
+    var B = BRANDS[key];
+    if (!B) return null;
+    var lx = L();
+    return function (P, F, pageNo, TOTAL) {
+      var M = lx.M, A4 = lx.A4, COL = lx.COL;
+      lx.pageHead(P, F, B.name.toUpperCase(), pageNo, TOTAL, DOC_LABEL);
+      var y = lx.sectionHead(P, F, B.eyebrow, B.name, B.intro);
+      y = Math.max(y, 196);
+      // hero band — typographic wordmark on the house dark ground
+      var hw = A4.w - M * 2, hh = 132;
+      P.rect(M, y, hw, hh, COL.DARK, 1);
+      P.rectB(M, y, hw, hh, COL.GOLD, 0.9, 0.55);
+      P.center(B.wordmark, A4.w / 2, y + hh / 2 - 22, 25, F.b, COL.CREAM, 6);
+      P.hline(A4.w / 2 - 60, A4.w / 2 + 60, y + hh / 2 + 16, COL.GOLD, 0.9, 0.9);
+      P.center(B.strap, A4.w / 2, y + hh / 2 + 26, 6.5, F.r, COL.GOLDL, 2.2);
+      y += hh + 26;
+      // story paragraphs
+      (B.paras || []).forEach(function (t) {
+        lx.wrap(t, F.r, 10.5, A4.w - M * 2).forEach(function (ln) {
+          P.text(ln, M, y - 9, 10.5, F.r, COL.INK2); y += 15;
+        });
+        y += 8;
+      });
+      y += 6;
+      lx.specRows(P, F, B.facts || [], M, y, A4.w - M * 2 - 40);
+      lx.pageFoot(P, F);
+    };
+  }
+
   function secDetail(m) {
     var lx = L();
     return function (P, F, pageNo, TOTAL) {
@@ -441,10 +591,14 @@
       { label: 'Design concepts', draw: secConcepts(m, renderImgs) },
       { label: 'Video system', draw: secVideo(m) },
       { label: 'Audio system', draw: secAudio(m) },
+      { label: 'MK Sound', draw: secBrand(m, 'mk') },
+      { label: 'Sonance', draw: secBrand(m, 'sonance') },
+      { label: 'Wisdom Audio', draw: secBrand(m, 'wisdom') },
       { label: 'Lighting', draw: secLighting(m) },
       { label: 'LED lighting', draw: secLed(m) },
       { label: 'Star ceiling', draw: secStar(m) },
       { label: 'Materials & finishes', draw: secBoard(m, swatchImgs) },
+      { label: 'Design scope', draw: secScope(m) },
       { label: 'Joinery & sundries', draw: secJoinery(m) },
       { label: 'The detail', draw: secDetail(m) }
     ].filter(function (s) { return s.draw; });

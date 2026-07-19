@@ -83,6 +83,13 @@
     .ptt { font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:15px; display:flex; align-items:center; gap:8px; }
     .ptt::before { content:''; width:14px; height:1.5px; background:linear-gradient(90deg,var(--gold),var(--pur)); border-radius:2px; }
     .opt-tag { font-weight:500; color:var(--muted); letter-spacing:.04em; text-transform:none; }
+    /* v0.7.0 — per-aspect grade badge chips (tier colour via --tier) */
+    .gr-row { display:flex; flex-wrap:wrap; gap:8px; }
+    .gr-chip { display:inline-flex; align-items:center; gap:7px; padding:7px 13px; border-radius:999px; border:1.5px solid var(--brd2); background:var(--bg3); color:var(--cream); font-size:11.5px; font-weight:600; letter-spacing:.05em; cursor:pointer; transition:.16s; font-family:inherit; }
+    .gr-chip:hover { border-color:var(--tier); }
+    .gr-chip.on { border-color:var(--tier); background:color-mix(in srgb, var(--tier) 22%, var(--bg3)); box-shadow:0 0 0 1px var(--tier), 0 0 16px -8px var(--tier); }
+    .gr-chip .gr-dot { width:9px; height:9px; border-radius:50%; background:var(--tier); box-shadow:0 0 6px var(--tier); flex:0 0 auto; }
+    .gr-chip.mini { padding:4px 10px; font-size:10px; cursor:default; }
     .fld { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
     .fld span { font-size:13px; color:var(--cream); }
     .hint { font-size:11.5px; color:var(--muted); line-height:1.55; margin-top:6px; }
@@ -309,7 +316,7 @@
   </div>
 
   <script>
-    const APP_VERSION = '0.6.0';
+    const APP_VERSION = '0.7.0';
     document.addEventListener('DOMContentLoaded', function(){ var v = document.getElementById('hdrVer'); if (v) v.textContent = 'v' + APP_VERSION; });
     // one-line swappable hero image (see aesthetic-config.js → heroImage; null = branded gradient)
     (function(){ var cfg = window.__AESTHETIC_CONFIG__ || {}; var el = document.getElementById('heroBg');

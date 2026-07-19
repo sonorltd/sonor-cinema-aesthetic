@@ -7,7 +7,7 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.1.0',
+    version: '0.2.0',
     buildDate: '2026-07-19',
     steps: ['Scheme', 'Materials', 'Lighting', 'Summary'],
 
@@ -45,7 +45,7 @@
     // a lighting concept (projects.metadata.brief) — pulled live in the app.
     defaultScenes: [
       { id: 'welcome',      label: 'Welcome',      note: 'Perimeter ~70% · downlights ~40% · riser on' },
-      { id: 'film',         label: 'Film',         note: 'All off · low riser glow · optional 5–10% perimeter' },
+      { id: 'film',         label: 'Film',         note: 'Main lights out · low riser glow · optional 5–10% perimeter' },
       { id: 'intermission', label: 'Intermission', note: 'Perimeter ~30% · riser + shelf lighting on' },
       { id: 'cleaning',     label: 'Cleaning',     note: 'Everything 100%' }
     ],
@@ -59,8 +59,9 @@
       'Fabric batches and photographic reproduction can vary — physical samples are provided before order. E&OE.'
     ],
 
-    // Landing hero — one-line swap (file at app root). Null = branded gradient.
-    heroImage: null,
+    // Landing + PDF cover hero — SAME image as the seating app (Bryn 2026-07-19:
+    // "use the same front cover image and logos as the seating app"). One-line swap.
+    heroImage: '../venice-double-seats.png',
 
     cacheKey: 'sonor_aesthetic_ssot_v1'
   };

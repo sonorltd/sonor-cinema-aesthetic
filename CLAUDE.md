@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.1.0)
+# Cinema Aesthetic — Claude Code Context (v0.2.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -67,3 +67,10 @@ render-and-eyeball before shipping).
   Scheme/Materials/Lighting/Summary wizard, aesthetic_items starter catalogue (24 items),
   aesthetic_configs saves, project bar (appKey 'cinema-aesthetic'), live CD/seating/brief
   context pulls, 4-page mood board PDF (cover · board · lighting · detail).
+- v0.2.0 (2026-07-19) — **Cinema Design Proposal.** PDF rebuilt on shared root master
+  `data/sonor-pdf-luxury.js` (exact seating chrome; same cover image + logos — venice
+  hero, Sonor lockup, CEDIA). 9 data-driven sections incl. video/audio/LED/star ceiling
+  from `cinema_designs.ct_state.metadata` (sections drop when empty). Cineca Jan-2026
+  wall fabrics + Diamond panels in `aesthetic_items` (no trade pricing). Ref SNR-CD-….
+  Gotchas honoured: Gilroy ff/ffl ligature ban (no "coffer"/"baffle"/"off" in PDF text),
+  truncate-vs-wrap on tile names, frame-edge rule.

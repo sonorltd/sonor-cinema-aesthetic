@@ -25,7 +25,7 @@
     _savedId: null,
     _lastRef: null
   };
-  var ctx = { room: null, seating: null, brief: null };   // live cross-app context
+  var ctx = { room: null, seating: null, brief: null, meta: null };   // live cross-app context
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -73,7 +73,7 @@
     var next = $('btnNext');
     if (next) {
       next.disabled = false;
-      next.textContent = cfg.step === STEPS.length ? 'Download mood board ↓' : 'Continue →';
+      next.textContent = cfg.step === STEPS.length ? 'Download proposal ↓' : 'Continue →';
       next.onclick = cfg.step === STEPS.length ? savePdf : goNext;
     }
     var body = $('stepBody'); if (!body) return;
@@ -115,10 +115,12 @@
       h += '<div class="mat-grid">';
       items.forEach(function (it) {
         var on = cfg.picks[sl.id] === it.id;
+        var hasSw = !!(it.swatch_img || it.hex);
         var sw = it.swatch_img ? 'background-image:url(\'' + esc(it.swatch_img) + '\');background-size:cover' : 'background:' + (it.hex || '#444');
+        var cw = it.metadata && it.metadata.colours_available;
         h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.pick(\'' + sl.id + '\',\'' + it.id + '\')">' +
-          '<div class="mc-top"><span class="mc-sw" style="' + sw + '"></span><span class="mc-name">' + esc(it.name) + '</span></div>' +
-          (it.manufacturer ? '<div class="mc-meta">' + esc(it.manufacturer) + '</div>' : '') +
+          '<div class="mc-top">' + (hasSw ? '<span class="mc-sw" style="' + sw + '"></span>' : '') + '<span class="mc-name">' + esc(it.name) + '</span></div>' +
+          (it.manufacturer ? '<div class="mc-meta">' + esc(it.manufacturer) + (cw ? ' · ' + cw + ' colourways' : '') + '</div>' : '') +
           (it.note ? '<div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(it.note) + '</div>' : '') +
           '</button>';
       });
@@ -164,8 +166,9 @@
     (CFG.slots || []).forEach(function (sl) {
       var it = E.item(cfg.picks[sl.id]);
       if (!it) return;
+      var hasSw = !!(it.swatch_img || it.hex);
       var sw = it.swatch_img ? 'background-image:url(\'' + esc(it.swatch_img) + '\');background-size:cover' : 'background:' + (it.hex || '#444');
-      h += '<div class="cellx"><div class="cl">' + esc(sl.label) + '</div><div style="display:flex;align-items:center;gap:9px;margin-top:6px"><span class="mc-sw" style="' + sw + ';width:22px;height:22px"></span><span class="cv" style="font-size:13.5px;margin:0">' + esc(it.name) + '</span></div></div>';
+      h += '<div class="cellx"><div class="cl">' + esc(sl.label) + '</div><div style="display:flex;align-items:center;gap:9px;margin-top:6px">' + (hasSw ? '<span class="mc-sw" style="' + sw + ';width:22px;height:22px"></span>' : '') + '<span class="cv" style="font-size:13.5px;margin:0">' + esc(it.name) + '</span></div>' + (it.manufacturer ? '<div class="cn">' + esc(it.manufacturer) + '</div>' : '') + '</div>';
     });
     h += '</div>';
     // lighting summary
@@ -174,7 +177,7 @@
       '<div class="hint">' + scenes().map(function (s) { return esc(s.label); }).join(' · ') + ' scenes · ' + esc(CFG.colourTemp || '') + '</div></div>';
     h += '<div class="actions">' +
       (!CLIENT ? '<button class="btn ghost" onclick="AestheticApp.saveConfig()">Save board</button>' : '') +
-      '<button class="btn primary" onclick="AestheticApp.savePdf()">Download mood board PDF</button></div>';
+      '<button class="btn primary" onclick="AestheticApp.savePdf()">Download Cinema Design Proposal</button></div>';
     h += '<div class="disc">' + (CFG.termsLines || []).map(esc).join(' ') + '</div>';
     h += '</div>';
     return h;
@@ -206,7 +209,7 @@
   }
   async function onProject(detail) {
     cfg.projectId = detail && detail.currentId || null;
-    ctx.room = null; ctx.seating = null; ctx.brief = null; cfg.scenes = null;
+    ctx.room = null; ctx.seating = null; ctx.brief = null; ctx.meta = null; cfg.scenes = null;
     var p = detail && detail.project;
     if (p) {
       cfg.client.name = p.client_name || cfg.client.name;
@@ -218,9 +221,12 @@
   }
   async function pullContext() {
     var db = dbc(); if (!db || !cfg.projectId) return;
-    try {   // room + display from Cinema Design
-      var r = await db.from('cinema_designs').select('room_width,room_depth,room_height,seat_count').eq('project_id', cfg.projectId).order('updated_at', { ascending: false }).limit(1).maybeSingle();
-      if (r.data) ctx.room = { w: r.data.room_width, d: r.data.room_depth, h: r.data.room_height };
+    try {   // room + full technical metadata from Cinema Design / Cinema Takeoff
+      var r = await db.from('cinema_designs').select('room_width,room_depth,room_height,seat_count,meta:ct_state->metadata').eq('project_id', cfg.projectId).order('updated_at', { ascending: false }).limit(1).maybeSingle();
+      if (r.data) {
+        ctx.room = { w: r.data.room_width, d: r.data.room_depth, h: r.data.room_height };
+        ctx.meta = r.data.meta || null;   // ct_state.metadata — video/audio/coffer/seating spec
+      }
     } catch (e) {}
     try {   // active seating config (range + label) — the seat fabric context
       var s = await db.from('seating_configs').select('label,range_id,updated_at').eq('project_id', cfg.projectId).eq('archived', false).order('updated_at', { ascending: false }).limit(1).maybeSingle();
@@ -286,28 +292,74 @@
     var yymmdd = String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate());
     var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', r = '';
     for (var i = 0; i < 4; i++) r += chars[Math.floor(Math.random() * chars.length)];
-    return 'SNR-AE-' + yymmdd + '-' + r;
+    return 'SNR-CD-' + yymmdd + '-' + r;
   }
+  // NOTE: Gilroy's ff/ffl ligatures render broken in pdf-lib (cinema-pdf-luxury §4)
+  // — no "baffle"/"off"/"coffer" in P.text strings destined for the PDF.
+  var VIDEO_TYPE_LABEL = {
+    'tv': 'Wall-mounted reference TV',
+    'projection': 'Projector + fixed-frame screen',
+    'projection-baffle': 'Projector · acoustically transparent screen · speakers concealed behind'
+  };
   function pdfModel() {
     var st = styleOf();
+    var meta = ctx.meta || {};
+    var mv = meta.video || {}, ms = meta.screen || {}, ma = meta.audio || {}, mst = meta.seating || {}, mc = meta.coffer || {};
+    var fits = (CFG.fittingTypes || []).filter(function (f) { return cfg.fittings[f.id]; });
+    var has = function (id) { return !!cfg.fittings[id]; };
+    // total coffer downlights (per-side counts)
+    var dl = 0; try { Object.keys(mc.fixtures || {}).forEach(function (k) { dl += (mc.fixtures[k].downlights || 0); }); } catch (e) {}
+    var starOn = !!((mc.star && mc.star.enabled) || mc.starCeiling || has('star_ceiling'));
     var m = {
-      title: cfg.client.project || 'Cinema Aesthetics',
+      title: cfg.client.project || 'Your Cinema',
       styleLabel: st ? st.label : '',
       styleNote: st ? st.note : '',
       client: cfg.client.name, project: cfg.client.project,
       quoteRef: cfg._lastRef,
       room: ctx.room, seating: ctx.seating,
+      performanceLevel: meta.performanceLevel || null,
+      introText: 'A dedicated home cinema, designed as one system — picture, sound, acoustics, lighting and interior finishes engineered together. This proposal sets out the design specification for your room; commercials follow on the formal quotation.',
+      heroImage: (CFG.heroImage || null),
+      video: (mv.viewingDistance || ms.w || meta.videoType) ? {
+        display: VIDEO_TYPE_LABEL[meta.videoType] || (meta.videoType || null),
+        screenW: ms.w || null, screenH: ms.h || null,
+        bottomFromFloor: ms.bottomFromFloor || null,
+        viewingDistance: mv.viewingDistance || mst.mlpDist || null,
+        contentRes: mv.contentRes || null,
+        projector: meta.projector || null,
+        screenGain: mv.screenGain || null
+      } : null,
+      audio: ma.atmosConfig ? {
+        headline: ma.atmosConfig + ' immersive audio',
+        recipe: meta.speakerRecipe || null,
+        mlpDist: mst.mlpDist || null,
+        earHeight: mst.earHeight || null
+      } : null,
+      lightingHeadline: fits.length ? fits.map(function (f) { return f.label; }).slice(0, 3).join(' · ') + (fits.length > 3 ? ' +' : '') : null,
+      led: (has('led_perimeter') || has('riser_light') || has('shelf_light') || (mc.ledCove && mc.ledCove.enabled)) ? {
+        cove: has('led_perimeter') || (mc.ledCove && mc.ledCove.enabled),
+        covePower: (mc.ledCove && mc.ledCove.powerWPerM) || null,
+        riser: has('riser_light'),
+        shelf: has('shelf_light'),
+        wallWash: has('wall_wash')
+      } : null,
+      star: starOn ? {
+        panelMode: (mc.star && mc.star.panelMode) || null,
+        dropHeight: mc.dropHeight || null,
+        ring: (mc.ring && mc.ring.front) || null,
+        downlights: dl || null
+      } : null,
       slots: (CFG.slots || []).map(function (sl) {
         var it = E.item(cfg.picks[sl.id]);
-        return it ? { slot: sl.label, name: it.name, manufacturer: it.manufacturer, hex: it.hex, swatchImg: it.swatch_img, note: it.note, tier: it.tier } : null;
+        return it ? { slot: sl.label, name: it.name, manufacturer: it.manufacturer, hex: it.hex, swatchImg: it.swatch_img, note: it.note, tier: it.tier, colourways: (it.metadata && it.metadata.colours_available) || null } : null;
       }).filter(Boolean),
-      fittings: (CFG.fittingTypes || []).filter(function (f) { return cfg.fittings[f.id]; }).map(function (f) { return { label: f.label, hint: f.hint }; }),
+      fittings: fits.map(function (f) { return { label: f.label, hint: f.hint, qty: (f.id === 'downlight' && dl) ? dl + ' fittings' : null }; }),
       scenes: scenes(),
       colourTemp: CFG.colourTemp,
       termsLines: CFG.termsLines || [],
       dateText: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     };
-    m.filename = 'sonor-aesthetic-' + (m.quoteRef || 'board') + '.pdf';
+    m.filename = 'sonor-cinema-proposal-' + (m.quoteRef || 'draft') + '.pdf';
     return m;
   }
   async function savePdf() {
@@ -322,6 +374,7 @@
   global.AestheticApp = {
     boot: boot, enter: enter, backToIntro: backToIntro, goBack: goBack, jumpTo: jumpTo,
     setStyle: setStyle, pick: pick, toggleFitting: toggleFitting, setClient: setClient,
-    saveConfig: saveConfig, openSaved: openSaved, savePdf: savePdf
+    saveConfig: saveConfig, openSaved: openSaved, savePdf: savePdf,
+    _debug: function () { return { cfg: cfg, ctx: ctx }; }   // harness hook (headless render tests)
   };
 })(window);

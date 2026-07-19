@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.7.0)
+# Cinema Aesthetic — Claude Code Context (v0.7.1)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -156,3 +156,17 @@ render-and-eyeball before shipping).
   options[] (av.grade kept as legacy alias = electronics). 1387 design_renders →
   3 images (concept board + hallway bar + renders, uploaded to
   seating-assets/aesthetic/). Ceiling treatments + 'Recessed Bulkhead' option.
+- v0.7.1 (2026-07-19) — **Project palette + board redesign.** Palette DEVISED from
+  the hallway bar concept (deep navy walls, ink cabinetry, brass, warm oak, stone
+  worktop, charcoal floor — set editorially; raw pixel sampling skews brown under
+  the tungsten glow). Stored per project: projects.metadata.design_palette
+  {source, swatches:[{name,hex,note}]} via sonor_merge_project_metadata (1387
+  seeded: Midnight Navy #242e3d · Ink Cabinet #1a2130 · Aged Brass #a8894f ·
+  Warm Oak #8a6743 · Stone White #e8e2d6 · Charcoal #2e3138). App: ctx.palette →
+  PROJECT PALETTE chips on Summary (.pal-* CSS). PDF: Materials & Finishes page
+  REDESIGNED — named palette band (colour block + name + hex + source line)
+  above the swatch tiles, painted tiles now take the palette LEAD colour with
+  cream labels, tiles gain a note subline (one-line truncation), bottom hex
+  strip replaced by a samples note. Navy catalogue hexes aligned to the concept
+  (wf-midnight #242e3d, jo-navy-brass #1a2130, cp-navy #262c36). Fallback: no
+  design_palette → previous layout (config-only projects unchanged).

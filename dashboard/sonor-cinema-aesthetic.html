@@ -90,6 +90,12 @@
     .gr-chip.on { border-color:var(--tier); background:color-mix(in srgb, var(--tier) 22%, var(--bg3)); box-shadow:0 0 0 1px var(--tier), 0 0 16px -8px var(--tier); }
     .gr-chip .gr-dot { width:9px; height:9px; border-radius:50%; background:var(--tier); box-shadow:0 0 6px var(--tier); flex:0 0 auto; }
     .gr-chip.mini { padding:4px 10px; font-size:10px; cursor:default; }
+    /* v0.7.1 — project palette chips (devised from the client concept) */
+    .pal-row { display:flex; flex-wrap:wrap; gap:14px; }
+    .pal-chip { display:flex; flex-direction:column; gap:5px; min-width:86px; }
+    .pal-sw { display:block; height:44px; border-radius:8px; border:1px solid var(--brd2); box-shadow:inset 0 0 0 1px rgba(255,255,255,.04); }
+    .pal-n { font-size:11.5px; font-weight:600; color:var(--cream); }
+    .pal-x { font-size:9.5px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; }
     .fld { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
     .fld span { font-size:13px; color:var(--cream); }
     .hint { font-size:11.5px; color:var(--muted); line-height:1.55; margin-top:6px; }
@@ -316,7 +322,7 @@
   </div>
 
   <script>
-    const APP_VERSION = '0.7.0';
+    const APP_VERSION = '0.7.1';
     document.addEventListener('DOMContentLoaded', function(){ var v = document.getElementById('hdrVer'); if (v) v.textContent = 'v' + APP_VERSION; });
     // one-line swappable hero image (see aesthetic-config.js → heroImage; null = branded gradient)
     (function(){ var cfg = window.__AESTHETIC_CONFIG__ || {}; var el = document.getElementById('heroBg');

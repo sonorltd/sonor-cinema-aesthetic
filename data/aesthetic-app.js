@@ -46,7 +46,7 @@
     _savedId: null,
     _lastRef: null
   };
-  var ctx = { room: null, seating: null, brief: null, meta: null, renders: null };   // live cross-app context
+  var ctx = { room: null, seating: null, brief: null, meta: null, renders: null, palette: null };   // live cross-app context
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -544,6 +544,14 @@
         '<div class="cfld"><span>Project</span><input value="' + esc(cfg.client.project) + '" onchange="AestheticApp.setClient(\'project\',this.value)"></div></div>';
       h += savedPanelHtml();
     }
+    // v0.7.1 — project palette (devised from the client concept render)
+    if (ctx.palette) {
+      h += '<div class="panel" style="margin-bottom:18px"><div class="ptt">Project palette <span class="opt-tag">· ' + esc(ctx.palette.source || 'from the client concept') + '</span></div><div class="pal-row">';
+      (ctx.palette.swatches || []).forEach(function (p) {
+        h += '<div class="pal-chip"><span class="pal-sw" style="background:' + esc(p.hex) + '"></span><span class="pal-n">' + esc(p.name) + '</span><span class="pal-x">' + esc(p.hex) + '</span></div>';
+      });
+      h += '</div></div>';
+    }
     // board strip — every surface pick as a swatch cell
     h += '<div class="strip">';
     (CFG.slots || []).filter(slotVisible).forEach(function (sl) {
@@ -620,7 +628,7 @@
   }
   async function onProject(detail) {
     cfg.projectId = detail && detail.currentId || null;
-    ctx.room = null; ctx.seating = null; ctx.brief = null; ctx.meta = null; ctx.renders = null; cfg.scenes = null;
+    ctx.room = null; ctx.seating = null; ctx.brief = null; ctx.meta = null; ctx.renders = null; ctx.palette = null; cfg.scenes = null;
     var p = detail && detail.project;
     if (p) {
       cfg.client.name = p.client_name || cfg.client.name;
@@ -648,6 +656,9 @@
       var md = (b.data && b.data.metadata) || {};
       if (md.brief) ctx.brief = md.brief;
       ctx.renders = Array.isArray(md.design_renders) ? md.design_renders : null;   // [{url, caption}]
+      // v0.7.1 — project palette devised from the client concept (design_palette
+      // {source, swatches:[{name,hex,note}]}) — drives the board page + app chips
+      ctx.palette = (md.design_palette && Array.isArray(md.design_palette.swatches) && md.design_palette.swatches.length) ? md.design_palette : null;
     } catch (e) {}
   }
 
@@ -823,6 +834,7 @@
       introText: 'A dedicated home cinema, designed as one system — picture, sound, acoustics, lighting and interior finishes engineered together. This proposal sets out the design specification for your room; commercials follow on the formal quotation.',
       heroImage: (CFG.heroImage || null),
       renders: ctx.renders || null,
+      palette: ctx.palette || null,   // v0.7.1 — {source, swatches:[{name,hex,note}]}
       // v0.7.0 — per-aspect grade badges (rendered in the app AND the PDF)
       grades: (function () {
         var o = {};

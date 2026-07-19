@@ -369,6 +369,10 @@
     };
   }
 
+  // v0.7.1 — redesigned board: named PROJECT PALETTE band (devised from the
+  // client concept render, projects.metadata.design_palette) above the swatch
+  // tiles; painted tiles take the palette's lead colour; one-line truncation
+  // rules kept (cinema-pdf-luxury §5).
   function secBoard(m, swatchImgs) {
     if (!m.slots || !m.slots.length) return null;
     var lx = L();
@@ -376,12 +380,36 @@
       var M = lx.M, A4 = lx.A4, COL = lx.COL;
       lx.pageHead(P, F, 'MATERIALS & FINISHES', pageNo, TOTAL, DOC_LABEL);
       lx.sectionHead(P, F, (m.styleLabel || 'SCHEME'), 'Materials & finishes', blurb('materials'));
-      P.hline(M, A4.w - M, 192, COL.GOLD, 0.8, 0.75);
-      var cols = 3, gap = 14, tw = (A4.w - M * 2 - gap * (cols - 1)) / cols, th = 112;
-      var y = 208;
+      var y = 192;
+      var pal = m.palette && m.palette.swatches && m.palette.swatches.length ? m.palette : null;
+      if (pal) {
+        P.tracked('PROJECT PALETTE', M, y, 6.5, F.r, COL.MUT, 1.5);
+        P.hline(M, A4.w - M, y + 11, COL.GOLD, 0.8, 0.75);
+        y += 22;
+        var n = pal.swatches.length, pgap = 10;
+        var pw = (A4.w - M * 2 - pgap * (n - 1)) / n, ph = 40;
+        pal.swatches.forEach(function (p, i) {
+          var px = M + i * (pw + pgap);
+          P.rect(px, y, pw, ph, lx.hexRgb(p.hex), 1);
+          P.rectB(px, y, pw, ph, COL.LINE, 0.8);
+          // one-line name truncation
+          var nm = String(p.name);
+          while (nm.length > 3 && F.b.widthOfTextAtSize(nm, 8) > pw) nm = nm.slice(0, -2).replace(/\s+$/, '');
+          P.text(nm === p.name ? nm : nm + '…', px, y + ph + 8, 8, F.b, COL.INK);
+          P.text(String(p.hex).toUpperCase(), px, y + ph + 19, 6.5, F.r, COL.MUT);
+        });
+        y += ph + 32;
+        if (pal.source) { P.text(pal.source + '.', M, y - 4, 8, F.r, COL.MUT); y += 14; }
+        y += 4;
+      } else {
+        P.hline(M, A4.w - M, y, COL.GOLD, 0.8, 0.75);
+        y += 16;
+      }
+      var cols = 3, gap = 14, tw = (A4.w - M * 2 - gap * (cols - 1)) / cols, th = 104;
+      var lead = pal ? pal.swatches[0] : null;   // palette lead colour for painted tiles
       (m.slots || []).forEach(function (s, i) {
         var cx = M + (i % cols) * (tw + gap);
-        var cy = y + Math.floor(i / cols) * (th + 48);
+        var cy = y + Math.floor(i / cols) * (th + 50);
         var img = swatchImgs[i];
         if (img) {
           var dw = tw, dh = img.height * (tw / img.width);
@@ -390,9 +418,15 @@
         } else if (s.hex) {
           P.rect(cx, cy, tw, th, lx.hexRgb(s.hex), 1);
         } else if (s.painted) {
-          P.rect(cx, cy, tw, th, [238, 234, 226], 1);
-          P.center('PAINTED FINISH', cx + tw / 2, cy + th / 2 - 8, 8, F.b, COL.MUT, 2);
-          P.center('COLOUR FROM THE SCHEME PALETTE', cx + tw / 2, cy + th / 2 + 6, 5.5, F.r, COL.MUT, 1.2);
+          if (lead) {
+            P.rect(cx, cy, tw, th, lx.hexRgb(lead.hex), 1);
+            P.center('PAINTED FINISH', cx + tw / 2, cy + th / 2 - 8, 8, F.b, COL.CREAM, 2);
+            P.center(String(lead.name).toUpperCase() + ' · ' + String(lead.hex).toUpperCase(), cx + tw / 2, cy + th / 2 + 6, 5.5, F.r, COL.CREAM, 1.2);
+          } else {
+            P.rect(cx, cy, tw, th, [238, 234, 226], 1);
+            P.center('PAINTED FINISH', cx + tw / 2, cy + th / 2 - 8, 8, F.b, COL.MUT, 2);
+            P.center('COLOUR FROM THE SCHEME PALETTE', cx + tw / 2, cy + th / 2 + 6, 5.5, F.r, COL.MUT, 1.2);
+          }
         } else {
           P.rect(cx, cy, tw, th, [234, 229, 219], 1);
           P.center(String(s.manufacturer || 'SAMPLE').toUpperCase(), cx + tw / 2, cy + th / 2 - 8, 8, F.b, COL.MUT, 2);
@@ -404,17 +438,16 @@
         var nm = String(s.name);
         while (nm.length > 3 && F.b.widthOfTextAtSize(nm, 10.5) > tw) nm = nm.slice(0, -2).replace(/\s+$/, '');
         P.text(nm === s.name ? nm : nm + '…', cx, cy + th + 18, 10.5, F.b, COL.INK);
-        if (s.manufacturer) P.text(s.manufacturer + (s.colourways ? ' · ' + s.colourways + ' colourways' : ''), cx, cy + th + 31, 8, F.r, COL.MUT, { maxWidth: tw });
+        var sub = s.manufacturer ? (s.manufacturer + (s.colourways ? ' · ' + s.colourways + ' colourways' : '')) : (s.note || '');
+        if (sub) {
+          var sb = String(sub);
+          while (sb.length > 3 && F.r.widthOfTextAtSize(sb, 8) > tw) sb = sb.slice(0, -2).replace(/\s+$/, '');
+          P.text(sb === String(sub) ? sb : sb + '…', cx, cy + th + 31, 8, F.r, COL.MUT);
+        }
       });
       var rows = Math.ceil((m.slots || []).length / cols);
-      var py = y + rows * (th + 48) + 8;
-      P.tracked('PALETTE', M, py, 6.5, F.r, COL.MUT, 1.5);
-      var hexes = (m.slots || []).filter(function (s) { return s.hex; });
-      if (hexes.length) {
-        var pw = (A4.w - M * 2) / hexes.length;
-        hexes.forEach(function (s, i) { P.rect(M + i * pw, py + 12, pw - 3, 24, lx.hexRgb(s.hex), 1); });
-        P.rectB(M, py + 12, A4.w - M * 2, 24, COL.LINE, 0.7);
-      }
+      var by = y + rows * (th + 50) + 6;
+      P.text('Physical samples of every surface are approved before any order is placed.', M, by, 8.5, F.r, COL.MUT);
       lx.pageFoot(P, F);
     };
   }

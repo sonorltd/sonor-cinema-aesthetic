@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.3.0)
+# Cinema Aesthetic — Claude Code Context (v0.4.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -83,3 +83,17 @@ render-and-eyeball before shipping).
   gains the channel-by-channel LOUDSPEAKERS schedule + ELECTRONICS block; Video page
   shows the chosen model. Screen geometry stays CT-owned. Client exposure HELD (Bryn:
   in-house until nailed) — everything still behind the internal build.
+- v0.4.0 (2026-07-19) — **Full design scope** (Bryn: "we need a full scope"). Ceiling
+  treatment MUTUALLY EXCLUSIVE (star / acoustic panels / stretched fabric / painted /
+  none — star excludes painted+panels by construction); tiered-seating intent (flat /
+  single / two-tier); downlight grade ladder Aurora→Orluna→Lighting of London; wall
+  lights/sconces held as TBC with notes; LED zone ticks (cove, pilasters, step nosing,
+  accent/skirting, backlit posters, shelf, riser front — replaces the old linear
+  fitting toggles); None/Painted pseudo-options on every surface slot; joinery &
+  cabinetry notes; sundries checklist (popcorn, fridge, PerfectDraft, tables, stools,
+  poster frames, snack station, throws) reading the Library 'sundry' category when
+  curated, config fallback until then. Proposal: +Joinery & Sundries section, LED page
+  lists zones, lighting page carries grade + sconces-TBC, painted tiles on the board.
+  Catalogue: +sundry (8) and sconce (1) categories, all needs_review for Library
+  curation. NOTE for Library: item names must avoid ff/ffl ligature words (Gilroy PDF
+  break — "Coffee" → renamed "Side / Lounge Tables"); or supply a pdf-safe display name.

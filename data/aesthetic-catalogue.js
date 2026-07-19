@@ -1,8 +1,6 @@
-/* Sonor Cinema Aesthetic — Tier-3 offline seed (v0.2.0, GENERATED)
-   window.__AESTHETIC_SEED__ — snapshot of v_aesthetic_catalogue (2026-07-19).
-   Regenerate: bash data/build-seed.sh  (keeps seed in lockstep with the view).
-   Cineca wall fabrics + Diamond panels from the Jan 2026 trade list — names/properties
-   ONLY; trade pricing NEVER enters this seed (seating-library-ssot §4).
+/* Sonor Cinema Aesthetic — Tier-3 offline seed (GENERATED 2026-07-19, v0.4.0)
+   window.__AESTHETIC_SEED__ — snapshot of v_aesthetic_catalogue. Regenerate: bash data/build-seed.sh.
+   NO trade pricing in this seed (seating-library-ssot §4).
 */
 (function () {
   window.__AESTHETIC_SEED__ = { generated: '2026-07-19', items:
@@ -329,6 +327,141 @@
    "needs_review": true
   },
   "sort_order": 70
+ },
+ {
+  "id": "sc-generic",
+  "category": "sconce",
+  "name": "Wall Light / Sconce — TBC",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Endless options — shortlist agreed at design development",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "su-popcorn",
+  "category": "sundry",
+  "name": "Popcorn Machine",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Feature counter-top machine — doubles as accent light",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
+  "id": "su-drinks-fridge",
+  "category": "sundry",
+  "name": "Drinks Fridge",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Under-counter glass-door fridge",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
+  "id": "su-perfectdraft",
+  "category": "sundry",
+  "name": "PerfectDraft Beer Tap",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Counter-top draught dispenser",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "su-side-tables",
+  "category": "sundry",
+  "name": "Side / Lounge Tables",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Between-seat and front-of-row tables",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 40
+ },
+ {
+  "id": "su-bar-stools",
+  "category": "sundry",
+  "name": "Bar Stools",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "For the refreshments counter",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
+  "id": "su-poster-frames",
+  "category": "sundry",
+  "name": "Movie Poster Frames",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Framed artwork — backlight via LED zones",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 60
+ },
+ {
+  "id": "su-snack-station",
+  "category": "sundry",
+  "name": "Snack / Candy Station",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Jars, scoops and display for the counter",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 70
+ },
+ {
+  "id": "su-throws",
+  "category": "sundry",
+  "name": "Throws & Cushions",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Fabric-matched soft accessories",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 80
  },
  {
   "id": "wf-cineca-alcantara",

@@ -46,7 +46,8 @@
         ['Display', m.video && m.video.display || null],
         ['Audio', m.audio && m.audio.headline || null],
         ['Lighting', m.lightingHeadline || null],
-        ['Star ceiling', m.star ? 'Included — see Star Ceiling section' : null]
+        ['Ceiling', m.ceilingTreatment ? m.ceilingTreatment.label + (m.star ? ' — see Star Ceiling section' : '') : null],
+        ['Tiered seating', m.riser ? m.riser.label : null]
       ];
       var b1 = lx.specRows(P, F, rows1, lx.M, y, colW);
       var b2 = lx.specRows(P, F, rows2, lx.M + colW + 28, y, colW);
@@ -151,14 +152,21 @@
       P.tracked('FITTINGS', M, y, 6.5, F.r, COL.MUT, 1.5);
       P.hline(M, A4.w - M, y + 11, COL.GOLD, 0.8, 0.75);
       y += 26;
-      (m.fittings || []).forEach(function (f, i, arr) {
+      var fitRows = (m.fittings || []).slice();
+      if (m.sconces) fitRows.push({ label: 'Wall lights / sconces', hint: 'TBC — shortlist at design development' + (m.sconces.notes ? ' · ' + m.sconces.notes : '') });
+      fitRows.forEach(function (f, i, arr) {
         P.dot(M + 3, y - 4, 2.2, COL.GOLD);
         P.text(f.label + (f.qty ? '  ·  ' + f.qty : ''), M + 14, y - 9, 11, F.b, COL.INK);
         if (f.hint) P.right(f.hint, A4.w - M, y - 8, 9, F.r, COL.MUT);
         if (i < arr.length - 1) P.hline(M, A4.w - M, y + 7, COL.LINE, 0.5, 0.6);
         y += 22;
       });
-      y += 18;
+      if (m.downlightGrade) {
+        y += 4;
+        P.text('Downlight grade: ' + m.downlightGrade.label + ' (' + m.downlightGrade.tier + ') — ' + m.downlightGrade.note, M, y - 4, 9, F.r, COL.MUT, { maxWidth: A4.w - M * 2 });
+        y += 16;
+      }
+      y += 14;
       P.tracked('SCENES', M, y, 6.5, F.r, COL.MUT, 1.5);
       P.hline(M, A4.w - M, y + 11, COL.GOLD, 0.8, 0.75);
       y += 28;
@@ -175,22 +183,66 @@
   }
 
   function secLed(m) {
-    if (!m.led) return null;
+    if (!m.led || !m.led.zones || !m.led.zones.length) return null;
     var lx = L();
     return function (P, F, pageNo, TOTAL) {
+      var M = lx.M, A4 = lx.A4, COL = lx.COL;
       lx.pageHead(P, F, 'LED LIGHTING', pageNo, TOTAL, DOC_LABEL);
       var y = lx.sectionHead(P, F, 'CONCEALED LINEAR LIGHT', 'LED lighting',
-        'Every LED run is concealed — cove, riser and shelf light is seen as a glow, never as a fitting. Warm white, fully dimmable, no RGB.');
+        'Every LED run is concealed — light is seen as a glow, never as a fitting. Warm white, fully dimmable, no RGB.');
       y = Math.max(y, 186);
-      var d = m.led;
-      var rows = [
-        ['Perimeter cove', d.cove ? ('Concealed within the acoustic ceiling perimeter' + (d.covePower ? '  ·  ' + d.covePower + ' W/m' : '')) : null],
-        ['Riser edge', d.riser ? 'Low-level wash to the riser front edge — Film-scene safe navigation' : null],
-        ['Shelf / joinery', d.shelf ? 'In-recess strips to shelving and display joinery' : null],
-        ['Wall wash', d.wallWash ? 'Feature wash to the rear wall and shelving lighting scene' : null],
-        ['Control', 'All circuits individually dimmed via Rako scenes']
-      ];
-      lx.specRows(P, F, rows, lx.M, y, 300);
+      P.tracked('LED ZONES', M, y, 6.5, F.r, COL.MUT, 1.5);
+      P.hline(M, A4.w - M, y + 11, COL.GOLD, 0.8, 0.75);
+      y += 27;
+      m.led.zones.forEach(function (z, i, arr) {
+        P.dot(M + 3, y - 4, 2.2, COL.GOLD);
+        P.text(z.label + (z.label === 'Ceiling Cove' && m.led.covePower ? '  ·  ' + m.led.covePower + ' W/m' : ''), M + 14, y - 9, 11, F.b, COL.INK);
+        if (z.hint) P.right(z.hint, A4.w - M, y - 8, 9, F.r, COL.MUT);
+        if (i < arr.length - 1) P.hline(M, A4.w - M, y + 7, COL.LINE, 0.5, 0.6);
+        y += 22;
+      });
+      y += 14;
+      P.text('All circuits individually dimmed via the Rako lighting scenes.', M, y, 9.5, F.r, COL.MUT);
+      lx.pageFoot(P, F);
+    };
+  }
+
+  function secJoinery(m) {
+    var haveNotes = !!m.joineryNotes, haveSundries = (m.sundries || []).length || m.sundriesNotes;
+    if (!haveNotes && !haveSundries) return null;
+    var lx = L();
+    return function (P, F, pageNo, TOTAL) {
+      var M = lx.M, A4 = lx.A4, COL = lx.COL;
+      lx.pageHead(P, F, 'JOINERY & SUNDRIES', pageNo, TOTAL, DOC_LABEL);
+      var y = lx.sectionHead(P, F, 'THE FINISHING KIT', 'Joinery & sundries',
+        'Cabinetry intent and the accessories that make the room feel finished on day one.');
+      y = Math.max(y, 186);
+      if (haveNotes) {
+        P.tracked('JOINERY & CABINETRY', M, y, 6.5, F.r, COL.MUT, 1.5);
+        P.hline(M, A4.w - M, y + 11, COL.GOLD, 0.8, 0.75);
+        y += 26;
+        lx.wrap(m.joineryNotes, F.r, 10.5, A4.w - M * 2).forEach(function (ln) {
+          P.text(ln, M, y - 9, 10.5, F.r, COL.INK2); y += 15;
+        });
+        y += 16;
+      }
+      if (haveSundries) {
+        P.tracked('SUNDRIES & ACCESSORIES', M, y, 6.5, F.r, COL.MUT, 1.5);
+        P.hline(M, A4.w - M, y + 11, COL.GOLD, 0.8, 0.75);
+        y += 27;
+        (m.sundries || []).forEach(function (s, i, arr) {
+          P.dot(M + 3, y - 4, 2.2, COL.GOLD);
+          P.text(s, M + 14, y - 9, 11, F.b, COL.INK);
+          if (i < arr.length - 1) P.hline(M, A4.w - M, y + 7, COL.LINE, 0.5, 0.6);
+          y += 22;
+        });
+        if (m.sundriesNotes) {
+          y += 8;
+          lx.wrap(m.sundriesNotes, F.r, 10, A4.w - M * 2).forEach(function (ln) {
+            P.text(ln, M, y - 9, 10, F.r, COL.MUT); y += 14;
+          });
+        }
+      }
       lx.pageFoot(P, F);
     };
   }
@@ -239,6 +291,10 @@
           P.image(img, cx + (tw - dw) / 2, cy + (th - dh) / 2, dw, dh, 1);
         } else if (s.hex) {
           P.rect(cx, cy, tw, th, lx.hexRgb(s.hex), 1);
+        } else if (s.painted) {
+          P.rect(cx, cy, tw, th, [238, 234, 226], 1);
+          P.center('PAINTED FINISH', cx + tw / 2, cy + th / 2 - 8, 8, F.b, COL.MUT, 2);
+          P.center('COLOUR FROM THE SCHEME PALETTE', cx + tw / 2, cy + th / 2 + 6, 5.5, F.r, COL.MUT, 1.2);
         } else {
           P.rect(cx, cy, tw, th, [234, 229, 219], 1);
           P.center(String(s.manufacturer || 'SAMPLE').toUpperCase(), cx + tw / 2, cy + th / 2 - 8, 8, F.b, COL.MUT, 2);
@@ -320,6 +376,7 @@
       { label: 'LED lighting', draw: secLed(m) },
       { label: 'Star ceiling', draw: secStar(m) },
       { label: 'Materials & finishes', draw: secBoard(m, swatchImgs) },
+      { label: 'Joinery & sundries', draw: secJoinery(m) },
       { label: 'The detail', draw: secDetail(m) }
     ].filter(function (s) { return s.draw; });
     m.sectionList = sections.map(function (s) { return s.label; });

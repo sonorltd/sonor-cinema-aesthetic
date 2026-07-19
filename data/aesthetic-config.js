@@ -7,7 +7,7 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.3.0',
+    version: '0.4.0',
     buildDate: '2026-07-19',
     steps: ['Scheme', 'Video', 'Audio', 'Materials', 'Lighting', 'Summary'],
 
@@ -47,24 +47,67 @@
     ],
 
     // Material slots — one pick per slot from the matching catalogue category.
+    // optional:true adds "None / existing" + "Painted finish" pseudo-options.
     slots: [
-      { id: 'wall_fabric',    label: 'Wall Fabric',     cat: 'wall_fabric',    hint: 'Stretched fabric walls / fabric-faced acoustic build-up' },
-      { id: 'acoustic_panel', label: 'Acoustic Panels', cat: 'acoustic_panel', hint: 'Visible treatment panels — absorbers and diffusion' },
-      { id: 'ceiling',        label: 'Ceiling',         cat: 'ceiling',        hint: 'Ceiling finish — panels, fabric or painted' },
-      { id: 'carpet',         label: 'Carpet',          cat: 'carpet',         hint: 'Cinema-grade carpet' },
-      { id: 'curtain',        label: 'Curtain',         cat: 'curtain',        hint: 'Blackout acoustic curtain fabric' },
-      { id: 'joinery',        label: 'Joinery',         cat: 'joinery',        hint: 'Media wall, shelving and cabinetry finish' }
+      { id: 'wall_fabric',    label: 'Wall Fabric',     cat: 'wall_fabric',    optional: true, hint: 'Stretched fabric walls / fabric-faced acoustic build-up' },
+      { id: 'acoustic_panel', label: 'Acoustic Panels', cat: 'acoustic_panel', optional: true, hint: 'Visible treatment panels — absorbers and diffusion' },
+      { id: 'ceiling',        label: 'Ceiling Finish',  cat: 'ceiling',        optional: true, hint: 'Finish for the chosen ceiling treatment', when: 'ceilingMaterial' },
+      { id: 'carpet',         label: 'Carpet',          cat: 'carpet',         optional: true, hint: 'Cinema-grade carpet' },
+      { id: 'curtain',        label: 'Curtain',         cat: 'curtain',        optional: true, hint: 'Blackout acoustic curtain fabric' },
+      { id: 'joinery',        label: 'Joinery',         cat: 'joinery',        optional: true, hint: 'Media wall, shelving and cabinetry finish' }
     ],
 
-    // Lighting fitting types (catalogue category 'lighting') + feature toggles.
+    // ── v0.4.0 — full design scope ────────────────────────────────────────
+    // Ceiling treatment — MUTUALLY EXCLUSIVE (star ceiling vs painted vs panels
+    // vs stretched fabric). Star includes the recessed acoustic ceiling build.
+    ceilingTreatments: [
+      { id: 'star',    label: 'Star Ceiling',       note: 'Fibre-optic star field set into the recessed acoustic ceiling — includes the ceiling build.' },
+      { id: 'panels',  label: 'Acoustic Panels',    note: 'Fabric-wrapped acoustic ceiling panels — finish chosen in Materials.' },
+      { id: 'fabric',  label: 'Stretched Fabric',   note: 'Full stretched-fabric ceiling with concealed services.' },
+      { id: 'painted', label: 'Painted',            note: 'Decorated plasterboard — colour from the scheme palette.' },
+      { id: 'none',    label: 'None / Existing',    note: 'Retain the existing ceiling.' }
+    ],
+    // Tiered seating (design intent — geometry stays owned by the Cinema Takeoff)
+    riserOptions: [
+      { id: 'none',   label: 'Flat floor',      note: 'Single level — no riser' },
+      { id: 'single', label: 'Single riser',    note: 'Rear row raised on an acoustic riser' },
+      { id: 'double', label: 'Two-tier riser',  note: 'Stepped risers for three-row rooms' }
+    ],
+    // Downlight grade ladder — essential → high end
+    downlightGrades: [
+      { id: 'aurora',  label: 'Aurora',              tier: 'Essential', note: 'Quality trade-grade dimmable warm-white downlights' },
+      { id: 'orluna',  label: 'Orluna',              tier: 'Premium',   note: 'High-end low-glare architectural downlights' },
+      { id: 'lol',     label: 'Lighting of London',  tier: 'Bespoke',   note: 'Top-tier bespoke architectural fittings' }
+    ],
+    // LED zones — tick everything that gets a concealed linear run
+    ledZones: [
+      { id: 'coffer',        label: 'Ceiling Cove',        hint: 'Perimeter cove in the recessed ceiling' },
+      { id: 'pilaster',      label: 'Pilasters',           hint: 'Vertical wash in wall pilasters / columns' },
+      { id: 'step_nose',     label: 'Step Nosing',         hint: 'Riser and step edge nosing strips' },
+      { id: 'accent',        label: 'Accent / Skirting',   hint: 'Low-level accent runs and skirting detail' },
+      { id: 'backlit_poster',label: 'Backlit Movie Posters', hint: 'Halo-lit poster frames' },
+      { id: 'shelf',         label: 'Shelf Recess',        hint: 'In-recess shelf and display lighting' },
+      { id: 'riser_front',   label: 'Riser Front',         hint: 'Low-level wash to the riser face' }
+    ],
+    // Sundries & accessories — checklist fallback; the Library's 'sundry'
+    // catalogue category takes over as it is curated (real models + images).
+    sundries: [
+      { id: 'popcorn',      label: 'Popcorn Machine',        hint: 'Feature counter-top machine — doubles as accent light' },
+      { id: 'drinks_fridge',label: 'Drinks Fridge',          hint: 'Under-counter glass-door fridge' },
+      { id: 'perfectdraft', label: 'PerfectDraft Beer Tap',  hint: 'Counter-top draught dispenser' },
+      { id: 'side_tables',  label: 'Side / Lounge Tables',   hint: 'Between-seat and front-of-row occasional tables' },
+      { id: 'bar_stools',   label: 'Bar Stools',             hint: 'For the refreshments counter' },
+      { id: 'poster_frames',label: 'Movie Poster Frames',    hint: 'Framed artwork — backlight under LED zones' },
+      { id: 'snack_station',label: 'Snack / Candy Station',  hint: 'Jars, scoops and display for the counter' },
+      { id: 'throws',       label: 'Throws & Cushions',      hint: 'Fabric-matched soft accessories' }
+    ],
+
+    // Lighting fitting types — point-source fittings only (v0.4.0: linear LED
+    // moved to ledZones; star ceiling moved to ceilingTreatments).
     fittingTypes: [
-      { id: 'downlight',     label: 'Recessed Downlights',      hint: 'Warm-white, dimmable' },
-      { id: 'led_perimeter', label: 'Perimeter LED',            hint: 'Concealed cove strip in the ceiling perimeter' },
-      { id: 'riser_light',   label: 'Riser Lighting',           hint: 'Low-level step/riser wash' },
+      { id: 'downlight',     label: 'Recessed Downlights',      hint: 'Warm-white, dimmable — grade chosen above' },
       { id: 'wall_wash',     label: 'Wall Wash',                hint: 'Feature wash to rear wall / shelving' },
-      { id: 'picture_light', label: 'Picture / Poster Lights',  hint: 'Over framed artwork' },
-      { id: 'shelf_light',   label: 'Shelf Lighting',           hint: 'In-recess shelf strips' },
-      { id: 'star_ceiling',  label: 'Star Ceiling',             hint: 'Fibre-optic star field' }
+      { id: 'picture_light', label: 'Picture / Poster Lights',  hint: 'Over framed artwork' }
     ],
 
     // Default scene set (Rako). Overridden per project when the client brief carries

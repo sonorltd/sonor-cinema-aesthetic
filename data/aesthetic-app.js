@@ -23,6 +23,18 @@
       video: { type: 'projection-baffle', tvId: null, tvSizeIn: null, projectorId: null },
       audio: { config: '5.1.4', picks: {}, subId: null, subQty: 2, processorId: null, ampId: null }
     },
+    // v0.4.0 — full design scope
+    design: {
+      ceiling: 'star',               // ceilingTreatments id — MUTUALLY EXCLUSIVE
+      riser: 'single',               // riserOptions id
+      downlightGrade: 'orluna',      // downlightGrades id
+      sconces: false,                // wall lights — TBC when true
+      sconcesNotes: '',
+      ledZones: { coffer: true, step_nose: true, riser_front: true },
+      joineryNotes: '',
+      sundries: {},                  // sundryId -> true
+      sundriesNotes: ''
+    },
     fittings: {},                    // fittingTypeId -> true
     scenes: null,                    // null = defaults / brief-driven
     client: { name: '', project: '' },
@@ -192,7 +204,8 @@
 
   // ── step 1 · scheme ──────────────────────────────────────────────────────
   function renderScheme() {
-    var h = '<div class="lead"><h2>Set the scheme.</h2><p>Pick the design direction for the room. The live room and seating below come straight from your cinema design — nothing is retyped.</p></div>';
+    var d = cfg.design;
+    var h = '<div class="lead"><h2>Set the scheme.</h2><p>Design direction, ceiling treatment and tiered seating. The live room and seating below come straight from your cinema design — nothing is retyped.</p></div>';
     h += '<div class="layout-grid">';
     h += '<div class="panel" style="grid-column:1/span 2"><div class="ptt">Design direction</div><div class="mat-grid">';
     (CFG.styles || []).forEach(function (st) {
@@ -203,6 +216,22 @@
     h += '</div></div>';
     h += '<div class="panel"><div class="ptt">Live project context</div>' + contextHtml() + '</div>';
     h += '</div>';
+    // ceiling treatment — mutually exclusive
+    h += '<div class="panel" style="margin-top:14px"><div class="ptt">Ceiling treatment <span class="opt-tag">· one route — star ceiling excludes painted / panels</span></div><div class="mat-grid">';
+    (CFG.ceilingTreatments || []).forEach(function (t) {
+      var on = d.ceiling === t.id;
+      h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setDesign(\'ceiling\',\'' + t.id + '\')">' +
+        '<div class="mc-name">' + esc(t.label) + '</div><div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(t.note) + '</div></button>';
+    });
+    h += '</div></div>';
+    // tiered seating
+    h += '<div class="panel" style="margin-top:14px"><div class="ptt">Tiered seating <span class="opt-tag">· design intent — riser geometry stays in the Cinema Takeoff</span></div><div class="mat-grid">';
+    (CFG.riserOptions || []).forEach(function (r) {
+      var on = d.riser === r.id;
+      h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setDesign(\'riser\',\'' + r.id + '\')">' +
+        '<div class="mc-name">' + esc(r.label) + '</div><div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(r.note) + '</div></button>';
+    });
+    h += '</div></div>';
     return h;
   }
   function contextHtml() {
@@ -215,14 +244,34 @@
       '<div class="hint">Room + seating flow in live from the Cinema Design / Seating apps for the selected project.</div>';
   }
 
-  // ── step 2 · materials ───────────────────────────────────────────────────
+  // ── materials (+ joinery notes + sundries) ───────────────────────────────
+  var PSEUDO_ITEMS = {
+    _none:    { id: '_none',    name: 'None / Existing', note: 'Retain the existing finish — nothing supplied' },
+    _painted: { id: '_painted', name: 'Painted Finish',  note: 'Decorated — colour from the scheme palette' }
+  };
+  function slotVisible(sl) {
+    if (sl.when === 'ceilingMaterial') {
+      // ceiling finish pick only applies to panel / stretched-fabric treatments
+      return cfg.design.ceiling === 'panels' || cfg.design.ceiling === 'fabric';
+    }
+    return true;
+  }
   function renderMaterials() {
-    var h = '<div class="lead"><h2>Fabrics &amp; finishes.</h2><p>One pick per surface. Swatches come from the Sonor aesthetic library — physical samples follow before anything is ordered.</p></div>';
+    var h = '<div class="lead"><h2>Fabrics &amp; finishes.</h2><p>One pick per surface — or none / painted where that is the right answer. Swatches come from the Sonor aesthetic library; physical samples follow before anything is ordered.</p></div>';
     (CFG.slots || []).forEach(function (sl) {
+      if (!slotVisible(sl)) return;
       var items = E.byCategory(sl.cat);
       h += '<div class="panel" style="margin-bottom:14px"><div class="ptt">' + esc(sl.label) + ' <span class="opt-tag">· ' + esc(sl.hint || '') + '</span></div>';
-      if (!items.length) { h += '<div class="hint">No library entries yet for this surface.</div></div>'; return; }
+      if (!items.length && !sl.optional) { h += '<div class="hint">No library entries yet for this surface.</div></div>'; return; }
       h += '<div class="mat-grid">';
+      if (sl.optional) {
+        ['_none', '_painted'].forEach(function (pid) {
+          var p = PSEUDO_ITEMS[pid], on = cfg.picks[sl.id] === pid;
+          h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.pick(\'' + sl.id + '\',\'' + pid + '\')">' +
+            '<div class="mc-top"><span class="mc-name">' + esc(p.name) + '</span></div>' +
+            '<div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(p.note) + '</div></button>';
+        });
+      }
       items.forEach(function (it) {
         var on = cfg.picks[sl.id] === it.id;
         var hasSw = !!(it.swatch_img || it.hex);
@@ -236,13 +285,54 @@
       });
       h += '</div></div>';
     });
+    // joinery & cabinetry notes
+    h += '<div class="panel" style="margin-bottom:14px"><div class="ptt">Joinery &amp; cabinetry notes <span class="opt-tag">· media wall, shelving, counters — free notes for the design pack</span></div>' +
+      '<textarea rows="3" style="width:100%;background:var(--bg3);border:1px solid var(--brd2);border-radius:7px;color:var(--cream);padding:10px 12px;font-size:12.5px;font-family:inherit;resize:vertical" ' +
+      'placeholder="e.g. full-height media wall in charcoal oak, shelf recesses with LED, hidden equipment cupboard…" ' +
+      'onchange="AestheticApp.setDesign(\'joineryNotes\', this.value)">' + esc(cfg.design.joineryNotes || '') + '</textarea></div>';
+    // sundries & accessories — Library 'sundry' category when curated, config fallback
+    var sundries = E.byCategory('sundry');
+    var list = sundries.length ? sundries.map(function (it) { return { id: it.id, label: it.name, hint: it.note || '' }; }) : (CFG.sundries || []);
+    h += '<div class="panel"><div class="ptt">Sundries &amp; accessories <span class="opt-tag">· the finishing kit — tick everything in scope</span></div>';
+    list.forEach(function (s) {
+      var on = !!cfg.design.sundries[s.id];
+      h += '<label class="fin"><input type="checkbox" ' + (on ? 'checked' : '') + ' onchange="AestheticApp.toggleSundry(\'' + s.id + '\',this.checked)">' +
+        '<span class="fin-b"><span class="fin-n">' + esc(s.label) + '</span><span class="fin-d">' + esc(s.hint || '') + '</span></span></label>';
+    });
+    h += '<textarea rows="2" style="width:100%;margin-top:10px;background:var(--bg3);border:1px solid var(--brd2);border-radius:7px;color:var(--cream);padding:10px 12px;font-size:12.5px;font-family:inherit;resize:vertical" ' +
+      'placeholder="Other sundries / notes…" onchange="AestheticApp.setDesign(\'sundriesNotes\', this.value)">' + esc(cfg.design.sundriesNotes || '') + '</textarea></div>';
     return h;
   }
 
-  // ── step 3 · lighting ────────────────────────────────────────────────────
+  // ── lighting ─────────────────────────────────────────────────────────────
   function renderLighting() {
-    var h = '<div class="lead"><h2>Lighting.</h2><p>Fittings and scenes — warm, calm and dimmable throughout. ' + esc(CFG.colourTemp || '') + '</p></div>';
+    var d = cfg.design;
+    var h = '<div class="lead"><h2>Lighting.</h2><p>Downlight grade, LED zones, fittings and scenes — warm, calm and dimmable throughout. ' + esc(CFG.colourTemp || '') + '</p></div>';
     h += '<div class="cfg-grid"><div class="cfg-left">';
+    // downlight grade ladder
+    h += '<div class="panel"><div class="ptt">Downlight grade <span class="opt-tag">· essential to bespoke</span></div><div class="mat-grid">';
+    (CFG.downlightGrades || []).forEach(function (g) {
+      var on = d.downlightGrade === g.id;
+      h += '<button class="mcard' + (on ? ' on' : '') + '" onclick="AestheticApp.setDesign(\'downlightGrade\',\'' + g.id + '\')">' +
+        '<div class="mc-name">' + esc(g.label) + '</div><div class="mc-meta">' + esc(g.tier) + '</div>' +
+        '<div class="mc-price" style="font-size:10.5px;line-height:1.45">' + esc(g.note) + '</div></button>';
+    });
+    h += '</div></div>';
+    // LED zones checklist
+    h += '<div class="panel"><div class="ptt">LED zones <span class="opt-tag">· concealed linear runs — tick all in scope</span></div>';
+    (CFG.ledZones || []).forEach(function (z) {
+      var on = !!d.ledZones[z.id];
+      h += '<label class="fin"><input type="checkbox" ' + (on ? 'checked' : '') + ' onchange="AestheticApp.toggleZone(\'' + z.id + '\',this.checked)">' +
+        '<span class="fin-b"><span class="fin-n">' + esc(z.label) + '</span><span class="fin-d">' + esc(z.hint || '') + '</span></span></label>';
+    });
+    h += '</div>';
+    // wall lights / sconces — TBC by nature
+    h += '<div class="panel"><div class="ptt">Wall lights / sconces <span class="opt-tag">· endless options — held as TBC for design development</span></div>' +
+      '<label class="fin"><input type="checkbox" ' + (d.sconces ? 'checked' : '') + ' onchange="AestheticApp.setDesign(\'sconces\', this.checked); AestheticApp.jumpRefresh()">' +
+      '<span class="fin-b"><span class="fin-n">Include wall lights / sconces</span><span class="fin-d">Carried in the proposal as TBC — shortlist agreed at design development</span></span></label>' +
+      (d.sconces ? '<textarea rows="2" style="width:100%;margin-top:8px;background:var(--bg3);border:1px solid var(--brd2);border-radius:7px;color:var(--cream);padding:10px 12px;font-size:12.5px;font-family:inherit;resize:vertical" placeholder="Direction of travel — e.g. brass half-moon, fabric shade, art deco fin…" onchange="AestheticApp.setDesign(\'sconcesNotes\', this.value)">' + esc(d.sconcesNotes || '') + '</textarea>' : '') +
+      '</div>';
+    // other fittings
     h += '<div class="panel"><div class="ptt">Fittings</div>';
     (CFG.fittingTypes || []).forEach(function (ft) {
       var on = !!cfg.fittings[ft.id];
@@ -273,14 +363,27 @@
     }
     // board strip — every surface pick as a swatch cell
     h += '<div class="strip">';
-    (CFG.slots || []).forEach(function (sl) {
-      var it = E.item(cfg.picks[sl.id]);
-      if (!it) return;
+    (CFG.slots || []).filter(slotVisible).forEach(function (sl) {
+      var it = itemOf(cfg.picks[sl.id]);
+      if (!it || it.id === '_none') return;
       var hasSw = !!(it.swatch_img || it.hex);
       var sw = it.swatch_img ? 'background-image:url(\'' + esc(it.swatch_img) + '\');background-size:cover' : 'background:' + (it.hex || '#444');
       h += '<div class="cellx"><div class="cl">' + esc(sl.label) + '</div><div style="display:flex;align-items:center;gap:9px;margin-top:6px">' + (hasSw ? '<span class="mc-sw" style="' + sw + ';width:22px;height:22px"></span>' : '') + '<span class="cv" style="font-size:13.5px;margin:0">' + esc(it.name) + '</span></div>' + (it.manufacturer ? '<div class="cn">' + esc(it.manufacturer) + '</div>' : '') + '</div>';
     });
     h += '</div>';
+    // design scope summary
+    var ct = (CFG.ceilingTreatments || []).find(function (t) { return t.id === cfg.design.ceiling; });
+    var ro = (CFG.riserOptions || []).find(function (r) { return r.id === cfg.design.riser; });
+    var g = gradeOf(), zn = zonesList(), sn = sundriesList();
+    h += '<div class="panel" style="margin-bottom:18px"><div class="ptt">Design scope</div><div style="font-size:12.5px;line-height:1.9">' +
+      (ct ? '<div><span style="color:var(--muted)">Ceiling · </span>' + esc(ct.label) + '</div>' : '') +
+      (ro ? '<div><span style="color:var(--muted)">Seating tiers · </span>' + esc(ro.label) + '</div>' : '') +
+      (g ? '<div><span style="color:var(--muted)">Downlights · </span>' + esc(g.label + ' (' + g.tier + ')') + '</div>' : '') +
+      (zn.length ? '<div><span style="color:var(--muted)">LED zones · </span>' + esc(zn.map(function (z) { return z.label; }).join(', ')) + '</div>' : '') +
+      (cfg.design.sconces ? '<div><span style="color:var(--muted)">Sconces · </span>Included — TBC at design development</div>' : '') +
+      (sn.length ? '<div><span style="color:var(--muted)">Sundries · </span>' + esc(sn.map(function (s) { return s.label; }).join(', ')) + '</div>' : '') +
+      (cfg.design.joineryNotes ? '<div><span style="color:var(--muted)">Joinery · </span>' + esc(cfg.design.joineryNotes) + '</div>' : '') +
+      '</div></div>';
     // AV summary
     h += '<div class="panel" style="margin-bottom:18px"><div class="ptt">Video &amp; audio</div>' + avSummaryHtml() + '</div>';
     // lighting summary
@@ -303,8 +406,20 @@
   function setStyle(id) { cfg.scheme.style = id; renderStep(); }
   function pick(slot, itemId) { cfg.picks[slot] = itemId; renderStep(); }
   function toggleFitting(id, on) { if (on) cfg.fittings[id] = true; else delete cfg.fittings[id]; }
+  function setDesign(k, v) { cfg.design[k] = v; if (k === 'ceiling' || k === 'riser' || k === 'downlightGrade') renderStep(); }
+  function toggleZone(id, on) { if (on) cfg.design.ledZones[id] = true; else delete cfg.design.ledZones[id]; }
+  function toggleSundry(id, on) { if (on) cfg.design.sundries[id] = true; else delete cfg.design.sundries[id]; }
+  function jumpRefresh() { renderStep(); }
   function setClient(k, v) { cfg.client[k] = v; }
   function styleOf() { return (CFG.styles || []).find(function (s) { return s.id === cfg.scheme.style; }) || null; }
+  function itemOf(id) { return (id && PSEUDO_ITEMS[id]) || E.item(id); }
+  function gradeOf() { return (CFG.downlightGrades || []).find(function (g) { return g.id === cfg.design.downlightGrade; }) || null; }
+  function zonesList() { return (CFG.ledZones || []).filter(function (z) { return cfg.design.ledZones[z.id]; }); }
+  function sundriesList() {
+    var lib = E.byCategory('sundry');
+    var src = lib.length ? lib.map(function (it) { return { id: it.id, label: it.name }; }) : (CFG.sundries || []);
+    return src.filter(function (s) { return cfg.design.sundries[s.id]; });
+  }
 
   // ── project bar + live context (internal builds only) ────────────────────
   function initProjectBar(attempt) {
@@ -383,7 +498,7 @@
       var res = await db.from('aesthetic_configs').select('id,config').eq('id', id).single();
       if (res.data && res.data.config) {
         var c = res.data.config;
-        ['scheme', 'picks', 'av', 'fittings', 'scenes', 'client'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
+        ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
         cfg._savedId = res.data.id;
         cfg.step = STEPS.length; renderStep();
       }
@@ -422,7 +537,9 @@
     var has = function (id) { return !!cfg.fittings[id]; };
     // total coffer downlights (per-side counts)
     var dl = 0; try { Object.keys(mc.fixtures || {}).forEach(function (k) { dl += (mc.fixtures[k].downlights || 0); }); } catch (e) {}
-    var starOn = !!((mc.star && mc.star.enabled) || mc.starCeiling || has('star_ceiling'));
+    // star ceiling: the DESIGN choice rules (mutually exclusive with painted/panels);
+    // CT coffer star data enriches the section when present
+    var starOn = cfg.design.ceiling === 'star';
     var m = {
       title: cfg.client.project || 'Your Cinema',
       styleLabel: st ? st.label : '',
@@ -461,25 +578,42 @@
         processor: avName(av.audio.processorId),
         amplifier: avName(av.audio.ampId)
       } : null,
-      lightingHeadline: fits.length ? fits.map(function (f) { return f.label; }).slice(0, 3).join(' · ') + (fits.length > 3 ? ' +' : '') : null,
-      led: (has('led_perimeter') || has('riser_light') || has('shelf_light') || (mc.ledCove && mc.ledCove.enabled)) ? {
-        cove: has('led_perimeter') || (mc.ledCove && mc.ledCove.enabled),
-        covePower: (mc.ledCove && mc.ledCove.powerWPerM) || null,
-        riser: has('riser_light'),
-        shelf: has('shelf_light'),
-        wallWash: has('wall_wash')
-      } : null,
+      lightingHeadline: (function () {
+        var g = gradeOf(), bits = [];
+        if (cfg.fittings.downlight) bits.push((g ? g.label + ' ' : '') + 'downlights');
+        var zn = zonesList(); if (zn.length) bits.push(zn.length + ' LED zones');
+        if (cfg.design.sconces) bits.push('sconces (TBC)');
+        return bits.length ? bits.join(' · ') : null;
+      })(),
+      downlightGrade: gradeOf(),
+      ledZonesList: zonesList().map(function (z) { return { label: z.label, hint: z.hint }; }),
+      sconces: cfg.design.sconces ? { notes: cfg.design.sconcesNotes || null } : null,
+      ceilingTreatment: (CFG.ceilingTreatments || []).find(function (t) { return t.id === cfg.design.ceiling; }) || null,
+      riser: (CFG.riserOptions || []).find(function (r) { return r.id === cfg.design.riser; }) || null,
+      joineryNotes: cfg.design.joineryNotes || null,
+      sundries: sundriesList().map(function (s) { return s.label; }),
+      sundriesNotes: cfg.design.sundriesNotes || null,
+      led: (function () {
+        var zn = zonesList();
+        return zn.length ? { zones: zn.map(function (z) { return { label: z.label, hint: z.hint }; }), covePower: (mc.ledCove && mc.ledCove.powerWPerM) || null } : null;
+      })(),
       star: starOn ? {
         panelMode: (mc.star && mc.star.panelMode) || null,
         dropHeight: mc.dropHeight || null,
         ring: (mc.ring && mc.ring.front) || null,
         downlights: dl || null
       } : null,
-      slots: (CFG.slots || []).map(function (sl) {
-        var it = E.item(cfg.picks[sl.id]);
+      slots: (CFG.slots || []).filter(slotVisible).map(function (sl) {
+        var id = cfg.picks[sl.id];
+        if (id === '_none') return null;   // nothing supplied — off the board
+        if (id === '_painted') return { slot: sl.label, name: 'Painted Finish', manufacturer: null, hex: null, painted: true, note: 'Colour from the scheme palette' };
+        var it = E.item(id);
         return it ? { slot: sl.label, name: it.name, manufacturer: it.manufacturer, hex: it.hex, swatchImg: it.swatch_img, note: it.note, tier: it.tier, colourways: (it.metadata && it.metadata.colours_available) || null } : null;
       }).filter(Boolean),
-      fittings: fits.map(function (f) { return { label: f.label, hint: f.hint, qty: (f.id === 'downlight' && dl) ? dl + ' fittings' : null }; }),
+      fittings: fits.map(function (f) {
+        var g = gradeOf();
+        return { label: f.label, hint: (f.id === 'downlight' && g) ? (g.label + ' · ' + g.tier) : f.hint, qty: (f.id === 'downlight' && dl) ? dl + ' fittings' : null };
+      }),
       scenes: scenes(),
       colourTemp: CFG.colourTemp,
       termsLines: CFG.termsLines || [],
@@ -501,6 +635,7 @@
     boot: boot, enter: enter, backToIntro: backToIntro, goBack: goBack, jumpTo: jumpTo,
     setStyle: setStyle, pick: pick, toggleFitting: toggleFitting, setClient: setClient,
     saveConfig: saveConfig, openSaved: openSaved, savePdf: savePdf, setAv: setAv,
+    setDesign: setDesign, toggleZone: toggleZone, toggleSundry: toggleSundry, jumpRefresh: jumpRefresh,
     _debug: function () { return { cfg: cfg, ctx: ctx }; }   // harness hook (headless render tests)
   };
 })(window);

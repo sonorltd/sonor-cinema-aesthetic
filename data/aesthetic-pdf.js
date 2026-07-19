@@ -42,12 +42,12 @@
         ['Seating', m.seating || null],
         ['Design direction', m.styleLabel ? (m.styleLabel + (m.styleNote ? ' — ' + m.styleNote : '')) : null]
       ];
-      var rows2 = [
-        ['Display', m.video && m.video.display || null],
-        ['Audio', m.audio && m.audio.headline || null],
-        ['Lighting', m.lightingHeadline || null],
+      var rows2 = [   // design leads, technical follows (matches the section order)
         ['Ceiling', m.ceilingTreatment ? m.ceilingTreatment.label + (m.star ? ' — see Star Ceiling section' : '') : null],
-        ['Tiered seating', m.riser ? m.riser.label : null]
+        ['Tiered seating', m.riser ? m.riser.label : null],
+        ['Lighting', m.lightingHeadline || null],
+        ['Display', m.video && m.video.display || null],
+        ['Audio', m.audio && m.audio.headline || null]
       ];
       var b1 = lx.specRows(P, F, rows1, lx.M, y, colW);
       var b2 = lx.specRows(P, F, rows2, lx.M + colW + 28, y, colW);
@@ -618,21 +618,23 @@
       renderImgs.push(rim);
     }
 
-    // assemble sections (nulls dropped), then paint with true page numbers
+    // assemble sections (nulls dropped), then paint with true page numbers.
+    // ORDER (Bryn 2026-07-19): DESIGN first — concepts, materials/palette, scope,
+    // lighting, star, joinery — THEN the technical AV spec (video, audio, brands).
     var sections = [
       { label: 'Introduction', draw: secIntro(m) },
       { label: 'Design concepts', draw: secConcepts(m, renderImgs) },
+      { label: 'Materials & finishes', draw: secBoard(m, swatchImgs) },
+      { label: 'Design scope', draw: secScope(m) },
+      { label: 'Lighting', draw: secLighting(m) },
+      { label: 'LED lighting', draw: secLed(m) },
+      { label: 'Star ceiling', draw: secStar(m) },
+      { label: 'Joinery & sundries', draw: secJoinery(m) },
       { label: 'Video system', draw: secVideo(m) },
       { label: 'Audio system', draw: secAudio(m) },
       { label: 'MK Sound', draw: secBrand(m, 'mk') },
       { label: 'Sonance', draw: secBrand(m, 'sonance') },
       { label: 'Wisdom Audio', draw: secBrand(m, 'wisdom') },
-      { label: 'Lighting', draw: secLighting(m) },
-      { label: 'LED lighting', draw: secLed(m) },
-      { label: 'Star ceiling', draw: secStar(m) },
-      { label: 'Materials & finishes', draw: secBoard(m, swatchImgs) },
-      { label: 'Design scope', draw: secScope(m) },
-      { label: 'Joinery & sundries', draw: secJoinery(m) },
       { label: 'The detail', draw: secDetail(m) }
     ].filter(function (s) { return s.draw; });
     m.sectionList = sections.map(function (s) { return s.label; });

@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.7.1)
+# Cinema Aesthetic — Claude Code Context (v0.7.2)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -170,3 +170,8 @@ render-and-eyeball before shipping).
   strip replaced by a samples note. Navy catalogue hexes aligned to the concept
   (wf-midnight #242e3d, jo-navy-brass #1a2130, cp-navy #262c36). Fallback: no
   design_palette → previous layout (config-only projects unchanged).
+- v0.7.2 (2026-07-19) — **Design-first section order** (Bryn: "design stuff should
+  come first in the pdf, then technical"): Intro · Design concepts · Materials &
+  finishes · Design scope · Lighting · LED · Star ceiling · Joinery & sundries ·
+  THEN Video system · Audio system · brand pages · The detail. Intro right-hand
+  spec column reordered to match (ceiling/seating/lighting before display/audio).

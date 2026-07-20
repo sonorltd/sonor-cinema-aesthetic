@@ -150,16 +150,23 @@
     return h;
   }
   function avLinks(id) { var d = id && E.avItem(id); return d ? { url: d.product_url || null, datasheet: d.datasheet_url || null, img: d.img || null } : {}; }
-  function avSelectHtml(cat, path, current, allowNone) {
-    var items = E.avByCategory(cat);
-    if (!items.length) return '<div class="hint">Library device catalogue unavailable — connect once online.</div>';
-    // soft-filter the PROCESSOR picker only to the grade's marques (current pick kept).
+  function avSelectHtml(cat, path, current, allowNone, roles) {
+    var items = E.avByCategory(cat);   // v0.10.0 — canonical av_catalogue cats; array = merged cats
+    if (!items.length) return '<div class="hint">Library catalogue unavailable — connect once online.</div>';
+    // soft-filter the PROCESSOR/RECEIVER picker only to the grade's marques (current pick kept).
     // Amps are always a free manual choice (Sonance / Triad / others) — never grade-locked.
+    var isElec = (Array.isArray(cat) ? cat : [cat]).some(function (c) { return /receiver|processor/.test(String(c)); });
     var g = avGradeOf();
-    if (g && !cfg.av.audio.showAllBrands && cat === 'receiver' && g.brands[cat] && g.brands[cat].length) {
-      var keep = g.brands[cat];
+    if (g && !cfg.av.audio.showAllBrands && isElec && g.brands.receiver && g.brands.receiver.length) {
+      var keep = g.brands.receiver;
       var filtered = items.filter(function (d) { return keep.indexOf(d.make) >= 0 || d.model_id === current; });
       if (filtered.length) items = filtered;
+    }
+    // v0.10.0 — speaker_role soft-filter per channel group (Library capability
+    // tags, CONSUMER-API §22.2): untagged devices stay; current pick never drops
+    if (roles && roles.length) {
+      var rf = items.filter(function (d) { return !d.role || roles.indexOf(d.role) >= 0 || d.model_id === current; });
+      if (rf.length) items = rf;
     }
     var byMake = {};
     items.forEach(function (d) { (byMake[d.make] = byMake[d.make] || []).push(d); });
@@ -261,7 +268,7 @@
     });
     h += '</div></div>';
     if (v.type === 'tv') {
-      h += '<div class="panel"><div class="ptt">Television <span class="opt-tag">· by manufacturer</span></div>' + avSelectHtml('tv', 'video.tvId', v.tvId) +
+      h += '<div class="panel"><div class="ptt">Television <span class="opt-tag">· by manufacturer</span></div>' + avSelectHtml('display', 'video.tvId', v.tvId) +
         '<div class="lbl">Screen size</div><div class="opts">';
       (CFG.tvSizes || []).forEach(function (s) {
         h += '<button class="opt' + (v.tvSizeIn === s ? ' on' : '') + '" onclick="AestheticApp.setAv(\'video.tvSizeIn\',' + s + ')">' + s + '&quot;</button>';
@@ -299,7 +306,7 @@
     (CFG.channelGroups || []).forEach(function (g) {
       var qty = g.qty(ac);
       if (!qty) return;
-      h += '<div class="panel"><div class="ptt">' + esc(g.label) + ' <span class="opt-tag">· ' + qty + '× · ' + esc(g.hint) + '</span></div>' + avSelectHtml(g.cat, 'audio.picks.' + g.id, a.picks[g.id], true) + '</div>';
+      h += '<div class="panel"><div class="ptt">' + esc(g.label) + ' <span class="opt-tag">· ' + qty + '× · ' + esc(g.hint) + '</span></div>' + avSelectHtml(g.cat, 'audio.picks.' + g.id, a.picks[g.id], true, g.roles) + '</div>';
     });
     h += '<div class="panel"><div class="ptt">Subwoofers <span class="opt-tag">· low-frequency foundation</span></div>' + avSelectHtml('subwoofer', 'audio.subId', a.subId, true) +
       '<div class="lbl">Quantity</div><div class="opts">';
@@ -310,8 +317,8 @@
     h += '<div class="panel"><div class="ptt">Electronics <span class="opt-tag">· grade soft-filters the processor picker — amps stay a free choice</span></div>' +
       gradeChipsHtml('electronics') +
       (cfg.av.grades.electronics ? '<label class="toggle" style="margin:8px 0 2px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" ' + (a.showAllBrands ? 'checked' : '') + ' onchange="AestheticApp.setAv(\'audio.showAllBrands\', this.checked); AestheticApp.jumpRefresh()"> Show all brands in the electronics pickers</label>' : '') +
-      '<div class="lbl">AV receiver / processor</div>' + avSelectHtml('receiver', 'audio.processorId', a.processorId, true) +
-      '<div class="lbl">Power amplifier</div>' + avSelectHtml('amplifier', 'audio.ampId', a.ampId, true) + '</div>';
+      '<div class="lbl">AV receiver / processor</div>' + avSelectHtml(['av_receiver', 'av_processor'], 'audio.processorId', a.processorId, true) +
+      '<div class="lbl">Power amplifier</div>' + avSelectHtml('power_amplifier', 'audio.ampId', a.ampId, true) + '</div>';
     h += '</div>';
     h += '<div class="panel sticky"><div class="ptt">Your AV selection</div><div id="avLive">' + avSummaryHtml() + '</div></div>';
     h += '</div>';

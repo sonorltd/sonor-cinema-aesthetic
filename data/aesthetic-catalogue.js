@@ -1,10 +1,307 @@
-/* Sonor Cinema Aesthetic — Tier-3 offline seed (GENERATED 2026-07-19)
+/* Sonor Cinema Aesthetic — Tier-3 offline seed (GENERATED 2026-07-20)
    window.__AESTHETIC_SEED__ — snapshot of v_aesthetic_catalogue. Regenerate: bash data/build-seed.sh.
    NO trade pricing in this seed (seating-library-ssot §4).
 */
 (function () {
-  window.__AESTHETIC_SEED__ = { generated: '2026-07-19', items:
+  window.__AESTHETIC_SEED__ = { generated: '2026-07-20', items:
 [
+ {
+  "id": "ap-gik-classic",
+  "category": "acoustic_panel",
+  "name": "Classic Acoustic Panel",
+  "manufacturer": "GIK Acoustics",
+  "hex": null,
+  "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/cgi_white.png",
+  "img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/hero1.jpg",
+  "tier": 3,
+  "note": "Broadband fabric-wrapped absorber (rigid fibreglass, NRC 1.05). Size + thickness + Camira Cara fabric are selectable; thickness sets the absorb-to frequency (5cm/200Hz to 17cm/70Hz) per block. Camira Cara: 20 colourways.",
+  "metadata": {
+   "eco": "Formaldehyde-free, low-VOC",
+   "nrc": 1.05,
+   "core": "Rigid fiberglass",
+   "sizes": [
+    {
+     "code": "60x60",
+     "h_cm": 60,
+     "w_cm": 60,
+     "shape": "Square",
+     "price_gbp": 65,
+     "orientation": "square"
+    },
+    {
+     "code": "30x120",
+     "h_cm": 120,
+     "w_cm": 30,
+     "shape": "Narrow",
+     "price_gbp": 65,
+     "orientation": "portrait"
+    },
+    {
+     "code": "120x30",
+     "h_cm": 30,
+     "w_cm": 120,
+     "shape": "Narrow",
+     "price_gbp": 65,
+     "orientation": "landscape"
+    },
+    {
+     "code": "60x90",
+     "h_cm": 90,
+     "w_cm": 60,
+     "shape": "Portrait",
+     "price_gbp": 79,
+     "orientation": "portrait"
+    },
+    {
+     "code": "90x60",
+     "h_cm": 60,
+     "w_cm": 90,
+     "shape": "Portrait",
+     "price_gbp": 79,
+     "orientation": "landscape"
+    },
+    {
+     "code": "60x120",
+     "h_cm": 120,
+     "w_cm": 60,
+     "shape": "Rectangle",
+     "price_gbp": 89,
+     "orientation": "portrait"
+    },
+    {
+     "code": "120x60",
+     "h_cm": 60,
+     "w_cm": 120,
+     "shape": "Rectangle",
+     "price_gbp": 89,
+     "orientation": "landscape"
+    }
+   ],
+   "fabric": "Camira Cara",
+   "images": [
+    "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/hero1.jpg",
+    "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/hero2.jpg",
+    "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/install1.png",
+    "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/install2.png",
+    "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/install3.png",
+    "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/cgi_white.png"
+   ],
+   "source": "gikacoustics.net + camirafabrics.com scrape 2026-07-19",
+   "mounting": "Sawtooth picture hangers (incl.); wall + ceiling",
+   "swatches": [
+    {
+     "hex": "#171314",
+     "name": "Black",
+     "note": null,
+     "ej_code": "EJ138",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/black.jpg"
+    },
+    {
+     "hex": "#f7f0de",
+     "name": "White",
+     "note": "Cara 'Vit'",
+     "ej_code": "EJ184",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/white.jpg"
+    },
+    {
+     "hex": null,
+     "name": "Off-White",
+     "note": "no confirmed Cara match — GIK label; confirm swatch",
+     "ej_code": null,
+     "matched": false,
+     "swatch_img": null
+    },
+    {
+     "hex": "#b7b6bb",
+     "name": "Glass",
+     "note": null,
+     "ej_code": "EJ004",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/glass.jpg"
+    },
+    {
+     "hex": "#505050",
+     "name": "Merrick",
+     "note": null,
+     "ej_code": "EJ048",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/merrick.jpg"
+    },
+    {
+     "hex": "#c1aa85",
+     "name": "Austen",
+     "note": null,
+     "ej_code": "EJ173",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/austen.jpg"
+    },
+    {
+     "hex": "#5a1b24",
+     "name": "Tummel",
+     "note": null,
+     "ej_code": "EJ038",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/tummel.jpg"
+    },
+    {
+     "hex": "#171836",
+     "name": "Walten",
+     "note": null,
+     "ej_code": "EJ011",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/walten.jpg"
+    },
+    {
+     "hex": "#ad2e30",
+     "name": "Pitlochry",
+     "note": null,
+     "ej_code": "EJ076",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/pitlochry.jpg"
+    },
+    {
+     "hex": "#787a7d",
+     "name": "Chaucer",
+     "note": null,
+     "ej_code": "EJ172",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/chaucer.jpg"
+    },
+    {
+     "hex": "#aa9c8a",
+     "name": "Lomond",
+     "note": null,
+     "ej_code": "EJ192",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/lomond.jpg"
+    },
+    {
+     "hex": "#e6d9d4",
+     "name": "Clan",
+     "note": null,
+     "ej_code": "EJ169",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/clan.jpg"
+    },
+    {
+     "hex": "#838e5d",
+     "name": "Fair Isle",
+     "note": null,
+     "ej_code": "EJ186",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/fair-isle.jpg"
+    },
+    {
+     "hex": "#314941",
+     "name": "Lora",
+     "note": null,
+     "ej_code": "EJ187",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/lora.jpg"
+    },
+    {
+     "hex": "#b7955e",
+     "name": "Maree",
+     "note": null,
+     "ej_code": "EJ195",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/maree.jpg"
+    },
+    {
+     "hex": "#6b7755",
+     "name": "Staffa",
+     "note": null,
+     "ej_code": "EJ185",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/staffa.jpg"
+    },
+    {
+     "hex": "#5a4c43",
+     "name": "Lerwick",
+     "note": null,
+     "ej_code": "EJ194",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/lerwick.jpg"
+    },
+    {
+     "hex": "#64746e",
+     "name": "Ronay",
+     "note": null,
+     "ej_code": "EJ189",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/ronay.jpg"
+    },
+    {
+     "hex": "#6e8a9f",
+     "name": "Dolphin",
+     "note": null,
+     "ej_code": "EJ105",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/dolphin.jpg"
+    },
+    {
+     "hex": "#686965",
+     "name": "Lead",
+     "note": null,
+     "ej_code": "EJ104",
+     "matched": true,
+     "swatch_img": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/swatches/lead.jpg"
+    }
+   ],
+   "hero_image": "https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/GIK-CLASSIC-PANEL/hero1.jpg",
+   "product_url": "https://www.gikacoustics.net/en-gb/products/classic-acoustic-panel",
+   "sku_pattern": "GIK-CLASAP-{SHAPE}-{COLOUR}",
+   "product_line": "Classic (formerly SpotPanel)",
+   "selector_dims": [
+    "size",
+    "thickness",
+    "fabric_swatch"
+   ],
+   "test_standard": "BS EN ISO 354:2003 (University of Salford)",
+   "warranty_years": 2,
+   "weight_kg_range": [
+    1.8,
+    3.6
+   ],
+   "thickness_options": [
+    {
+     "cm": 5,
+     "gik_line": "SpotPanel",
+     "absorbs_to_hz": 200
+    },
+    {
+     "cm": 7,
+     "gik_line": "242",
+     "absorbs_to_hz": 180
+    },
+    {
+     "cm": 10,
+     "gik_line": "Classic",
+     "absorbs_to_hz": 100
+    },
+    {
+     "cm": 12,
+     "gik_line": "244",
+     "absorbs_to_hz": 90
+    },
+    {
+     "cm": 15,
+     "gik_line": null,
+     "absorbs_to_hz": 80
+    },
+    {
+     "cm": 17,
+     "gik_line": "Monster",
+     "absorbs_to_hz": 70
+    }
+   ],
+   "default_thickness_cm": 10,
+   "thickness_settable_per_block": true
+  },
+  "sort_order": 3
+ },
  {
   "id": "ap-cineca-diamond",
   "category": "acoustic_panel",
@@ -334,7 +631,7 @@
   "category": "carpet",
   "name": "Navy Plush",
   "manufacturer": null,
-  "hex": "#232a3a",
+  "hex": "#262c36",
   "swatch_img": null,
   "img": null,
   "tier": 2,
@@ -425,6 +722,21 @@
   "sort_order": 15
  },
  {
+  "id": "ce-fabric",
+  "category": "ceiling",
+  "name": "Stretched Fabric — Dark",
+  "manufacturer": null,
+  "hex": "#2b2926",
+  "swatch_img": null,
+  "img": null,
+  "tier": 3,
+  "note": "Full stretched-fabric ceiling with concealed cove",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 20
+ },
+ {
   "id": "opt-ceiling-painted",
   "category": "ceiling",
   "name": "Painted",
@@ -441,21 +753,6 @@
    "select_mode": "one",
    "needs_review": true,
    "exclusive_group": "ceiling"
-  },
-  "sort_order": 20
- },
- {
-  "id": "ce-fabric",
-  "category": "ceiling",
-  "name": "Stretched Fabric — Dark",
-  "manufacturer": null,
-  "hex": "#2b2926",
-  "swatch_img": null,
-  "img": null,
-  "tier": 3,
-  "note": "Full stretched-fabric ceiling with concealed cove",
-  "metadata": {
-   "needs_review": true
   },
   "sort_order": 20
  },
@@ -838,7 +1135,7 @@
   "category": "joinery",
   "name": "Navy Shaker + Brass",
   "manufacturer": null,
-  "hex": "#232c3e",
+  "hex": "#1a2130",
   "swatch_img": null,
   "img": null,
   "tier": 3,
@@ -1446,6 +1743,21 @@
   "sort_order": 50
  },
  {
+  "id": "su-popcorn",
+  "category": "sundry",
+  "name": "Popcorn Machine",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Feature counter-top machine — doubles as accent light",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 10
+ },
+ {
   "id": "opt-sundry-popcorn-machine",
   "category": "sundry",
   "name": "Popcorn machine",
@@ -1465,19 +1777,19 @@
   "sort_order": 10
  },
  {
-  "id": "su-popcorn",
+  "id": "su-drinks-fridge",
   "category": "sundry",
-  "name": "Popcorn Machine",
+  "name": "Drinks Fridge",
   "manufacturer": null,
   "hex": null,
   "swatch_img": null,
   "img": null,
   "tier": 2,
-  "note": "Feature counter-top machine — doubles as accent light",
+  "note": "Under-counter glass-door fridge",
   "metadata": {
    "needs_review": true
   },
-  "sort_order": 10
+  "sort_order": 20
  },
  {
   "id": "opt-sundry-side-coffee-tables",
@@ -1499,36 +1811,6 @@
   "sort_order": 20
  },
  {
-  "id": "su-drinks-fridge",
-  "category": "sundry",
-  "name": "Drinks Fridge",
-  "manufacturer": null,
-  "hex": null,
-  "swatch_img": null,
-  "img": null,
-  "tier": 2,
-  "note": "Under-counter glass-door fridge",
-  "metadata": {
-   "needs_review": true
-  },
-  "sort_order": 20
- },
- {
-  "id": "su-perfectdraft",
-  "category": "sundry",
-  "name": "PerfectDraft Beer Tap",
-  "manufacturer": null,
-  "hex": null,
-  "swatch_img": null,
-  "img": null,
-  "tier": 2,
-  "note": "Counter-top draught dispenser",
-  "metadata": {
-   "needs_review": true
-  },
-  "sort_order": 30
- },
- {
   "id": "opt-sundry-cup-holders",
   "category": "sundry",
   "name": "Cup holders",
@@ -1543,6 +1825,21 @@
    "source": "cowork-design-scope-2026-07",
    "proposed": true,
    "select_mode": "multi",
+   "needs_review": true
+  },
+  "sort_order": 30
+ },
+ {
+  "id": "su-perfectdraft",
+  "category": "sundry",
+  "name": "PerfectDraft Beer Tap",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "Counter-top draught dispenser",
+  "metadata": {
    "needs_review": true
   },
   "sort_order": 30
@@ -1582,6 +1879,21 @@
   "sort_order": 40
  },
  {
+  "id": "su-bar-stools",
+  "category": "sundry",
+  "name": "Bar Stools",
+  "manufacturer": null,
+  "hex": null,
+  "swatch_img": null,
+  "img": null,
+  "tier": 2,
+  "note": "For the refreshments counter",
+  "metadata": {
+   "needs_review": true
+  },
+  "sort_order": 50
+ },
+ {
   "id": "opt-sundry-pick-n-mix-candy-station",
   "category": "sundry",
   "name": "Pick'n'mix / candy station",
@@ -1601,19 +1913,19 @@
   "sort_order": 50
  },
  {
-  "id": "su-bar-stools",
+  "id": "su-poster-frames",
   "category": "sundry",
-  "name": "Bar Stools",
+  "name": "Movie Poster Frames",
   "manufacturer": null,
   "hex": null,
   "swatch_img": null,
   "img": null,
   "tier": 2,
-  "note": "For the refreshments counter",
+  "note": "Framed artwork — backlight via LED zones",
   "metadata": {
    "needs_review": true
   },
-  "sort_order": 50
+  "sort_order": 60
  },
  {
   "id": "opt-sundry-blankets-throws",
@@ -1630,21 +1942,6 @@
    "source": "cowork-design-scope-2026-07",
    "proposed": true,
    "select_mode": "multi",
-   "needs_review": true
-  },
-  "sort_order": 60
- },
- {
-  "id": "su-poster-frames",
-  "category": "sundry",
-  "name": "Movie Poster Frames",
-  "manufacturer": null,
-  "hex": null,
-  "swatch_img": null,
-  "img": null,
-  "tier": 2,
-  "note": "Framed artwork — backlight via LED zones",
-  "metadata": {
    "needs_review": true
   },
   "sort_order": 60
@@ -1834,7 +2131,7 @@
   "category": "wall_fabric",
   "name": "Midnight Blue",
   "manufacturer": null,
-  "hex": "#232a3a",
+  "hex": "#242e3d",
   "swatch_img": null,
   "img": null,
   "tier": 2,

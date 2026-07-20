@@ -7,7 +7,7 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.9.1',
+    version: '0.10.0',
     buildDate: '2026-07-19',
     steps: ['Scheme', 'Video', 'Audio', 'Materials', 'Lighting', 'Summary'],
 
@@ -28,12 +28,14 @@
       { id: '9.1.6', surrounds: 4, rears: 2, heights: 6 }
     ],
     // channel groups — pickers appear per group; qty derived from the atmos config
+    // roles[] soft-filter the picker via Library speaker_role capability tags
+    // (CONSUMER-API §22.2) — untagged devices stay visible, picks never drop.
     channelGroups: [
-      { id: 'front_lr', label: 'Front L + R',      cat: 'speaker', qty: function (ac) { return 2; },            hint: 'Main left/right — behind the screen on AT builds' },
-      { id: 'centre',   label: 'Centre',           cat: 'speaker', qty: function (ac) { return 1; },            hint: 'Dialogue anchor below/behind the picture' },
-      { id: 'surround', label: 'Surrounds',        cat: 'speaker', qty: function (ac) { return ac.surrounds; }, hint: 'Side surrounds at the listening area' },
-      { id: 'rear',     label: 'Rear surrounds',   cat: 'speaker', qty: function (ac) { return ac.rears; },     hint: 'Rear wall pair (7.x/9.x layouts)' },
-      { id: 'height',   label: 'Atmos heights',    cat: 'speaker', qty: function (ac) { return ac.heights; },   hint: 'In-ceiling height layer' }
+      { id: 'front_lr', label: 'Front L + R',      cat: 'speaker', qty: function (ac) { return 2; },            hint: 'Main left/right — behind the screen on AT builds', roles: ['lcr', 'in_wall', 'on_wall', 'installation', 'invisible'] },
+      { id: 'centre',   label: 'Centre',           cat: 'speaker', qty: function (ac) { return 1; },            hint: 'Dialogue anchor below/behind the picture',        roles: ['lcr', 'in_wall', 'on_wall', 'installation', 'invisible'] },
+      { id: 'surround', label: 'Surrounds',        cat: 'speaker', qty: function (ac) { return ac.surrounds; }, hint: 'Side surrounds at the listening area',            roles: ['surround', 'in_wall', 'on_wall', 'installation', 'invisible'] },
+      { id: 'rear',     label: 'Rear surrounds',   cat: 'speaker', qty: function (ac) { return ac.rears; },     hint: 'Rear wall pair (7.x/9.x layouts)',                roles: ['surround', 'in_wall', 'on_wall', 'installation', 'invisible'] },
+      { id: 'height',   label: 'Atmos heights',    cat: 'speaker', qty: function (ac) { return ac.heights; },   hint: 'In-ceiling height layer',                          roles: ['in_ceiling', 'sst_ceiling', 'invisible'] }
     ],
     subQtyOptions: [1, 2, 3, 4],
     // ── AV system grades (v0.5.0) — Bronze → Platinum electronics ladder.
@@ -80,9 +82,9 @@
       },
       speakers: {
         bronze:   'Quality in-wall / on-wall loudspeaker package',
-        silver:   'MK Sound monitor-grade package',
-        gold:     'MK Sound THX reference package',
-        platinum: 'Flagship MK Sound reference system',
+        silver:   'M&K Sound monitor-grade package',
+        gold:     'M&K Sound THX reference package',
+        platinum: 'Flagship M&K Sound reference system',
         wisdom:   'Wisdom Audio planar line-source system — beyond platinum'
       },
       electronics: {

@@ -499,9 +499,12 @@
   // Library yet — Library ask logged; drops in automatically once curated as a
   // 'brand' catalogue row with an image), brief story + fact rows. Every page
   // renders ONLY when that system is actually selected. All copy ligature-safe.
+  // Library av-assets bucket — self-hosted brand marks (cinema-gear-library skill)
+  var AV_ASSETS = 'https://ysmvklstkzodlocttspy.supabase.co/storage/v1/object/public/av-assets/';
   var BRANDS = {
     mk: {
-      name: 'MK Sound', wordmark: 'MK SOUND', strap: 'THE STUDIO REFERENCE · SINCE 1974',
+      name: 'M&K Sound', wordmark: 'M&K SOUND', strap: 'THE STUDIO REFERENCE · SINCE 1974',
+      logo: 'logos/mandk-sound.png',
       eyebrow: 'BRAND STORY',
       intro: 'Miller & Kreisel created the powered subwoofer and the satellite-sub system in Los Angeles in 1974 — and their monitors became the reference in the dubbing stages where films are actually mixed.',
       paras: [
@@ -517,6 +520,7 @@
     },
     sonance: {
       name: 'Sonance', wordmark: 'SONANCE', strap: 'ARCHITECTURAL AUDIO · SINCE 1983',
+      logo: 'logos/sonance.png',
       eyebrow: 'BRAND STORY',
       intro: 'Sonance pioneered architectural audio from San Clemente, California in 1983 — loudspeakers and amplification designed to disappear into the room while the sound fills it.',
       paras: [
@@ -532,6 +536,7 @@
     },
     wisdom: {
       name: 'Wisdom Audio', wordmark: 'WISDOM AUDIO', strap: 'PLANAR MAGNETIC LINE SOURCE · CARSON CITY, NEVADA',
+      logo: 'logos/wisdom-audio.png',
       eyebrow: 'BRAND STORY',
       intro: 'Wisdom Audio hand-builds planar magnetic line-source loudspeakers in Carson City, Nevada — systems that live inside the wall and energise the whole seating area evenly, at reference level, without strain.',
       paras: [
@@ -546,7 +551,7 @@
       ]
     }
   };
-  function secBrand(m, key) {
+  function secBrand(m, key, logoImg) {
     if (!m.brandPages || m.brandPages.indexOf(key) < 0) return null;
     var B = BRANDS[key];
     if (!B) return null;
@@ -556,13 +561,22 @@
       lx.pageHead(P, F, B.name.toUpperCase(), pageNo, TOTAL, DOC_LABEL);
       var y = lx.sectionHead(P, F, B.eyebrow, B.name, B.intro);
       y = Math.max(y, 196);
-      // hero band — typographic wordmark on the house dark ground
+      // hero band — official brand mark (Library av-assets) + wordmark on the
+      // house dark ground; falls back to type-only if the logo cannot load
       var hw = A4.w - M * 2, hh = 132;
       P.rect(M, y, hw, hh, COL.DARK, 1);
       P.rectB(M, y, hw, hh, COL.GOLD, 0.9, 0.55);
-      P.center(B.wordmark, A4.w / 2, y + hh / 2 - 22, 25, F.b, COL.CREAM, 6);
-      P.hline(A4.w / 2 - 60, A4.w / 2 + 60, y + hh / 2 + 16, COL.GOLD, 0.9, 0.9);
-      P.center(B.strap, A4.w / 2, y + hh / 2 + 26, 6.5, F.r, COL.GOLDL, 2.2);
+      if (logoImg) {
+        var lw = 34;
+        P.image(logoImg, A4.w / 2 - lw / 2, y + 14, lw, lw, 1);
+        P.center(B.wordmark, A4.w / 2, y + 58, 19, F.b, COL.CREAM, 5);
+        P.hline(A4.w / 2 - 60, A4.w / 2 + 60, y + 92, COL.GOLD, 0.9, 0.9);
+        P.center(B.strap, A4.w / 2, y + 101, 6.5, F.r, COL.GOLDL, 2.2);
+      } else {
+        P.center(B.wordmark, A4.w / 2, y + hh / 2 - 22, 25, F.b, COL.CREAM, 6);
+        P.hline(A4.w / 2 - 60, A4.w / 2 + 60, y + hh / 2 + 16, COL.GOLD, 0.9, 0.9);
+        P.center(B.strap, A4.w / 2, y + hh / 2 + 26, 6.5, F.r, COL.GOLDL, 2.2);
+      }
       y += hh + 26;
       // story paragraphs
       (B.paras || []).forEach(function (t) {
@@ -622,6 +636,12 @@
       if (s.swatchImg) { try { im = await lx.loadImage(doc, s.swatchImg); } catch (e) {} }
       swatchImgs.push(im);
     }
+    // brand marks for the active brand pages (Library av-assets logos/)
+    var brandLogos = {};
+    for (var bi = 0; bi < (m.brandPages || []).length; bi++) {
+      var bk = m.brandPages[bi], bd = BRANDS[bk];
+      if (bd && bd.logo) { try { brandLogos[bk] = await lx.loadImage(doc, AV_ASSETS + bd.logo); } catch (e) {} }
+    }
     // design concept renders (projects.metadata.design_renders)
     var renderImgs = [];
     for (var ri = 0; ri < (m.renders || []).length && ri < 3; ri++) {
@@ -644,9 +664,9 @@
       { label: 'Joinery & sundries', draw: secJoinery(m) },
       { label: 'Video system', draw: secVideo(m) },
       { label: 'Audio system', draw: secAudio(m) },
-      { label: 'MK Sound', draw: secBrand(m, 'mk') },
-      { label: 'Sonance', draw: secBrand(m, 'sonance') },
-      { label: 'Wisdom Audio', draw: secBrand(m, 'wisdom') },
+      { label: 'MK Sound', draw: secBrand(m, 'mk', brandLogos['mk']) },
+      { label: 'Sonance', draw: secBrand(m, 'sonance', brandLogos['sonance']) },
+      { label: 'Wisdom Audio', draw: secBrand(m, 'wisdom', brandLogos['wisdom']) },
       { label: 'The detail', draw: secDetail(m) }
     ].filter(function (s) { return s.draw; });
     m.sectionList = sections.map(function (s) { return s.label; });

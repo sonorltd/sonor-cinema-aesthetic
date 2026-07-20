@@ -84,11 +84,20 @@
     ITEMS = []; source = 'inline'; _index(); return false;
   }
 
-  // ── AV hardware (v0.3.0, in-house) — read-only from the Library's
-  //    device_catalogue. 2-tier: Supabase → localStorage cache (no seed —
-  //    internal feature, needs the live Library at least once per browser). ──
-  var AV_CACHE = 'sonor_aesthetic_av_v1';
-  var AV_CATS = ['speaker', 'subwoofer', 'receiver', 'amplifier', 'projector', 'tv'];
+  // ── AV hardware — CANONICAL read surface = the `av_catalogue` VIEW
+  //    (CONSUMER-API §0, Library v2.9.1 2026-07-20): deduped merge of
+  //    device_catalogue + misc_catalogue, one row per model_id, spec_family
+  //    tagged, metadata null-filled to the family template. Never read the
+  //    base tables directly. 2-tier: Supabase → localStorage cache.
+  //    v0.10.0: legacy categories still present in the view are normalised
+  //    client-side to the uniform taxonomy (cinema-gear-library skill):
+  //    receiver→av_receiver · amplifier→power_amplifier · processor→
+  //    av_processor · tv→display. hero_image + speaker_role adopted. ──
+  var AV_CACHE = 'sonor_aesthetic_av_v2';   // v2 — av_catalogue shape
+  var AV_CATS = ['speaker', 'subwoofer', 'projector', 'screen',
+                 'av_receiver', 'av_processor', 'power_amplifier', 'display',
+                 'receiver', 'amplifier', 'processor', 'tv'];   // + legacy (normalised on load)
+  var AV_CAT_ALIAS = { receiver: 'av_receiver', amplifier: 'power_amplifier', processor: 'av_processor', tv: 'display', immersive_receiver: 'av_receiver' };
   var AV = { items: [], byId: {}, byCat: {}, source: 'none' };
 
   function _avIndex() {
@@ -101,16 +110,27 @@
       AV.byCat[c].sort(function (a, b) { return String(a.make).localeCompare(b.make) || String(a.model).localeCompare(b.model); });
     });
   }
+  function _avAdapt(rows) {
+    var seen = {};
+    return (rows || []).filter(function (d) {
+      if (d.discontinued === true || /discontinued/i.test(d.model || '')) return false;
+      if (seen[d.model_id]) return false;   // belt-and-braces (view is already deduped)
+      seen[d.model_id] = true;
+      return true;
+    }).map(function (d) {
+      d.category = AV_CAT_ALIAS[d.category] || d.category;
+      return d;
+    });
+  }
   async function avLoad() {
     try {
       var db = global.__AESTHETIC_DB__ || (global.SonorDB ? new global.SonorDB() : null) || global.db;
       if (db && db.client) {
-        var res = await db.client.from('device_catalogue')
-          .select('model_id,make,model,category,description,msrp_gbp,product_url,discontinued,datasheet_url:metadata->>datasheet_url,img:metadata->>img')
+        var res = await db.client.from('av_catalogue')
+          .select('model_id,make,model,category,description,msrp_gbp,product_url,datasheet_url,discontinued,img:metadata->>hero_image,role:metadata->>speaker_role')
           .in('category', AV_CATS);
         if (!res.error && res.data && res.data.length) {
-          // discontinued filtered client-side (REST null-filter caveat) + model-name marker fallback
-          AV.items = res.data.filter(function (d) { return d.discontinued !== true && !/discontinued/i.test(d.model || ''); });
+          AV.items = _avAdapt(res.data);
           AV.source = 'supabase'; _avIndex();
           try { localStorage.setItem(AV_CACHE, JSON.stringify({ t: Date.now(), items: AV.items })); } catch (e) {}
           return true;
@@ -134,6 +154,12 @@
     avLoad: avLoad,
     get avSource() { return AV.source; },
     avItem: function (id) { return AV.byId[id] || null; },
-    avByCategory: function (cat) { return (AV.byCat[cat] || []).slice(); }
+    avByCategory: function (cat) {   // v0.10.0 — accepts one canonical cat or an array (e.g. av_receiver + av_processor)
+      var cats = Array.isArray(cat) ? cat : [cat];
+      var out = [];
+      cats.forEach(function (c) { out = out.concat(AV.byCat[AV_CAT_ALIAS[c] || c] || []); });
+      out.sort(function (a, b) { return String(a.make).localeCompare(b.make) || String(a.model).localeCompare(b.model); });
+      return out;
+    }
   };
 })(window);

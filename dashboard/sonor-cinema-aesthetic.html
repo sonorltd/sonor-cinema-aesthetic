@@ -25,6 +25,7 @@
   <script src="../data/aesthetic-engine.js"></script>
   <script src="../data/aesthetic-pdf.js"></script>
   <script src="../data/aesthetic-app.js"></script>
+  <script src="../data/aesthetic-moodboard.js"></script>   <!-- v0.9.0 — Bespoke Cinema Design Concept (Claude Design handoff) -->
   <script src="../data/backups/sonor-db-backup-latest.js"></script>
   <link rel="stylesheet" href="../data/brand.css">
   <link rel="stylesheet" href="../data/sonor-header.css">
@@ -351,7 +352,7 @@
   </div>
 
   <script>
-    const APP_VERSION = '0.8.0';
+    const APP_VERSION = '0.9.0';
     document.addEventListener('DOMContentLoaded', function(){ var v = document.getElementById('hdrVer'); if (v) v.textContent = 'v' + APP_VERSION; });
     // one-line swappable hero image (see aesthetic-config.js → heroImage; null = branded gradient)
     (function(){ var cfg = window.__AESTHETIC_CONFIG__ || {}; var el = document.getElementById('heroBg');

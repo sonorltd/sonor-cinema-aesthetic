@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.8.0)
+# Cinema Aesthetic — Claude Code Context (v0.9.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -190,3 +190,19 @@ render-and-eyeball before shipping).
   references — consumption remains their P1 ask (B-419o, scheme block added).
   New useScheme/useSeating/openFromOverview + _renderOverview harness hook;
   _savedLabel/_seatingSel state; overview refreshes on project change + save.
+- v0.9.0 (2026-07-20) — **Bespoke Cinema Design Concept (Claude Design handoff).**
+  Editable single-sheet A3 mood board integrated from the Claude Design session's
+  handoff zip (module data/aesthetic-moodboard.js; reference DC + WIRING.md kept
+  in design-reference/). Opened from the Summary step (internal-only, !CLIENT):
+  prefills from pdfModel() (room, palette, slots, AV, lighting, scope), ADAPTIVE
+  sections (auto-show per project feature + per-section Auto/Show/Hide overrides),
+  11 drag/drop image slots (upload → seating-assets aesthetic/moodboard/<pid>/,
+  data-URL fallback), every text line contenteditable, ref SNR-BC-yymmdd-XXXX,
+  Export = A3 landscape print. Board state = aesthetic_configs.config.moodboard
+  — per-project + versioned via standard saveConfig(); DRIFT FIX vs WIRING.md:
+  'moodboard' added to the openSaved/useScheme restore whitelists (guide missed
+  it — saved concepts would never reload). PERMANENT scoped storage policy
+  seating_assets_moodboard_ins (INSERT anon+auth, bucket seating-assets, path
+  aesthetic/moodboard/% — public bucket, internal app; flag to the security
+  session if auth lands). Headless-verified: overlay renders, adaptive sections
+  correct for the 1387-style config, prefill live. handoff zip → _to_delete/.

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="omelette-owns-print" content="true">
+<style>
+  @font-face{font-family:'Gilroy';src:url('./fonts/Gilroy-Light.ttf') format('truetype');font-weight:300;font-display:swap}
+  @font-face{font-family:'Gilroy';src:url('./fonts/Gilroy-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+  @font-face{font-family:'Gilroy';src:url('./fonts/Gilroy-Medium.ttf') format('truetype');font-weight:500;font-display:swap}
+  @font-face{font-family:'Gilroy';src:url('./fonts/Gilroy-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+  @font-face{font-family:'Gilroy';src:url('./fonts/Gilroy-Heavy.ttf') format('truetype');font-weight:800;font-display:swap}
+  html,body{margin:0;background:#050403}
+  a{color:#ad9978}a:hover{color:#c8b48e}
+  .mb-empty:empty{display:none}
+  @page{size:420mm 297mm;margin:0}
+  @media print{html,body{background:#090807}}
+</style>
+</helmet>
+<div style="width:1587px;height:1122px;margin:0 auto;position:relative;overflow:hidden;font-family:'Gilroy','DM Sans',system-ui,sans-serif;color:#F4F1EC;background:radial-gradient(1200px 560px at 50% -180px,rgba(173,153,120,.10),transparent 62%),radial-gradient(1000px 560px at 108% 6%,rgba(128,88,161,.14),transparent 55%),radial-gradient(880px 600px at -6% 98%,rgba(128,88,161,.11),transparent 58%),linear-gradient(#0b0a0c,#090807);">
+  <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 82% at 50% 0%,transparent 60%,rgba(0,0,0,.45));"></div>
+
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:26px 30px 24px;gap:16px;box-sizing:border-box;">
+
+    <!-- ══ HEADER ══ -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex:0 0 auto;">
+      <div>
+        <h1 style="margin:0;font-weight:800;font-size:26px;letter-spacing:-.01em;line-height:1;background:linear-gradient(90deg,#F4F1EC,#c8b48e);-webkit-background-clip:text;background-clip:text;color:transparent;">BESPOKE CINEMA DESIGN CONCEPT</h1>
+        <div style="margin-top:9px;font-weight:600;font-size:13px;letter-spacing:.02em;color:#b8ad99;">ROOM SIZE: <span style="color:#F4F1EC;">4210mm (L) &times; 4313mm (W) &times; 2500mm (H)</span></div>
+        <div style="margin-top:6px;font-weight:700;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:#8f8574;">SLEEK &nbsp;&bull;&nbsp; ACOUSTIC &nbsp;&bull;&nbsp; IMMERSIVE</div>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <div style="font-weight:800;font-size:15px;letter-spacing:.34em;color:#F4F1EC;">SONOR</div>
+        <div style="font-weight:600;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#8f8574;">Smart Homes &middot; Est. 2003</div>
+        <div style="display:flex;gap:5px;margin-top:2px;">
+          <span style="width:9px;height:9px;border-radius:50%;background:#8058a1;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#4bb9d3;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#78ba57;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#f5d05c;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#e37c59;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#ec6061;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#e67eb1;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#ad9978;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#b7b1a7;"></span>
+          <span style="width:9px;height:9px;border-radius:50%;background:#302f2e;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HERO + LAYOUT PLAN ══ -->
+    <div style="display:grid;grid-template-columns:1fr 372px;gap:16px;flex:1 1 auto;min-height:0;">
+      <!-- hero -->
+      <div style="position:relative;border-radius:10px;overflow:hidden;border:1px solid rgba(173,153,120,.18);box-shadow:0 26px 60px -34px rgba(0,0,0,.9);">
+        <image-slot id="mb-hero" shape="rect" fit="cover" placeholder="Drop main render — front / TV wall (16:9)"></image-slot>
+      </div>
+      <!-- layout plan -->
+      <div style="display:flex;flex-direction:column;gap:11px;min-height:0;">
+        <div style="font-weight:600;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:8px;"><span style="width:16px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>LAYOUT PLAN &middot; TOP VIEW</div>
+        <div style="position:relative;flex:1 1 auto;min-height:0;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.07);background:#111010;">
+          <image-slot id="mb-plan" shape="rect" fit="contain" placeholder="Drop top-view layout plan"></image-slot>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 18px;font-size:10px;line-height:1.45;color:#c4bcad;">
+          <div><b style="color:#ad9978;font-weight:700;">[1]</b> 85&Prime; OLED TV (Wall Flush)</div>
+          <div><b style="color:#ad9978;font-weight:700;">[6]</b> 7.1.4 In-Ceiling Speakers</div>
+          <div><b style="color:#ad9978;font-weight:700;">[2]</b> Jamo S 809 HCS LCR</div>
+          <div><b style="color:#ad9978;font-weight:700;">[7]</b> Sonos Era 300 on Stands</div>
+          <div><b style="color:#ad9978;font-weight:700;">[3]</b> Jamo Sub 210 (Subwoofer)</div>
+          <div><b style="color:#ad9978;font-weight:700;">[8]</b> Acoustic Panels &middot; Fabric Wrap</div>
+          <div><b style="color:#ad9978;font-weight:700;">[4]</b> Sonos Arc (Soundbar)</div>
+          <div><b style="color:#ad9978;font-weight:700;">[9]</b> Acoustic Curtains (Class B)</div>
+          <div><b style="color:#ad9978;font-weight:700;">[5]</b> Acoustic Diffuser (Front)</div>
+          <div><b style="color:#ad9978;font-weight:700;">[10]</b> Door (Rear Wall)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ WALL THUMBNAILS ══ -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:0 0 158px;">
+      <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.07);">
+        <image-slot id="mb-wall-front" shape="rect" fit="cover" placeholder="Front / TV wall"></image-slot>
+        <div style="position:absolute;left:0;bottom:0;right:0;padding:6px 9px;background:linear-gradient(0deg,rgba(5,4,3,.9),transparent);font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#F4F1EC;pointer-events:none;">Front / TV Wall</div>
+      </div>
+      <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.07);">
+        <image-slot id="mb-wall-left" shape="rect" fit="cover" placeholder="Left wall"></image-slot>
+        <div style="position:absolute;left:0;bottom:0;right:0;padding:6px 9px;background:linear-gradient(0deg,rgba(5,4,3,.9),transparent);font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#F4F1EC;pointer-events:none;">Left Wall / Acoustic Panels</div>
+      </div>
+      <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.07);">
+        <image-slot id="mb-wall-rear" shape="rect" fit="cover" placeholder="Rear wall"></image-slot>
+        <div style="position:absolute;left:0;bottom:0;right:0;padding:6px 9px;background:linear-gradient(0deg,rgba(5,4,3,.9),transparent);font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#F4F1EC;pointer-events:none;">Rear Wall / Door</div>
+      </div>
+      <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.07);">
+        <image-slot id="mb-wall-right" shape="rect" fit="cover" placeholder="Right side"></image-slot>
+        <div style="position:absolute;left:0;bottom:0;right:0;padding:6px 9px;background:linear-gradient(0deg,rgba(5,4,3,.9),transparent);font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#F4F1EC;pointer-events:none;">Right Side / Curtain &amp; Door</div>
+      </div>
+    </div>
+
+    <!-- ══ SPEC BANDS ══ -->
+    <div data-section style="display:grid;grid-template-columns:1.05fr 1.05fr 1.35fr 1.05fr 1.2fr;gap:0;flex:0 0 auto;border-top:1px solid rgba(173,153,120,.22);border-bottom:1px solid rgba(173,153,120,.22);">
+
+      <!-- SPECIFICATION -->
+      <div style="padding:14px 16px 14px 0;border-right:1px solid rgba(255,255,255,.07);">
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:11px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Specification</div>
+        <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;line-height:1.35;color:#c9c1b2;">
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">85&Prime; OLED TV (Wall Mounted Flush)</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Jamo S 809 HCS LCR</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Sonos Sub 210 (Subwoofer)</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">7.1.4 In-Ceiling Speakers</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">2 &times; Sonos Era 300 on Stands (Rear/Side)</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Acoustic Panels (Wall) with Fabric Wrap</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Acoustic Curtains (Class B / Heavy Weft)</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Carpet: Heavy Duty Cinema Grade</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">2-Tier Layout — Rear Row on Riser</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Step / Toe Kick Lighting throughout</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Dimmable Lighting throughout</span></div>
+        </div>
+      </div>
+
+      <!-- ACOUSTIC TREATMENT -->
+      <div style="padding:14px 16px;border-right:1px solid rgba(255,255,255,.07);">
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:11px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Acoustic Treatment</div>
+        <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;line-height:1.35;color:#c9c1b2;">
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">1st Wall: Fabric-Wrap Acoustic Panels</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Side Walls: Hybrid Acoustic Treatment</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Front Wall: 3D Diffuser Panels</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Rear Wall: Diffuser</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Right Wall: Heavy Weft Drapery Acoustic Curtains</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Ceiling: Acoustic Panels within Theatre Frame</span></div>
+        </div>
+      </div>
+
+      <!-- MATERIALS & FINISHES -->
+      <div style="padding:14px 16px;border-right:1px solid rgba(255,255,255,.07);">
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:11px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Materials &amp; Finishes</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px 10px;">
+          <div><div style="position:relative;height:52px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.09);"><image-slot id="mb-mat-1" shape="rect" fit="cover" placeholder=""></image-slot></div><div style="margin-top:4px;font-size:8.5px;line-height:1.25;color:#b3aa9b;"><b style="color:#e6ddca;font-weight:600;">Acoustic Wall Panels</b><br>Dark Grey Fabric</div></div>
+          <div><div style="position:relative;height:52px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.09);"><image-slot id="mb-mat-2" shape="rect" fit="cover" placeholder=""></image-slot></div><div style="margin-top:4px;font-size:8.5px;line-height:1.25;color:#b3aa9b;"><b style="color:#e6ddca;font-weight:600;">Rear Wall Panels</b><br>Dark Grey Fabric</div></div>
+          <div><div style="position:relative;height:52px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.09);"><image-slot id="mb-mat-3" shape="rect" fit="cover" placeholder=""></image-slot></div><div style="margin-top:4px;font-size:8.5px;line-height:1.25;color:#b3aa9b;"><b style="color:#e6ddca;font-weight:600;">Ceiling Fabric</b><br>Black Fabric</div></div>
+          <div><div style="position:relative;height:52px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.09);"><image-slot id="mb-mat-4" shape="rect" fit="cover" placeholder=""></image-slot></div><div style="margin-top:4px;font-size:8.5px;line-height:1.25;color:#b3aa9b;"><b style="color:#e6ddca;font-weight:600;">Carpet</b><br>Light Grey Plush</div></div>
+          <div><div style="position:relative;height:52px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.09);"><image-slot id="mb-mat-5" shape="rect" fit="cover" placeholder=""></image-slot></div><div style="margin-top:4px;font-size:8.5px;line-height:1.25;color:#b3aa9b;"><b style="color:#e6ddca;font-weight:600;">Flooring</b><br>Grey Hard Carpet</div></div>
+          <div><div style="position:relative;height:52px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.09);"><image-slot id="mb-mat-6" shape="rect" fit="cover" placeholder=""></image-slot></div><div style="margin-top:4px;font-size:8.5px;line-height:1.25;color:#b3aa9b;"><b style="color:#e6ddca;font-weight:600;">Joinery / Trims</b><br>Charcoal Oak / Ash</div></div>
+        </div>
+      </div>
+
+      <!-- LIGHTING PLAN -->
+      <div style="padding:14px 16px;border-right:1px solid rgba(255,255,255,.07);">
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:11px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Lighting Plan</div>
+        <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;line-height:1.35;color:#c9c1b2;">
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Recessed Downlights (Dimming Cinematic Balance)</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Warm White Perimeter LED (2700K–3000K)</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">LED Step / Toe Kick (Motion / Dimming Enabled)</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Wall Wash Lights to Rear Wall</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Spot Lighting in Recess for Wall Features</span></div>
+          <div style="display:flex;gap:7px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">All Lighting Dimmable</span></div>
+        </div>
+      </div>
+
+      <!-- RISER DETAIL -->
+      <div style="padding:14px 0 14px 16px;">
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:11px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Riser Detail &middot; Side View</div>
+        <div style="position:relative;height:74px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.07);background:#111010;margin-bottom:9px;"><image-slot id="mb-riser" shape="rect" fit="contain" placeholder="Drop riser section diagram"></image-slot></div>
+        <div style="font-size:9.5px;line-height:1.5;color:#b3aa9b;">
+          <div class="mb-empty">Riser Height: <b style="color:#e6ddca;font-weight:600;">300mm</b></div>
+          <div class="mb-empty">Step Depth: <b style="color:#e6ddca;font-weight:600;">1000mm</b></div>
+          <div class="mb-empty">Riser Upholstery: <b style="color:#e6ddca;font-weight:600;">Main 1000mm</b></div>
+          <div class="mb-empty" style="margin-top:4px;color:#8f8574;">LED Strip in Front Edge</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DETAIL STRIP ══ -->
+    <div style="display:grid;grid-template-columns:1.15fr 1fr 1.25fr 1.05fr;gap:22px;flex:0 0 auto;">
+
+      <!-- SHELVES / RECESS -->
+      <div>
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Shelves / Recess &middot; Left Wall</div>
+        <div style="display:flex;gap:9px;">
+          <div style="display:flex;gap:6px;flex:0 0 auto;">
+            <div style="position:relative;width:52px;height:88px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.08);"><image-slot id="mb-shelf-1" shape="rect" fit="cover" placeholder=""></image-slot></div>
+            <div style="position:relative;width:52px;height:88px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.08);"><image-slot id="mb-shelf-2" shape="rect" fit="cover" placeholder=""></image-slot></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;font-size:10px;line-height:1.35;color:#c9c1b2;">
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Built-in Shelving with LED Strip Lighting</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Space for Media Collectibles or Decorative Items</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CURTAIN DETAIL -->
+      <div>
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Curtain Detail &middot; Right Wall</div>
+        <div style="display:flex;gap:9px;">
+          <div style="position:relative;width:56px;height:88px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.08);flex:0 0 auto;"><image-slot id="mb-curtain" shape="rect" fit="cover" placeholder=""></image-slot></div>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:10px;line-height:1.35;color:#c9c1b2;">
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Full Height Acoustic Curtains</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Ceiling Mounted</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Heavy Weft</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Blackout Movie Fabric</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Dark Grey</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEATING DETAIL -->
+      <div>
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Seating Detail &middot; Recliners</div>
+        <div style="display:flex;gap:9px;">
+          <div style="position:relative;width:96px;height:88px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.08);flex:0 0 auto;"><image-slot id="mb-seat" shape="rect" fit="cover" placeholder="Seat"></image-slot></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;align-content:start;font-size:10px;line-height:1.3;color:#c9c1b2;">
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Electric Recliners</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Cupholders</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Premium Headrest</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Cooling &amp; Heating</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Hidden Armrest</span></div>
+            <div style="display:flex;gap:6px;"><span style="color:#ad9978;">&bull;</span><span class="mb-empty">Wireless Charging</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLOUR PALETTE -->
+      <div>
+        <div style="font-weight:600;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#ad9978;display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:14px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ad9978,#8058a1);"></span>Colour Palette</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+          <div><div style="height:64px;border-radius:6px;background:#4b4d4f;border:1px solid rgba(255,255,255,.09);"></div><div style="margin-top:5px;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#8f8574;">Slate Grey</div></div>
+          <div><div style="height:64px;border-radius:6px;background:#1c1b1a;border:1px solid rgba(255,255,255,.09);"></div><div style="margin-top:5px;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#8f8574;">Cinema Black</div></div>
+          <div><div style="height:64px;border-radius:6px;background:#8a7d6a;border:1px solid rgba(255,255,255,.09);"></div><div style="margin-top:5px;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#8f8574;">Warm Taupe</div></div>
+          <div><div style="height:64px;border-radius:6px;background:#b8b0a2;border:1px solid rgba(255,255,255,.09);"></div><div style="margin-top:5px;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#8f8574;">Stone</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <x-import component-from-global-scope="image-slot" from="./image-slot.js" hint-size="0,0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none"></x-import>
+</div>
+</x-dc>
+</body>
+</html>

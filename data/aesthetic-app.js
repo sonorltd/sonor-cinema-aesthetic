@@ -586,6 +586,7 @@
       '<div class="hint">' + scenes().map(function (s) { return esc(s.label); }).join(' · ') + ' scenes · ' + esc(CFG.colourTemp || '') + '</div></div>';
     h += '<div class="actions">' +
       (!CLIENT ? '<button class="btn ghost" onclick="AestheticApp.saveConfig()">Save board</button>' : '') +
+      (!CLIENT ? '<button class="btn ghost" onclick="AestheticApp.openMoodBoard()">Bespoke Cinema Design Concept</button>' : '') +
       '<button class="btn primary" onclick="AestheticApp.savePdf()">Download Cinema Design Proposal</button></div>';
     h += '<div class="disc">' + (CFG.termsLines || []).map(esc).join(' ') + '</div>';
     h += '</div>';
@@ -754,7 +755,7 @@
       var res = await db.from('aesthetic_configs').select('id,label,config').eq('id', id).single();
       if (res.data && res.data.config) {
         var c = res.data.config;
-        ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client', 'options'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
+        ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client', 'options', 'moodboard'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
         migrateCfg(cfg);
         normalizeDesign();
         cfg._savedId = res.data.id;
@@ -872,7 +873,7 @@
       var res = await db.from('aesthetic_configs').select('id,label,config').eq('id', id).single();
       if (res.data && res.data.config) {
         var c = res.data.config;
-        ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client', 'options'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
+        ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client', 'options', 'moodboard'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
         migrateCfg(cfg);        // v0.7.0 — legacy single grade → per-aspect
         normalizeDesign();
         cfg._savedId = res.data.id;
@@ -1066,6 +1067,25 @@
     m.filename = 'sonor-cinema-proposal-' + (m.quoteRef || 'draft') + '.pdf';
     return m;
   }
+  // ── v0.9.0 — Bespoke Cinema Design Concept (Claude Design handoff) ────────
+  // Editable A3 mood board beside the proposal PDF. Module: aesthetic-moodboard.js.
+  // Board state rides in aesthetic_configs.config.moodboard — per-project +
+  // versioned via the standard saveConfig() path (whole cfg is the payload).
+  async function openMoodBoard() {
+    if (!global.AestheticMoodBoard) { console.warn('[aesthetic] moodboard module not loaded'); return; }
+    global.AestheticMoodBoard.open({
+      model: pdfModel(),                 // same data that drives the proposal PDF
+      board: cfg.moodboard || {},        // persisted board state (images + text + sections + ref)
+      db: dbc(),                         // enables Supabase storage image upload
+      projectId: cfg.projectId,
+      appVersion: CFG.version,
+      onSave: async function (board) {
+        cfg.moodboard = board;
+        await saveConfig();              // same save path + app_version stamp as everything else
+      }
+    });
+  }
+
   async function savePdf() {
     cfg._lastRef = makeRef();
     var m = pdfModel();
@@ -1082,6 +1102,7 @@
     setDesign: setDesign, toggleZone: toggleZone, toggleSundry: toggleSundry, jumpRefresh: jumpRefresh,
     setOption: setOption, toggleOption: toggleOption,
     useScheme: useScheme, useSeating: useSeating, openFromOverview: openFromOverview,
+    openMoodBoard: openMoodBoard,
     _renderOverview: renderOverview,   // harness hook (headless overview render)
     _debug: function () { return { cfg: cfg, ctx: ctx }; }   // harness hook (headless render tests)
   };

@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.9.0)
+# Cinema Aesthetic — Claude Code Context (v0.9.1)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -206,3 +206,15 @@ render-and-eyeball before shipping).
   aesthetic/moodboard/% — public bucket, internal app; flag to the security
   session if auth lands). Headless-verified: overlay renders, adaptive sections
   correct for the 1387-style config, prefill live. handoff zip → _to_delete/.
+- v0.9.1 (2026-07-20) — **Used sections only + not-specified notes** (Bryn: "only
+  render used sections... if there is no star ceiling, dont give it a section
+  just put a note that it is not specified"). ONE derivation in pdfModel():
+  m.notSpecified[] (star ceiling / curtains / tiered seating / wall lights /
+  LED lighting — whatever the design does NOT have). Concept board: haystack is
+  NAMES-only (a Curtain slot picked painted/none no longer summons the curtain
+  section); new 'notes' adaptive section renders one compact editable strip —
+  "Not in this specification: … available as design options on request."
+  Proposal PDF: same list as a NOT IN THIS SPECIFICATION block at the foot of
+  the Design Scope page (page renders for notes even with no option groups).
+  Copy is ff-safe. Headless-verified: painted-curtain config → curtain section
+  gone, note reads Curtains only.

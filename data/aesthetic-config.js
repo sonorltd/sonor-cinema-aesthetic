@@ -7,7 +7,7 @@
 */
 (function () {
   window.__AESTHETIC_CONFIG__ = {
-    version: '0.9.0',
+    version: '0.9.1',
     buildDate: '2026-07-19',
     steps: ['Scheme', 'Video', 'Audio', 'Materials', 'Lighting', 'Summary'],
 

@@ -454,7 +454,8 @@
 
   // ── v0.7.0 — DESIGN SCOPE: dynamic Library option selections, two columns ──
   function secScope(m) {
-    if (!m.optionGroups || !m.optionGroups.length) return null;
+    var notSpec = m.notSpecified || [];
+    if ((!m.optionGroups || !m.optionGroups.length) && !notSpec.length) return null;
     var lx = L();
     return function (P, F, pageNo, TOTAL) {
       var M = lx.M, A4 = lx.A4, COL = lx.COL;
@@ -478,6 +479,17 @@
         });
         y += 16;
       });
+      // v0.9.1 — features NOT in this specification: one compact note, no
+      // empty sections (e.g. no star ceiling → a note here, no Star page)
+      if (notSpec.length) {
+        var ny = Math.max(y, A4.h - 148);
+        P.tracked('NOT IN THIS SPECIFICATION', M, ny, 6.5, F.r, COL.MUT, 1.5);
+        P.hline(M, A4.w - M, ny + 11, COL.LINE, 0.8, 0.75);
+        var line = notSpec.join('  ·  ') + ' — not specified for this room. Available as design options on request.';
+        lx.wrap(line, F.r, 9, A4.w - M * 2).slice(0, 2).forEach(function (ln, li) {
+          P.text(ln, M, ny + 18 + li * 13, 9, F.r, COL.MUT);
+        });
+      }
       lx.pageFoot(P, F);
     };
   }

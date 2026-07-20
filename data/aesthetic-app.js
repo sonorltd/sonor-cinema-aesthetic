@@ -1058,6 +1058,22 @@
         var g = gradeOf();
         return { label: f.label, hint: (f.id === 'downlight' && g) ? (g.label + ' · ' + g.tier) : f.hint, qty: (f.id === 'downlight' && dl) ? dl + ' fittings' : null };
       }),
+      // v0.9.1 — features NOT in this specification (drives 'not specified'
+      // notes on the concept board + Design Scope page instead of empty sections)
+      notSpecified: (function () {
+        var out = [];
+        if (cfg.design.ceiling !== 'star') out.push('Star ceiling');
+        var curtainOn = (CFG.slots || []).some(function (sl) {
+          if (!/curtain/i.test(sl.label || '')) return false;
+          var id = cfg.picks[sl.id];
+          return id && id !== '_none' && id !== '_painted';
+        });
+        if (!curtainOn) out.push('Curtains');
+        if (cfg.design.riser === 'none') out.push('Tiered seating');
+        if (!cfg.design.sconces) out.push('Wall lights / sconces');
+        if (!zonesList().length) out.push('LED lighting');
+        return out;
+      })(),
       scenes: scenes(),
       colourTemp: CFG.colourTemp,
       termsLines: CFG.termsLines || [],

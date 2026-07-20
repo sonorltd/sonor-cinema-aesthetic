@@ -57,7 +57,8 @@
     { id: 'seating',  label: 'Seating detail' },
     { id: 'curtain',  label: 'Curtain detail' },
     { id: 'shelves',  label: 'Shelves / recess' },
-    { id: 'palette',  label: 'Colour palette' }
+    { id: 'palette',  label: 'Colour palette' },
+    { id: 'notes',    label: 'Not-specified notes' }
   ];
 
   var state = null;   // { model, board, db, projectId, appVersion, onSave, _defaults, _auto }
@@ -74,13 +75,34 @@
   // ── adaptive detection — which sections the project actually has ────────────
   function haystack(m) {
     var parts = [];
-    (m.slots || []).forEach(function (s) { parts.push(s.slot, s.name, s.manufacturer); });
+    // v0.9.1 — NAMES only, not slot labels: a 'Curtain' slot picked as painted/none
+    // must not summon a curtain section
+    (m.slots || []).forEach(function (s) { if (!s.painted) parts.push(s.name, s.manufacturer); });
     (m.optionGroups || []).forEach(function (o) { parts.push(o.label); (o.names || []).forEach(function (n) { parts.push(n); }); });
     if (m.ceilingTreatment) parts.push(m.ceilingTreatment.label);
     if (m.riser) parts.push(m.riser.label);
     (m.sundries || []).forEach(function (s) { parts.push(s); });
     if (m.joineryNotes) parts.push(m.joineryNotes);
     return parts.filter(Boolean).join(' | ').toLowerCase();
+  }
+  function curtainOn(m) {
+    // a real curtain PICK (not painted/none), or a curtain named in options/sundries
+    var pick = (m.slots || []).some(function (s) { return /curtain|drape/i.test(s.slot || '') && !s.painted; });
+    return pick || /curtain|drape/.test(haystack(m));
+  }
+  // features NOT in the spec → compact notes instead of empty sections.
+  // Prefers the app's model.notSpecified (one derivation shared with the
+  // proposal PDF's Design Scope page); falls back to local detection.
+  function notSpecList(m) {
+    m = m || {};
+    if (Array.isArray(m.notSpecified)) return m.notSpecified;
+    var out = [];
+    if (!m.star) out.push('Star ceiling');
+    if (!curtainOn(m)) out.push('Curtains');
+    if (!(m.riser && m.riser.id !== 'none' && m.riser.id !== 'flat')) out.push('Tiered seating');
+    if (!m.sconces) out.push('Wall lights / sconces');
+    if (!(m.ledZonesList && m.ledZonesList.length)) out.push('LED lighting');
+    return out;
   }
   function autoDetect(m) {
     m = m || {};
@@ -94,9 +116,10 @@
       scope:    !!(m.ceilingTreatment || m.riser || (m.sundries && m.sundries.length) || (m.optionGroups && m.optionGroups.length)),
       riser:    riserOn,
       seating:  true,
-      curtain:  /curtain|drape/.test(hay),
+      curtain:  curtainOn(m),
       shelves:  /shel|joinery|cabinet|recess|niche/.test(hay),
-      palette:  !!(m.palette && m.palette.swatches && m.palette.swatches.length)
+      palette:  !!(m.palette && m.palette.swatches && m.palette.swatches.length),
+      notes:    notSpecList(m).length > 0
     };
   }
   // effective visibility = manual override (on/off) else auto-detected result
@@ -149,6 +172,10 @@
       seatNotes: ['Electric recliners', 'Cupholders', 'Cooling & heating', 'Wireless charging'],
       curtainNotes: ['Full height acoustic', 'Ceiling mounted', 'Heavy weft', 'Blackout — dark grey'],
       shelfNotes: ['Built-in shelving with LED strip', 'Space for media / decorative items'],
+      notesLine: (function () {
+        var ns = notSpecList(m);
+        return ns.length ? ns.join('  ·  ') + ' — not specified for this room. Available as design options on request.' : '';
+      })(),
       ref: (state && state.board && state.board.ref) || makeRef()
     };
   }
@@ -284,7 +311,12 @@
       '<div class="amb-detail" style="grid-template-columns:repeat(' + det.length + ',1fr)">' +
       det.map(function (x) { return '<div>' + x[1]() + '</div>'; }).join('') + '</div>' : '';
 
-    return header + heroRow + walls + bandsHtml + detHtml;
+    // not-specified notes — one compact line instead of empty sections
+    var notesHtml = (effective('notes') && (text('notesLine') || '').length) ?
+      '<div class="amb-notes"><span class="amb-notes-h">Not in this specification</span>' +
+      '<span contenteditable="true" class="amb-ed" data-ed="notesLine">' + esc(text('notesLine')) + '</span></div>' : '';
+
+    return header + heroRow + walls + bandsHtml + detHtml + notesHtml;
   }
 
   // ── sections config panel ────────────────────────────────────────────────────
@@ -366,6 +398,8 @@
 '.amb-ed{outline:none;border-radius:2px;transition:box-shadow .15s}' +
 '.amb-ed:hover{box-shadow:inset 0 0 0 1px rgba(173,153,120,.35)}' +
 '.amb-ed:focus{box-shadow:inset 0 0 0 1px ' + GOLD + ';background:rgba(173,153,120,.08)}' +
+'.amb-notes{flex:0 0 auto;display:flex;align-items:baseline;gap:10px;padding:9px 12px;border:1px solid rgba(255,255,255,.08);border-radius:6px;background:rgba(255,255,255,.02);font-size:9.5px;line-height:1.5;color:' + MUTED + '}' +
+'.amb-notes-h{flex:0 0 auto;font-weight:800;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:' + GOLD + '}' +
 '@media print{#amb-overlay{position:static;background:#090807}#amb-bar,#amb-sections-wrap{display:none}#amb-scroll{overflow:visible;padding:0}#amb-page{box-shadow:none}' +
   '.amb-slot-edit{display:none}@page{size:420mm 297mm;margin:0}}' +
 '</style>';

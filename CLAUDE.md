@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.7.2)
+# Cinema Aesthetic — Claude Code Context (v0.8.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -175,3 +175,18 @@ render-and-eyeball before shipping).
   finishes · Design scope · Lighting · LED · Star ceiling · Joinery & sundries ·
   THEN Video system · Audio system · brand pages · The detail. Intro right-hand
   spec column reordered to match (ceiling/seating/lighting before display/audio).
+- v0.8.0 (2026-07-19) — **Landing project overview + THE chosen scheme.** The
+  front page (internal builds, project selected) now shows a PROJECT OVERVIEW:
+  every saved design board (aesthetic_configs) and seating config
+  (seating_configs, READ-ONLY) for the active project, with summary info (room,
+  seats, published-scheme state). One board is chosen as THE scheme ("Use as
+  scheme") and one seating config paired ("Use with scheme") — flick freely;
+  each pick loads that board and republishes. design_spec now carries
+  scheme: {config_id, label, style, style_label, seating_config_id,
+  seating_label, chosen_at} — the master design PDF (Cinema Designer) states
+  "Based on design scheme: {label} ({style_label})". DATA-TRANSFER CHECK: our
+  side VERIFIED live — Bryn's real board publish is in 1387's design_spec (MK
+  in-walls + Yamaha RX-A6A, config af6be7fd…); CD/CT still have ZERO design_spec
+  references — consumption remains their P1 ask (B-419o, scheme block added).
+  New useScheme/useSeating/openFromOverview + _renderOverview harness hook;
+  _savedLabel/_seatingSel state; overview refreshes on project change + save.

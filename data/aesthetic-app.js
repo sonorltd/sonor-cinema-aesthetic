@@ -44,9 +44,11 @@
     client: { name: '', project: '' },
     projectId: null,
     _savedId: null,
+    _savedLabel: null,               // v0.8.0 — label of the loaded board (scheme publish)
+    _seatingSel: null,               // v0.8.0 — chosen seating config {id,label} for the scheme
     _lastRef: null
   };
-  var ctx = { room: null, seating: null, brief: null, meta: null, renders: null, palette: null };   // live cross-app context
+  var ctx = { room: null, seating: null, brief: null, meta: null, renders: null, palette: null, spec: null, seatCount: null };   // live cross-app context
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -634,8 +636,10 @@
       cfg.client.name = p.client_name || cfg.client.name;
       cfg.client.project = (p.address || p.name || '').split('\n')[0].split(',')[0] || cfg.client.project;
     }
+    cfg._seatingSel = null;   // re-adopted from the incoming project's spec
     await pullContext();
     loadSavedList();
+    loadOverview();           // v0.8.0 — landing overview
     renderStep();
   }
   async function pullContext() {
@@ -644,6 +648,7 @@
       var r = await db.from('cinema_designs').select('room_width,room_depth,room_height,seat_count,meta:ct_state->metadata').eq('project_id', cfg.projectId).order('updated_at', { ascending: false }).limit(1).maybeSingle();
       if (r.data) {
         ctx.room = { w: r.data.room_width, d: r.data.room_depth, h: r.data.room_height };
+        ctx.seatCount = r.data.seat_count || null;
         ctx.meta = r.data.meta || null;   // ct_state.metadata — video/audio/coffer/seating spec
       }
     } catch (e) {}
@@ -659,8 +664,115 @@
       // v0.7.1 — project palette devised from the client concept (design_palette
       // {source, swatches:[{name,hex,note}]}) — drives the board page + app chips
       ctx.palette = (md.design_palette && Array.isArray(md.design_palette.swatches) && md.design_palette.swatches.length) ? md.design_palette : null;
+      // v0.8.0 — the published spec (read back for the landing overview + scheme marks)
+      ctx.spec = md.design_spec || null;
+      if (ctx.spec && ctx.spec.scheme && ctx.spec.scheme.seating_config_id && !cfg._seatingSel) {
+        cfg._seatingSel = { id: ctx.spec.scheme.seating_config_id, label: ctx.spec.scheme.seating_label || null };
+      }
     } catch (e) {}
   }
+
+  // ── v0.8.0 — landing overview: saved boards + seating configs, scheme pick ──
+  // The front page lists every saved design board and seating config for the
+  // active project; one board (+ one seating config) is chosen as THE scheme.
+  // Choosing publishes design_spec.scheme so the master design PDF (Cinema
+  // Designer) can state which design scheme it is based on. Flick freely —
+  // each pick republishes.
+  function fmtDate(s) { try { return new Date(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); } catch (e) { return ''; } }
+  async function loadOverview() {
+    var sec = $('ovw');
+    if (!sec) return;
+    var db = dbc();
+    if (CLIENT || !db || !cfg.projectId) { sec.style.display = 'none'; return; }
+    var boards = [], seats = [];
+    try {
+      var rb = await db.from('aesthetic_configs').select('id,label,app_version,updated_at,config').eq('project_id', cfg.projectId).eq('archived', false).order('updated_at', { ascending: false }).limit(20);
+      boards = rb.data || [];
+    } catch (e) {}
+    try {
+      var rs = await db.from('seating_configs').select('id,label,range_id,updated_at').eq('project_id', cfg.projectId).eq('archived', false).order('updated_at', { ascending: false }).limit(20);
+      seats = rs.data || [];
+    } catch (e) {}
+    renderOverview(boards, seats);
+  }
+  function renderOverview(boards, seats) {
+    var sec = $('ovw');
+    if (!sec) return;
+    if (CLIENT || !cfg.projectId) { sec.style.display = 'none'; return; }
+    sec.style.display = 'block';
+    var spec = ctx.spec || {};
+    var schemeId = (spec.scheme && spec.scheme.config_id) || spec.config_id || null;
+    var seatSel = (cfg._seatingSel && cfg._seatingSel.id) || (spec.scheme && spec.scheme.seating_config_id) || null;
+    var tt = $('ovwTitle');
+    if (tt) tt.innerHTML = esc(cfg.client.project || 'This project') + ' — <span class="lt">saved schemes</span>.';
+    var sm = $('ovwSummary');
+    if (sm) {
+      var bits = [];
+      if (ctx.room && (ctx.room.w || ctx.room.d)) bits.push('Room ' + (ctx.room.w || '?') + ' × ' + (ctx.room.d || '?') + ' mm');
+      if (ctx.seatCount) bits.push(ctx.seatCount + ' seats');
+      if (ctx.seating) bits.push('Seating: ' + ctx.seating);
+      if (spec.updated_at) {
+        var schemeBoard = (boards || []).find(function (r) { return r.id === schemeId; });
+        bits.push('Published scheme: ' + (schemeBoard ? (schemeBoard.label || 'board') : (spec.style || 'saved board')) + ' · ' + fmtDate(spec.updated_at) + ' · v' + (spec.app_version || '?'));
+      } else {
+        bits.push('No scheme published yet — choose a board below.');
+      }
+      sm.textContent = bits.join('  ·  ');
+    }
+    var bo = $('ovwBoards');
+    if (bo) {
+      bo.innerHTML = (boards && boards.length) ? boards.map(function (r) {
+        var st = r.config && r.config.scheme && (CFG.styles || []).find(function (s) { return s.id === r.config.scheme.style; });
+        var cur = r.id === schemeId;
+        return '<div class="ovw-row' + (cur ? ' cur' : '') + '">' +
+          '<div class="ovw-b"><div class="ovw-n">' + esc(r.label || 'Board') + (cur ? ' <span class="ovw-badge">✓ Scheme in use</span>' : '') + '</div>' +
+          '<div class="ovw-d">' + esc(st ? st.label : '—') + ' · ' + fmtDate(r.updated_at) + ' · v' + esc(r.app_version || '') + '</div></div>' +
+          '<button class="ovw-btn" onclick="AestheticApp.openFromOverview(\'' + r.id + '\')">Open</button>' +
+          (cur ? '' : '<button class="ovw-btn gold" onclick="AestheticApp.useScheme(\'' + r.id + '\')">Use as scheme</button>') +
+          '</div>';
+      }).join('') : '<div class="ovw-hint">No boards yet for this project — start one below.</div>';
+    }
+    var se = $('ovwSeating');
+    if (se) {
+      se.innerHTML = (seats && seats.length) ? seats.map(function (r, i) {
+        var cur = seatSel ? r.id === seatSel : false;
+        var latest = !seatSel && i === 0;
+        return '<div class="ovw-row' + (cur ? ' cur' : '') + '">' +
+          '<div class="ovw-b"><div class="ovw-n">' + esc(r.label || r.range_id || 'Seating') + (cur ? ' <span class="ovw-badge">✓ With scheme</span>' : '') + '</div>' +
+          '<div class="ovw-d">' + esc(r.range_id || '') + ' · ' + fmtDate(r.updated_at) + (latest ? ' · latest' : '') + '</div></div>' +
+          (cur ? '' : '<button class="ovw-btn" onclick="AestheticApp.useSeating(\'' + r.id + '\',\'' + esc(String(r.label || r.range_id || '')).replace(/'/g, '') + '\')">Use with scheme</button>') +
+          '</div>';
+      }).join('') : '<div class="ovw-hint">No seating configs for this project — build one in the Seating Configurator.</div>';
+    }
+    var nt = $('ovwNote');
+    if (nt) nt.textContent = 'The chosen scheme is published as the project’s confirmed design spec — Cinema Designer and the master design PDF reference the scheme it is based on.';
+  }
+  // load a board's config and make it THE project scheme (stays on the landing)
+  async function useScheme(id) {
+    var db = dbc(); if (!db || CLIENT) return;
+    try {
+      var res = await db.from('aesthetic_configs').select('id,label,config').eq('id', id).single();
+      if (res.data && res.data.config) {
+        var c = res.data.config;
+        ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client', 'options'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
+        migrateCfg(cfg);
+        normalizeDesign();
+        cfg._savedId = res.data.id;
+        cfg._savedLabel = res.data.label || null;
+        await publishDesignSpec();
+        await pullContext();      // re-read the published spec for the marks
+        loadOverview();
+      }
+    } catch (e) { console.warn('[aesthetic] useScheme failed', e); }
+  }
+  async function useSeating(id, label) {
+    if (CLIENT) return;
+    cfg._seatingSel = { id: id, label: label || null };
+    await publishDesignSpec();
+    await pullContext();
+    loadOverview();
+  }
+  function openFromOverview(id) { enter(); openSaved(id); }
 
   // ── saved boards (aesthetic_configs — this app's ONLY table writes) ──────
   async function saveConfig() {
@@ -671,9 +783,10 @@
       var res;
       if (cfg._savedId) res = await db.from('aesthetic_configs').update(body).eq('id', cfg._savedId).select('id').single();
       else res = await db.from('aesthetic_configs').insert(body).select('id').single();
-      if (res.data) cfg._savedId = res.data.id;
+      if (res.data) { cfg._savedId = res.data.id; cfg._savedLabel = label; }
       loadSavedList();
       publishDesignSpec();   // ONE SOURCE: confirmed settings → projects.metadata.design_spec
+      loadOverview();        // v0.8.0 — landing list stays current
     } catch (e) { console.warn('[aesthetic] save failed', e); }
   }
 
@@ -696,6 +809,18 @@
       var spec = {
         source: 'cinema-aesthetic', app_version: CFG.version,
         config_id: cfg._savedId || null, updated_at: new Date().toISOString(),
+        // v0.8.0 — THE chosen scheme: which saved board (and seating config)
+        // this project's design is based on. The master design PDF (Cinema
+        // Designer) states: "Based on design scheme: {label} ({style_label})".
+        scheme: {
+          config_id: cfg._savedId || null,
+          label: cfg._savedLabel || null,
+          style: st ? st.id : null,
+          style_label: st ? st.label : null,
+          seating_config_id: (cfg._seatingSel && cfg._seatingSel.id) || null,
+          seating_label: (cfg._seatingSel && cfg._seatingSel.label) || null,
+          chosen_at: new Date().toISOString()
+        },
         style: st ? st.id : null,
         ceiling: d.ceiling, riser: d.riser,
         downlight_grade: d.downlightGrade,
@@ -744,13 +869,14 @@
   async function openSaved(id) {
     var db = dbc(); if (!db) return;
     try {
-      var res = await db.from('aesthetic_configs').select('id,config').eq('id', id).single();
+      var res = await db.from('aesthetic_configs').select('id,label,config').eq('id', id).single();
       if (res.data && res.data.config) {
         var c = res.data.config;
         ['scheme', 'picks', 'av', 'design', 'fittings', 'scenes', 'client', 'options'].forEach(function (k) { if (c[k] != null) cfg[k] = c[k]; });
         migrateCfg(cfg);        // v0.7.0 — legacy single grade → per-aspect
         normalizeDesign();
         cfg._savedId = res.data.id;
+        cfg._savedLabel = res.data.label || null;
         cfg.step = STEPS.length; renderStep();
       }
     } catch (e) {}
@@ -955,6 +1081,8 @@
     saveConfig: saveConfig, openSaved: openSaved, savePdf: savePdf, setAv: setAv,
     setDesign: setDesign, toggleZone: toggleZone, toggleSundry: toggleSundry, jumpRefresh: jumpRefresh,
     setOption: setOption, toggleOption: toggleOption,
+    useScheme: useScheme, useSeating: useSeating, openFromOverview: openFromOverview,
+    _renderOverview: renderOverview,   // harness hook (headless overview render)
     _debug: function () { return { cfg: cfg, ctx: ctx }; }   // harness hook (headless render tests)
   };
 })(window);

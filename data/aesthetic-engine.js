@@ -98,7 +98,7 @@
                  'av_receiver', 'av_processor', 'power_amplifier', 'display',
                  'receiver', 'amplifier', 'processor', 'tv'];   // + legacy (normalised on load)
   var AV_CAT_ALIAS = { receiver: 'av_receiver', amplifier: 'power_amplifier', processor: 'av_processor', tv: 'display', immersive_receiver: 'av_receiver' };
-  var AV = { items: [], byId: {}, byCat: {}, source: 'none' };
+  var AV = { items: [], byId: {}, byCat: {}, alias: {}, source: 'none' };
 
   function _avIndex() {
     AV.byId = {}; AV.byCat = {};
@@ -131,15 +131,23 @@
           .in('category', AV_CATS);
         if (!res.error && res.data && res.data.length) {
           AV.items = _avAdapt(res.data);
+          // v0.10.1 — alias map (sonor_catalogue_aliases, CONSUMER-API §16):
+          // saved boards/design_spec may hold consolidated old ids (e.g. the
+          // verbose M&K scheme) — resolve them to the clean canonical id.
+          try {
+            var al = await db.client.from('sonor_catalogue_aliases').select('old_id,new_id');
+            AV.alias = {};
+            (al.data || []).forEach(function (a) { AV.alias[a.old_id] = a.new_id; });
+          } catch (e) { AV.alias = {}; }
           AV.source = 'supabase'; _avIndex();
-          try { localStorage.setItem(AV_CACHE, JSON.stringify({ t: Date.now(), items: AV.items })); } catch (e) {}
+          try { localStorage.setItem(AV_CACHE, JSON.stringify({ t: Date.now(), items: AV.items, alias: AV.alias })); } catch (e) {}
           return true;
         }
       }
     } catch (e) {}
     try {
       var raw = localStorage.getItem(AV_CACHE);
-      if (raw) { var c = JSON.parse(raw); if (c && c.items) { AV.items = c.items; AV.source = 'cache'; _avIndex(); return true; } }
+      if (raw) { var c = JSON.parse(raw); if (c && c.items) { AV.items = c.items; AV.alias = c.alias || {}; AV.source = 'cache'; _avIndex(); return true; } }
     } catch (e) {}
     AV.items = []; AV.source = 'none'; _avIndex(); return false;
   }
@@ -153,7 +161,8 @@
     categories: function () { return Object.keys(idx.byCat); },
     avLoad: avLoad,
     get avSource() { return AV.source; },
-    avItem: function (id) { return AV.byId[id] || null; },
+    avItem: function (id) { return AV.byId[id] || (AV.alias[id] ? AV.byId[AV.alias[id]] : null) || null; },
+    avResolveId: function (id) { return AV.byId[id] ? id : (AV.alias[id] || id); },   // clean canonical id for persists
     avByCategory: function (cat) {   // v0.10.0 — accepts one canonical cat or an array (e.g. av_receiver + av_processor)
       var cats = Array.isArray(cat) ? cat : [cat];
       var out = [];

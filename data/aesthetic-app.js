@@ -812,7 +812,7 @@
       var channels = {};
       (CFG.channelGroups || []).forEach(function (g) {
         var qty = g.qty(ac);
-        if (qty && av.audio.picks[g.id]) channels[g.id] = { qty: qty, model_id: av.audio.picks[g.id], name: avName(av.audio.picks[g.id]) };
+        if (qty && av.audio.picks[g.id]) channels[g.id] = { qty: qty, model_id: E.avResolveId(av.audio.picks[g.id]), name: avName(av.audio.picks[g.id]) };
       });
       var spec = {
         source: 'cinema-aesthetic', app_version: CFG.version,
@@ -847,13 +847,13 @@
           grade: av.grades.electronics || null,
           grade_tbc: wisdomOn() ? 'Wisdom Audio system TBC — pending Habitech experience centre visit' : null,
           video_type: av.video.type,
-          tv: av.video.tvId ? { model_id: av.video.tvId, name: avName(av.video.tvId), size_in: av.video.tvSizeIn } : null,
-          projector: av.video.projectorId ? { model_id: av.video.projectorId, name: avName(av.video.projectorId) } : null,
+          tv: av.video.tvId ? { model_id: E.avResolveId(av.video.tvId), name: avName(av.video.tvId), size_in: av.video.tvSizeIn } : null,
+          projector: av.video.projectorId ? { model_id: E.avResolveId(av.video.projectorId), name: avName(av.video.projectorId) } : null,
           atmos: av.audio.config,
           channels: channels,
-          sub: av.audio.subId ? { model_id: av.audio.subId, name: avName(av.audio.subId), qty: av.audio.subQty } : null,
-          processor: av.audio.processorId ? { model_id: av.audio.processorId, name: avName(av.audio.processorId) } : null,
-          amplifier: av.audio.ampId ? { model_id: av.audio.ampId, name: avName(av.audio.ampId) } : null
+          sub: av.audio.subId ? { model_id: E.avResolveId(av.audio.subId), name: avName(av.audio.subId), qty: av.audio.subQty } : null,
+          processor: av.audio.processorId ? { model_id: E.avResolveId(av.audio.processorId), name: avName(av.audio.processorId) } : null,
+          amplifier: av.audio.ampId ? { model_id: E.avResolveId(av.audio.ampId), name: avName(av.audio.ampId) } : null
         },
         sundries: Object.keys(d.sundries || {})
       };

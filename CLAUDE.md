@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.9.1)
+# Cinema Aesthetic — Claude Code Context (v0.10.1)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -218,3 +218,38 @@ render-and-eyeball before shipping).
   the Design Scope page (page renders for notes even with no option groups).
   Copy is ff-safe. Headless-verified: painted-curtain config → curtain section
   gone, note reads Curtains only.
+- v0.10.0 (2026-07-20) — **Synced to the restructured Library (CONSUMER-API v2.9.x
+  + cinema-gear-library skill 2026-07-20).** AV reads now hit the CANONICAL
+  `av_catalogue` VIEW (deduped device+misc merge, one row per model_id) — never
+  the base tables (CONSUMER-API §0). Uniform category taxonomy adopted:
+  av_receiver / av_processor / power_amplifier / display (legacy receiver/
+  amplifier/processor/tv still normalised client-side via AV_CAT_ALIAS — the
+  view still carries both vocabularies); engine avByCategory accepts arrays
+  (receiver picker = av_receiver + av_processor). AV_CACHE bumped →
+  sonor_aesthetic_av_v2. Adopted Library enrichment: metadata.hero_image (per-
+  line img), datasheet_url COLUMN, metadata.speaker_role → per-channel-group
+  roles[] soft-filter on the speaker pickers (fronts/centre=lcr+in_wall+…,
+  surrounds=surround+…, heights=in_ceiling+sst_ceiling+invisible; untagged
+  devices stay, picks never drop — closes B-419j). Canonical make 'M&K Sound'
+  everywhere (brand page name/wordmark, grade notes; detection regex already
+  matched). Brand pages now draw the OFFICIAL brand marks from the Library's
+  av-assets bucket (logos/mandk-sound|sonance|wisdom-audio.png) above the
+  wordmark, type-only fallback kept — closes the v0.7.0 logo ask (B-419q for
+  these three marques). Seed regen (123). CONSUMPTION MAP now: av_catalogue
+  (AV products) · v_aesthetic_catalogue (design finishes/options) ·
+  cinema_designs/seating_configs/projects.metadata (context) — writes ONLY
+  aesthetic_configs + metadata design_spec/design_palette merges.
+- v0.10.1 (2026-07-20) — **Alias-aware id resolution (CONSUMER-API §16).** The
+  Library's M&K consolidation DELETED the verbose ids Bryn's live 1387 board
+  holds (MK-IW950-IN-WALL-SPEAKE → MK-IW950 etc. — aliases verified in
+  sonor_catalogue_aliases). Engine now loads the alias map with avLoad
+  (cached); avItem() falls through old→new, new avResolveId(); design_spec
+  publishes RESOLVED canonical model_ids. CROSS-APP CONSUMPTION AUDIT (Bryn:
+  "all cinema design apps... new structures"): CD + CT read product data ONLY
+  through the shared SonorLibrary layer (data/sonor-library.js master v3.7.0,
+  identical vendored copies; CD built bundle v3.7.0) over v_sonor_library —
+  the contract §23.1 explicitly keeps that path correct (device_catalogue =
+  guaranteed superset for blocks). Seating reads no catalogue. This app =
+  av_catalogue (canonical). sync-everything run 2026-07-20 (22 copies
+  refreshed incl. regenerated sonor-blocks-seed.js) — all vendored masters
+  current. No CD/CT code edits (their session owns them; nothing needed).

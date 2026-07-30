@@ -13,6 +13,10 @@
   var E = null;                      // SonorAesthetic
   var STEPS = CFG.steps || ['Scheme', 'Materials', 'Lighting', 'Summary'];
   var CLIENT = !!global.__AESTHETIC_CLIENT__;
+  // NEUTRAL project surfaces (Bryn: "general project no matter which app —
+  // neutrally located like brief"): trades lives in sonor-project-master.
+  var TRADES_URL = 'https://sonorltd.github.io/sonor-project-master/trades.html?pid=';
+  global.TRADES_URL = TRADES_URL;
 
   var cfg = {
     step: 1,
@@ -48,7 +52,7 @@
     _seatingSel: null,               // v0.8.0 — chosen seating config {id,label} for the scheme
     _lastRef: null
   };
-  var ctx = { room: null, seating: null, brief: null, meta: null, renders: null, palette: null, spec: null, seatCount: null };   // live cross-app context
+  var ctx = { room: null, seating: null, brief: null, meta: null, renders: null, palette: null, spec: null, seatCount: null, rooms: null };   // live cross-app context
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -594,7 +598,7 @@
     h += '<div class="actions">' +
       (!CLIENT ? '<button class="btn ghost" onclick="AestheticApp.saveConfig()">Save board</button>' : '') +
       (!CLIENT ? '<button class="btn ghost" onclick="AestheticApp.openMoodBoard()">Bespoke Cinema Design Concept</button>' : '') +
-      (!CLIENT && cfg.projectId ? '<button class="btn ghost" onclick="window.open(\'sonor-trades.html?project=\' + AestheticApp._debug().cfg.projectId, \'_blank\')">Trades list ↗</button>' : '') +
+      (!CLIENT && cfg.projectId ? '<button class="btn ghost" onclick="window.open(TRADES_URL + AestheticApp._debug().cfg.projectId, \'_blank\')">Trades list ↗</button>' : '') +
       '<button class="btn primary" onclick="AestheticApp.savePdf()">Download Cinema Design Proposal</button></div>';
     h += '<div class="disc">' + (CFG.termsLines || []).map(esc).join(' ') + '</div>';
     h += '</div>';
@@ -664,6 +668,17 @@
     try {   // active seating config (range + label) — the seat fabric context
       var s = await db.from('seating_configs').select('label,range_id,updated_at').eq('project_id', cfg.projectId).eq('archived', false).order('updated_at', { ascending: false }).limit(1).maybeSingle();
       if (s.data) ctx.seating = (s.data.label || s.data.range_id || '').toString();
+    } catch (e) {}
+    try {   // v0.11.1 — canonical room registry (PROJECT-ROOM TAG v1): Takeoffs
+      // areas {floor_id, floor_code, name} — same identity RFI clouds resolve to
+      var tf = await db.from('takeoffs_floors').select('floor_id,code,content').eq('project_id', cfg.projectId).order('seq');
+      var rooms = [];
+      (tf.data || []).forEach(function (f) {
+        (((f.content || {}).areas) || []).forEach(function (a) {
+          if (a && a.name) rooms.push({ floor_id: f.floor_id, floor_code: f.code, name: a.name });
+        });
+      });
+      ctx.rooms = rooms.length ? rooms : null;
     } catch (e) {}
     try {   // client brief + design renders
       var b = await db.from('projects').select('metadata').eq('id', cfg.projectId).maybeSingle();
@@ -755,7 +770,7 @@
     }
     var nt = $('ovwNote');
     if (nt) nt.innerHTML = 'The chosen scheme is published as the project’s confirmed design spec — Cinema Designer and the master design PDF reference the scheme it is based on. ' +
-      '<a class="ovw-btn" style="text-decoration:none;display:inline-flex;margin-left:8px" target="_blank" href="sonor-trades.html?project=' + esc(cfg.projectId) + '">TRADES — builder &amp; joiner list ↗</a>';
+      '<a class="ovw-btn" style="text-decoration:none;display:inline-flex;margin-left:8px" target="_blank" href="' + TRADES_URL + esc(cfg.projectId) + '">TRADES — builder &amp; joiner list ↗</a>';
   }
   // load a board's config and make it THE project scheme (stays on the landing)
   async function useScheme(id) {
@@ -819,6 +834,10 @@
       var spec = {
         source: 'cinema-aesthetic', app_version: CFG.version,
         config_id: cfg._savedId || null, updated_at: new Date().toISOString(),
+        // v0.11.1 — PROJECT-ROOM TAG v1: this spec belongs to the cinema room.
+        // Auto-matched from the Takeoffs room registry; tasks/RFIs/trades join
+        // on the same {floor_id, floor_code, name} shape.
+        room: (ctx.rooms || []).find(function (r) { return /cinema/i.test(r.name); }) || null,
         // v0.8.0 — THE chosen scheme: which saved board (and seating config)
         // this project's design is based on. The master design PDF (Cinema
         // Designer) states: "Based on design scheme: {label} ({style_label})".

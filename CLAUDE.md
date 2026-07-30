@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.11.0)
+# Cinema Aesthetic — Claude Code Context (v0.11.1)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -266,3 +266,21 @@ render-and-eyeball before shipping).
   Links: landing overview note + Summary actions ("Trades list ↗"). Hosted:
   https://sonorltd.github.io/sonor-cinema-aesthetic/dashboard/sonor-trades.html?project=<id>
   ASKS logged: PM brief page + Master Hub + CD could link the same URL.
+- v0.11.1 (2026-07-30) — **TRADES relocated to the NEUTRAL home + room meta-tags.**
+  Bryn: "general project no matter which app — neutrally located like brief" +
+  "everything meta tagged to the room, similar to RFIs, so tasks wire through".
+  (1) The trades page now lives at APP - Project Master/trades.html (exact
+  brief.html pattern: self-contained, inline anon REST, ?pid= deep link,
+  project picker fallback) — dashboard/sonor-trades.html retired to _to_delete
+  same day it was born. App links + shared bar point at
+  https://sonorltd.github.io/sonor-project-master/trades.html?pid=<id>.
+  (2) PROJECT-ROOM TAG v1 (meta-tag convention): {floor_id, floor_code, name}
+  taken VERBATIM from takeoffs_floors.content.areas[] — the same room identity
+  RFI clouds resolve to. Trades areas carry a room-tag select (1387 seeded:
+  Cinema→LG·Family Room / Cinema, Gym→LG·Gym, Hall→LG·Lower Hall);
+  design_spec now auto-tags room (cinema-matching area from ctx.rooms, loaded
+  in pullContext). Tasks/RFIs/trades all join on this shape when the Tasks
+  wiring lands. (3) SHARED BAR v1.6.0 (root master sonor-project-bar.js,
+  synced 22 apps): 🔨 Trades link beside 📄 Brief, gated on metadata.trades —
+  reachable from EVERY app's project bar. NOTE Takeoffs areas carry no ids —
+  ask logged for stable area ids; renames orphan tags (page shows '(missing)').

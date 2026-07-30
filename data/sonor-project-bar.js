@@ -98,6 +98,18 @@
     return `<a class="brief-link" href="${BRIEF_URL}?pid=${encodeURIComponent(active.id)}" target="_blank" rel="noopener" title="Client brief for this project — opens in a new tab">📄 Brief</a>`;
   }
 
+  // v1.6.0 — per-project TRADES page (builder / joiner works list). Neutral
+  // surface in the Project Master repo, exact brief-link pattern; shown when
+  // the project carries a trades list (projects.metadata.trades — written by
+  // the trades page via sonor_merge_project_metadata). Areas carry
+  // PROJECT-ROOM TAGs {floor_id, floor_code, name} from takeoffs_floors
+  // areas — the same room identity RFI clouds resolve to; tasks join later.
+  const TRADES_URL = 'https://sonorltd.github.io/sonor-project-master/trades.html';
+  function _tradesLink(active) {
+    if (!active || !active.metadata || !active.metadata.trades) return '';
+    return `<a class="brief-link" href="${TRADES_URL}?pid=${encodeURIComponent(active.id)}" target="_blank" rel="noopener" title="Builder & joiner works list — opens in a new tab">🔨 Trades</a>`;
+  }
+
   // ---- Internal state ----
   let _supa = null;
   let _projects = [];                 // cached rows
@@ -257,7 +269,7 @@
             <span class="meta">
               ${active.client_name ? `<span class="meta-cell"><span class="k">CLIENT</span><span>${_esc(active.client_name)}</span></span>` : ''}
               ${status ? `<span class="status-pill" style="background:${statusCol}33;border:1px solid ${statusCol};color:#F4F1EC">${_esc(status)}</span>` : ''}
-              ${_briefLink(active)}
+              ${_briefLink(active)}${_tradesLink(active)}
             </span>
           ` : '<span class="note">No project selected in the host app yet.</span>'}
         </div>
@@ -274,7 +286,7 @@
             ${active.client_name ? `<span class="meta-cell"><span class="k">CLIENT</span><span>${_esc(active.client_name)}</span></span>` : ''}
             ${active.address ? `<span class="meta-cell"><span class="k">ADDR</span><span>${_esc(active.address)}</span></span>` : ''}
             ${status ? `<span class="status-pill" style="background:${statusCol}33;border:1px solid ${statusCol};color:#F4F1EC">${_esc(status)}</span>` : ''}
-            ${_briefLink(active)}
+            ${_briefLink(active)}${_tradesLink(active)}
           </span>
         ` : '<span class="note">No project selected — pick one above to load it into this app.</span>'}
         <span class="actions">

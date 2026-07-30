@@ -594,6 +594,7 @@
     h += '<div class="actions">' +
       (!CLIENT ? '<button class="btn ghost" onclick="AestheticApp.saveConfig()">Save board</button>' : '') +
       (!CLIENT ? '<button class="btn ghost" onclick="AestheticApp.openMoodBoard()">Bespoke Cinema Design Concept</button>' : '') +
+      (!CLIENT && cfg.projectId ? '<button class="btn ghost" onclick="window.open(\'sonor-trades.html?project=\' + AestheticApp._debug().cfg.projectId, \'_blank\')">Trades list ↗</button>' : '') +
       '<button class="btn primary" onclick="AestheticApp.savePdf()">Download Cinema Design Proposal</button></div>';
     h += '<div class="disc">' + (CFG.termsLines || []).map(esc).join(' ') + '</div>';
     h += '</div>';
@@ -753,7 +754,8 @@
       }).join('') : '<div class="ovw-hint">No seating configs for this project — build one in the Seating Configurator.</div>';
     }
     var nt = $('ovwNote');
-    if (nt) nt.textContent = 'The chosen scheme is published as the project’s confirmed design spec — Cinema Designer and the master design PDF reference the scheme it is based on.';
+    if (nt) nt.innerHTML = 'The chosen scheme is published as the project’s confirmed design spec — Cinema Designer and the master design PDF reference the scheme it is based on. ' +
+      '<a class="ovw-btn" style="text-decoration:none;display:inline-flex;margin-left:8px" target="_blank" href="sonor-trades.html?project=' + esc(cfg.projectId) + '">TRADES — builder &amp; joiner list ↗</a>';
   }
   // load a board's config and make it THE project scheme (stays on the landing)
   async function useScheme(id) {

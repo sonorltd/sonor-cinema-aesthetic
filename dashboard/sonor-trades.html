@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sonor · Trades — builder &amp; joiner works</title>
+<link rel="icon" href="../data/favicon.svg">
+<!-- ═══════════════════════════════════════════════════════════════════════
+  SONOR TRADES — per-project builder / joiner quote list (v1.0.0, 2026-07-20)
+  The "brief hyperlink" pattern: standalone page, open from anywhere, deep link
+  ?project=<uuid>. ONE SOURCE: the whole list lives in projects.metadata.trades
+  and is written ONLY via the sonor_merge_project_metadata RPC (atomic single-
+  key merge — no metadata clobbering). Areas (Cinema / Gym / Hall + add your
+  own) → items (description, detail, trade, sum, notes). Two print modes:
+  · Print for trades  — blank sum boxes + signature line (give to the builder)
+  · Print priced      — internal copy with sums + totals
+════════════════════════════════════════════════════════════════════════ -->
+<style>
+  :root { --bg:#090807; --bg2:#111010; --bg3:#1a1814; --brd:#2a261f; --brd2:#221f19;
+          --gold:#ad9978; --gold2:#c8b48e; --cream:#F4F1EC; --muted:#8f8574; --red:#c96a5a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--cream); font-family:'Gilroy','DM Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  @font-face { font-family:'Gilroy'; src:url('../data/fonts/Gilroy-Regular.ttf'); font-weight:400; }
+  @font-face { font-family:'Gilroy'; src:url('../data/fonts/Gilroy-Bold.ttf'); font-weight:700; }
+  @font-face { font-family:'Gilroy'; src:url('../data/fonts/Gilroy-Heavy.ttf'); font-weight:800; }
+  .hdr { display:flex; align-items:center; gap:14px; padding:14px 22px; background:var(--bg2); border-bottom:1px solid var(--brd); }
+  .hdr .wm { font-weight:800; letter-spacing:.3em; font-size:14px; }
+  .hdr .tag { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+  .hdr .sp { flex:1; }
+  .hdr button { font-family:inherit; font-weight:700; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; padding:9px 14px; border-radius:3px; cursor:pointer; border:1px solid rgba(173,153,120,.5); background:transparent; color:var(--gold); }
+  .hdr button:hover { background:var(--gold); color:#0b0a0c; }
+  .hdr button.gold { background:var(--gold); color:#0b0a0c; border-color:var(--gold); }
+  #saveNote { font-size:11px; color:var(--muted); min-width:70px; text-align:right; }
+  #projectBarHost { background:var(--bg2); border-bottom:1px solid var(--brd2); }
+  .wrap { max-width:1150px; margin:0 auto; padding:26px 22px 80px; }
+  .intro { font-size:12.5px; color:var(--muted); line-height:1.7; margin-bottom:22px; max-width:760px; }
+  .area { background:var(--bg2); border:1px solid var(--brd2); border-radius:12px; padding:18px 20px; margin-bottom:20px; }
+  .area-h { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .area-h input.a-label { background:transparent; border:none; color:var(--gold2); font-family:inherit; font-weight:800; font-size:17px; letter-spacing:.02em; flex:0 1 auto; min-width:120px; outline:none; }
+  .area-h .a-count { font-size:11px; color:var(--muted); }
+  .area-h .sp { flex:1; }
+  .area-h .a-sub { font-size:13px; font-weight:700; color:var(--cream); }
+  .area-h button { background:none; border:1px solid var(--brd); color:var(--muted); border-radius:6px; padding:5px 10px; font-size:10.5px; cursor:pointer; font-family:inherit; }
+  .area-h button:hover { border-color:var(--gold); color:var(--gold); }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700; padding:4px 8px 8px; border-bottom:1px solid var(--brd); }
+  td { padding:6px 8px; border-bottom:1px solid var(--brd2); vertical-align:top; }
+  tr:last-child td { border-bottom:none; }
+  td input, td textarea, td select { width:100%; background:var(--bg3); border:1px solid var(--brd2); border-radius:6px; color:var(--cream); font-family:inherit; font-size:12.5px; padding:7px 9px; outline:none; resize:vertical; }
+  td input:focus, td textarea:focus, td select:focus { border-color:var(--gold); }
+  td.c-desc { width:24%; } td.c-detail { width:34%; } td.c-trade { width:10%; } td.c-sum { width:11%; } td.c-notes { width:17%; } td.c-x { width:30px; }
+  td input.sum { text-align:right; font-variant-numeric:tabular-nums; }
+  .rm { background:none; border:none; color:var(--muted); cursor:pointer; font-size:14px; padding:6px 4px; }
+  .rm:hover { color:var(--red); }
+  .addrow { margin-top:10px; }
+  .addrow button, .foot-add button { background:none; border:1px dashed var(--brd); color:var(--muted); border-radius:8px; padding:8px 16px; font-size:11.5px; cursor:pointer; font-family:inherit; width:100%; }
+  .addrow button:hover, .foot-add button:hover { border-color:var(--gold); color:var(--gold); }
+  .foot-add { margin:6px 0 18px; }
+  .grand { display:flex; justify-content:flex-end; gap:18px; font-size:14px; font-weight:700; padding:8px 8px 0; }
+  .grand span { color:var(--muted); font-weight:400; }
+  .empty { padding:60px 20px; text-align:center; color:var(--muted); font-size:13px; }
+
+  /* ── print ─────────────────────────────────────────────────────────────── */
+  @media print {
+    body { background:#fff; color:#16130f; }
+    .hdr, #projectBarHost, .rm, .addrow, .foot-add, .noprint { display:none !important; }
+    .wrap { max-width:none; padding:0; }
+    .p-head { display:block !important; }
+    .area { background:#fff; border:none; border-top:2px solid #ad9978; border-radius:0; padding:14px 0 4px; margin-bottom:8px; page-break-inside:avoid; }
+    .area-h input.a-label { color:#8c743c; }
+    .area-h .a-sub { color:#16130f; }
+    th { color:#8b8272; border-color:#d8d2c4; }
+    td { border-color:#eee8dc; }
+    td input, td textarea, td select { background:#fff; border:none; color:#16130f; padding:2px 0; appearance:none; }
+    td input.sum { border-bottom:1px solid #c9c1af; border-radius:0; }
+    body.print-blank td input.sum, body.print-blank .grand, body.print-blank td.c-notes textarea { visibility:hidden; }
+    body.print-blank td input.sum { visibility:visible; color:transparent; }  /* blank £ box for the trade to fill */
+    .p-sign { display:block !important; }
+  }
+  .p-head { display:none; padding:0 0 14px; border-bottom:1px solid #ad9978; margin-bottom:10px; }
+  .p-head h1 { margin:0; font-size:22px; letter-spacing:-.01em; }
+  .p-head .p-sub { font-size:11px; color:#8b8272; margin-top:5px; letter-spacing:.06em; }
+  .p-sign { display:none; margin-top:26px; padding-top:14px; border-top:1px solid #d8d2c4; font-size:11px; color:#57503f; }
+  .p-sign .line { display:inline-block; width:220px; border-bottom:1px solid #57503f; margin:0 26px 0 8px; }
+</style>
+</head>
+<body>
+  <header class="hdr">
+    <span class="wm">SONOR</span>
+    <span class="tag">Trades · Builder &amp; Joiner Works</span>
+    <span class="sp"></span>
+    <span id="saveNote"></span>
+    <button onclick="Trades.addArea()">+ Area</button>
+    <button onclick="Trades.printBlank()">Print for trades</button>
+    <button class="gold" onclick="Trades.printPriced()">Print priced</button>
+  </header>
+  <div id="projectBarHost"></div>
+  <div class="wrap">
+    <div class="p-head" id="pHead"></div>
+    <div class="intro noprint">Per-area works list for the builder / joiner to quote against. Everything here is
+      the finishing-works scope — AV, control, lighting programming and calibration are carried by Sonor and are
+      <b>not</b> in this list unless stated. Edits save automatically to the project. Use <b>Print for trades</b>
+      for a blank-sum copy to hand over, <b>Print priced</b> for the internal copy.</div>
+    <div id="areas"><div class="empty">Select a project above to open its trades list.</div></div>
+    <div class="foot-add noprint" style="display:none" id="footAdd"><button onclick="Trades.addArea()">+ Add another area</button></div>
+    <div class="grand" id="grand" style="display:none"></div>
+    <div class="p-sign" id="pSign">Quoted by <span class="line"></span> Company <span class="line"></span> Date <span class="line"></span><br><br>
+      Please price each line individually where possible. Supply items marked “supply by Sonor” are fit-only.</div>
+  </div>
+
+<script src="../data/sonor-db.js"></script>
+<script src="../data/sonor-project-bar.js"></script>
+<script>
+(function () {
+  'use strict';
+  var db = null, projectId = null, projectLabel = '', doc = null, saveTimer = null, dirty = false;
+
+  var DEFAULT_DOC = { version: 1, areas: [] };
+  function uid() { return 't' + Math.random().toString(36).slice(2, 9); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function money(n) { return n == null || n === '' ? '' : '£' + Number(n).toLocaleString('en-GB', { maximumFractionDigits: 0 }); }
+
+  // ── load / save (ONE SOURCE: projects.metadata.trades via merge RPC) ──────
+  async function loadDoc() {
+    var el = document.getElementById('areas');
+    if (!db || !projectId) { el.innerHTML = '<div class="empty">Select a project above to open its trades list.</div>'; return; }
+    try {
+      var res = await db.client.from('projects').select('metadata').eq('id', projectId).maybeSingle();
+      var md = (res.data && res.data.metadata) || {};
+      doc = md.trades || JSON.parse(JSON.stringify(DEFAULT_DOC));
+      if (!doc.areas) doc.areas = [];
+    } catch (e) { doc = JSON.parse(JSON.stringify(DEFAULT_DOC)); }
+    render();
+  }
+  function queueSave() {
+    dirty = true;
+    note('editing…');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 1200);
+  }
+  async function save() {
+    if (!db || !projectId || !doc) return;
+    doc.updated_at = new Date().toISOString();
+    doc.updated_by = 'trades-page';
+    try {
+      var res = await db.client.rpc('sonor_merge_project_metadata', { p_project_id: projectId, p_patch: { trades: doc } });
+      if (res.error) throw res.error;
+      dirty = false; note('saved ✓');
+      setTimeout(function () { if (!dirty) note(''); }, 2200);
+    } catch (e) { note('save failed'); console.warn('[trades] save failed', e); }
+  }
+  function note(t) { var n = document.getElementById('saveNote'); if (n) n.textContent = t; }
+
+  // ── render ────────────────────────────────────────────────────────────────
+  function render() {
+    var el = document.getElementById('areas');
+    document.getElementById('footAdd').style.display = doc ? 'block' : 'none';
+    if (!doc) return;
+    if (!doc.areas.length) { el.innerHTML = '<div class="empty">No areas yet — add Cinema / Gym / Hall with “+ Area”.</div>'; }
+    else el.innerHTML = doc.areas.map(areaHtml).join('');
+    var totals = doc.areas.map(subTotal);
+    var grandEl = document.getElementById('grand');
+    var any = totals.some(function (t) { return t > 0; });
+    grandEl.style.display = any ? 'flex' : 'none';
+    if (any) grandEl.innerHTML = '<span>Estimated total (entered sums)</span>' + money(totals.reduce(function (a, b) { return a + b; }, 0));
+    var ph = document.getElementById('pHead');
+    ph.innerHTML = '<h1>Builder &amp; Joiner Works — ' + esc(projectLabel || 'Project') + '</h1>' +
+      '<div class="p-sub">SONOR SMART HOMES · ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) +
+      ' · finishing works scope — AV / control / calibration by Sonor unless stated</div>';
+  }
+  function subTotal(a) { return (a.items || []).reduce(function (s, it) { return s + (Number(it.sum) || 0); }, 0); }
+  function areaHtml(a, ai) {
+    var st = subTotal(a);
+    var h = '<div class="area"><div class="area-h">' +
+      '<input class="a-label" value="' + esc(a.label) + '" onchange="Trades.setArea(' + ai + ',this.value)">' +
+      '<span class="a-count">' + (a.items || []).length + ' items</span><span class="sp"></span>' +
+      (st ? '<span class="a-sub">' + money(st) + '</span>' : '') +
+      '<button class="noprint" onclick="Trades.removeArea(' + ai + ')">remove</button></div>';
+    h += '<table><thead><tr><th>Item</th><th>Detail / spec</th><th>Trade</th><th>Sum £</th><th>Notes</th><th class="noprint"></th></tr></thead><tbody>';
+    (a.items || []).forEach(function (it, ii) {
+      var id = ai + ',' + ii;
+      h += '<tr>' +
+        '<td class="c-desc"><input value="' + esc(it.desc) + '" onchange="Trades.set(' + id + ',\'desc\',this.value)"></td>' +
+        '<td class="c-detail"><textarea rows="1" onchange="Trades.set(' + id + ',\'detail\',this.value)">' + esc(it.detail) + '</textarea></td>' +
+        '<td class="c-trade"><select onchange="Trades.set(' + id + ',\'trade\',this.value)">' +
+          ['Builder', 'Joiner', 'Either', 'Specialist'].map(function (t) { return '<option' + (it.trade === t ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></td>' +
+        '<td class="c-sum"><input class="sum" type="number" min="0" step="10" value="' + (it.sum == null ? '' : esc(it.sum)) + '" onchange="Trades.set(' + id + ',\'sum\',this.value)"></td>' +
+        '<td class="c-notes"><textarea rows="1" onchange="Trades.set(' + id + ',\'notes\',this.value)">' + esc(it.notes) + '</textarea></td>' +
+        '<td class="c-x noprint"><button class="rm" title="Remove line" onclick="Trades.removeItem(' + id + ')">×</button></td></tr>';
+    });
+    h += '</tbody></table><div class="addrow noprint"><button onclick="Trades.addItem(' + ai + ')">+ Add item to ' + esc(a.label) + '</button></div></div>';
+    return h;
+  }
+
+  // ── mutators ──────────────────────────────────────────────────────────────
+  window.Trades = {
+    set: function (ai, ii, k, v) { doc.areas[ai].items[ii][k] = (k === 'sum' ? (v === '' ? null : Number(v)) : v); queueSave(); render(); },
+    setArea: function (ai, v) { doc.areas[ai].label = v || 'Area'; queueSave(); render(); },
+    addItem: function (ai) { doc.areas[ai].items.push({ id: uid(), desc: '', detail: '', trade: 'Builder', sum: null, notes: '' }); queueSave(); render(); },
+    removeItem: function (ai, ii) { doc.areas[ai].items.splice(ii, 1); queueSave(); render(); },
+    addArea: function () { if (!doc) return; doc.areas.push({ id: uid(), label: 'New Area', items: [] }); queueSave(); render(); },
+    removeArea: function (ai) { if (!confirm('Remove this whole area and its items?')) return; doc.areas.splice(ai, 1); queueSave(); render(); },
+    printBlank: function () { document.body.classList.add('print-blank'); window.print(); setTimeout(function () { document.body.classList.remove('print-blank'); }, 500); },
+    printPriced: function () { document.body.classList.remove('print-blank'); window.print(); },
+    _debug: function () { return { doc: doc, setDoc: function (d, label) { doc = d; projectLabel = label || projectLabel; render(); } }; }
+  };
+
+  // ── boot: project bar + ?project deep link ────────────────────────────────
+  function boot(attempt) {
+    attempt = attempt || 0;
+    try { db = new SonorDB(); } catch (e) { db = null; }
+    var bar = window.SonorProjectBar;
+    if ((!bar || !db) && attempt < 5) { setTimeout(function () { boot(attempt + 1); }, 900); return; }
+    var q = new URLSearchParams(location.search);
+    var deep = q.get('project');
+    if (bar && db) {
+      try {
+        bar.init({ supa: db, appKey: 'trades', host: document.getElementById('projectBarHost'), onChange: function (detail) {
+          projectId = (detail && detail.currentId) || null;
+          var p = detail && detail.project;
+          projectLabel = p ? ((p.address || p.name || '').split('\n')[0].split(',')[0]) : '';
+          loadDoc();
+        } });
+        var pid = deep || (bar.getActiveId && bar.getActiveId());
+        if (pid) {
+          projectId = pid;
+          var pr = bar.getProject && bar.getProject(pid);
+          projectLabel = pr ? ((pr.address || pr.name || '').split('\n')[0].split(',')[0]) : '';
+          loadDoc();
+        }
+      } catch (e) { console.warn('[trades] bar init failed', e); }
+    } else if (db && deep) { projectId = deep; loadDoc(); }
+  }
+  document.addEventListener('DOMContentLoaded', function () { boot(); });
+})();
+</script>
+</body>
+</html>

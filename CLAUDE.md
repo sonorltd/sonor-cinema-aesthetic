@@ -1,4 +1,4 @@
-# Cinema Aesthetic — Claude Code Context (v0.10.1)
+# Cinema Aesthetic — Claude Code Context (v0.11.0)
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
@@ -253,3 +253,16 @@ render-and-eyeball before shipping).
   av_catalogue (canonical). sync-everything run 2026-07-20 (22 copies
   refreshed incl. regenerated sonor-blocks-seed.js) — all vendored masters
   current. No CD/CT code edits (their session owns them; nothing needed).
+- v0.11.0 (2026-07-30) — **TRADES page (builder / joiner quote list).** New
+  standalone dashboard/sonor-trades.html — the "brief hyperlink" pattern:
+  project bar + ?project=<uuid> deep link, opens in its own tab from anywhere.
+  Per-area works lists (Cinema / Gym / Hall seeded on 1387 from the concept
+  images + CT build data — 30 lines; areas + items freely addable), columns
+  Item / Detail / Trade (Builder·Joiner·Either·Specialist) / Sum £ / Notes,
+  per-area subtotals + grand total, debounced autosave. ONE SOURCE: the whole
+  doc lives in projects.metadata.trades written ONLY via
+  sonor_merge_project_metadata. Two print modes: "Print for trades" (blank sum
+  boxes + signature block — hand to the builder) and "Print priced" (internal).
+  Links: landing overview note + Summary actions ("Trades list ↗"). Hosted:
+  https://sonorltd.github.io/sonor-cinema-aesthetic/dashboard/sonor-trades.html?project=<id>
+  ASKS logged: PM brief page + Master Hub + CD could link the same URL.

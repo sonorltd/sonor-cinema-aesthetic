@@ -7,7 +7,8 @@ family room, matching the attached concept image's dark grey scheme exactly.
 Walls in charcoal stretched fabric (#33363a) with graphite upholstered panels,
 joinery in near-black graphite shaker style (#232529) with dark bronze hardware,
 shelving niches lined in smoked oak (#6e5136) with concealed warm LED washes,
-seating in light stone-grey fabric (#b3ada3), slate deep-pile carpet (#4b4d51).
+seating: two rows of three FrontRow Serenity modular recliners in light
+silver-grey fabric (#b3ada3), slate deep-pile carpet (#4b4d51).
 Full-height dark grey blackout curtains over all windows. Warm 2700K lighting
 only — concealed LED cove glow at the ceiling perimeter, low-glare bronze-trimmed
 downlights, no visible light sources, no RGB, no blue tones anywhere.
@@ -24,7 +25,8 @@ Front view of the cinema: full-width acoustically transparent projection screen
 upholstered acoustic panels either side, smoked-oak shelving niche with warm LED
 wash to the left of the screen between the screen and the acoustic door, subtle
 fibre-optic star-ceiling recess above with a warm LED cove halo, two rows of
-four light stone-grey fabric recliner cinema seats facing the screen, dark grey
+three FrontRow Serenity modular recliners in light silver-grey fabric facing
+the screen, dark grey
 blackout curtains just visible at the right edge, film playing on screen with
 rich colour.
 
@@ -32,7 +34,7 @@ rich colour.
 Clean top-down architectural plan illustration (not photoreal), matching the
 attached LGF plan: 5.23m × 5.18m room with the angled bay window drawn on the
 bottom wall and two windows on the right wall, projection screen on the top
-(solid) wall, door in the top-left corner, two rows of four recliner seats,
+(solid) wall, door in the top-left corner, two straight rows of three recliner seats,
 in-wall speaker positions marked left-centre-right behind the screen, two
 surround speakers on the side walls, four ceiling speaker positions, single
 subwoofer front corner, blackout curtain runs drawn across the bay and right-
@@ -65,8 +67,9 @@ trimmed downlight scallops, framed backlit movie poster with halo glow, low
 walnut side table beside a stone-grey recliner armrest.
 
 ## 7 · SEATING DETAIL  → seat slot
-Close-up three-quarter shot of a single luxury cinema recliner in light
-stone-grey fabric exactly matching the attached concept image's seats, stitched
+Close-up three-quarter shot of a single FrontRow Serenity luxury cinema
+recliner in light silver-grey fabric exactly matching the attached concept
+image's seats, stitched
 headrest, dark bronze cup-holder detail, slate carpet below, soft warm rim
 lighting from behind.
 

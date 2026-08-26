@@ -1,4 +1,12 @@
-# Cinema Aesthetic — Claude Code Context (v0.11.1)
+# Cinema Aesthetic — Claude Code Context (v0.12.0)
+
+> **v0.12.0 (2026-08-20):** 📂 Folder pill — new app-local module `data/aesthetic-folder-link.js` v0.1.0 injects an
+> "📂 Folder" pill beside the header version when the active project's `projects.metadata.workspace_folder` is set
+> (relative to the Sonor root, e.g. "APP - Cinema Aesthetic/greystones" — 1392 + 1387 stamped). Click navigates to
+> `sonor-open://<encoded path>` handled by the one-time Mac helper `scripts/install-sonor-open-helper.sh`
+> ("Sonor Open.app", osacompile applet + CFBundleURLTypes, path-locked inside ~/Code/Sonor); right-click copies the
+> path; toast hints if the helper is missing. Data-driven — any project gains the pill by stamping the metadata key;
+> pattern is portable to other apps (module has no aesthetic-specific deps).
 
 > **Spine version: 1.2** (SONOR-APP-SPINE.md)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)

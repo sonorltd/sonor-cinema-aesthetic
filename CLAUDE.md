@@ -1,5 +1,7 @@
 # Cinema Aesthetic — Claude Code Context (v0.12.0)
 
+> **Active theme: locked custom / slate canvas** — client-facing surface, `data-theme-lock` (sonor-platform §2 exemption); the cross-app ◐ cookie never flips it.
+
 > **v0.12.0 (2026-08-20):** 📂 Folder pill — new app-local module `data/aesthetic-folder-link.js` v0.1.0 injects an
 > "📂 Folder" pill beside the header version when the active project's `projects.metadata.workspace_folder` is set
 > (relative to the Sonor root, e.g. "APP - Cinema Aesthetic/greystones" — 1392 + 1387 stamped). Click navigates to
@@ -8,7 +10,7 @@
 > path; toast hints if the helper is missing. Data-driven — any project gains the pill by stamping the metadata key;
 > pattern is portable to other apps (module has no aesthetic-specific deps).
 
-> **Spine version: 1.2** (SONOR-APP-SPINE.md)
+> **Spine version: 1.3** (SONOR-APP-SPINE.md — SonorShell-mounted like Seating; declaration reconciled 2026-09-30)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
 > Brand source: `../Branding - CORE/brand-core.xml`
 > Repo: `sonor-cinema-aesthetic` · Pages: https://sonorltd.github.io/sonor-cinema-aesthetic/

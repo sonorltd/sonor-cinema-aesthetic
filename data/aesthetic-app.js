@@ -671,7 +671,7 @@
     } catch (e) {}
     try {   // v0.11.1 — canonical room registry (PROJECT-ROOM TAG v1): Takeoffs
       // areas {floor_id, floor_code, name} — same identity RFI clouds resolve to
-      var tf = await db.from('takeoffs_floors').select('floor_id,code,content').eq('project_id', cfg.projectId).order('seq');
+      var tf = await db.from('takeoffs_floors').select('floor_id,code,content').eq('project_id', cfg.projectId).is('deleted_at', null).order('seq');
       var rooms = [];
       (tf.data || []).forEach(function (f) {
         (((f.content || {}).areas) || []).forEach(function (a) {

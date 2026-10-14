@@ -1,4 +1,5 @@
 # Greystones (1392) — Basement Render Prompts v6 · DARK GREY · LAYOUT + OBJECT CANON LOCKED
+### Runner 2.0 note (2026-10-14): `layout-canon.png` is NO LONGER attached implicitly — pass it: `node nano-banana-batch.mjs --layoutref layout-canon.png` (it is appended last; the DO NOT RE-RENDER canon prompt never receives it).
 ### v6 (2026-09-01): Bryn — "inconsistent, make it more like the plan, exact and to scale, especially projector screen; nothing but the screen on that wall; front/RHS/rear cinema walls stretched fabric." Added the OBJECT CANON (exact repeated dimensions for every object so each render draws the SAME object at the SAME size), fixed cinema wall finishes, stripped all invented accessories from the screen wall. Layout unchanged from v5 (`layout-canon.png`, frozen from Bryn's hand sketch) — the batch script attaches it to EVERY render; placements must match it exactly. Also attach `../15 harrop/andy original cinema mood.png` as the style/material reference (the script does this too).
 
 ## STYLE BLOCK (prepend to every prompt)

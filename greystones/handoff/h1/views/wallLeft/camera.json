@@ -1,0 +1,21 @@
+{
+  "slot": "wallLeft",
+  "job": "side elevation — tier & projector line",
+  "position_mm": [
+    3520,
+    1500,
+    3300
+  ],
+  "target_mm": [
+    0,
+    1200,
+    2700
+  ],
+  "fov_deg": 60,
+  "aspect": "16:9",
+  "px": [
+    1920,
+    1080
+  ],
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

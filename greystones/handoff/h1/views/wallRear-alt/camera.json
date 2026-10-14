@@ -1,0 +1,21 @@
+{
+  "slot": "wallRear-alt",
+  "job": "rear corner — door & niches",
+  "position_mm": [
+    800,
+    1650,
+    2520
+  ],
+  "target_mm": [
+    3275,
+    1100,
+    6000
+  ],
+  "fov_deg": 58,
+  "aspect": "16:9",
+  "px": [
+    1920,
+    1080
+  ],
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

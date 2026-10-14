@@ -1,0 +1,21 @@
+{
+  "slot": "wallRear",
+  "job": "seating & tier — from the screen looking back",
+  "position_mm": [
+    2000,
+    1500,
+    700
+  ],
+  "target_mm": [
+    2000,
+    1050,
+    6000
+  ],
+  "fov_deg": 58,
+  "aspect": "16:9",
+  "px": [
+    1920,
+    1080
+  ],
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

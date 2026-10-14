@@ -1,0 +1,21 @@
+{
+  "slot": "seat",
+  "job": "one seat close-up",
+  "position_mm": [
+    1663,
+    1250,
+    2580
+  ],
+  "target_mm": [
+    763,
+    600,
+    4408
+  ],
+  "fov_deg": 42,
+  "aspect": "16:9",
+  "px": [
+    1920,
+    1080
+  ],
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

@@ -6,7 +6,7 @@
 // path as the 📦 Handoff pill — and writes the package to <out>/hN/. hN = next free revision in <out> (append-only).
 //
 //   node handoff-headless.mjs --pid <project uuid> --out "<…>/greystones/handoff" [--module path/to/28-render-handoff.js]
-//     [--app https://sonorltd.github.io/sonor-cinema/dashboard/sonor-cinema.html] [--facts "retained: …;removed: …"]
+//     [--app https://sonorltd.github.io/sonor-cinema/dashboard/sonor-cinema.html] [--facts "retained: …;removed: …"] [--rev h4]
 //     [--chrome "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
 //
 // --module injects a local copy of the module AFTER the page loads (a newer module against the deployed app).
@@ -24,7 +24,7 @@ if (!PID) { console.error('--pid <project uuid> required'); process.exit(2); }
 
 fs.mkdirSync(OUT, { recursive: true });
 const existing = fs.readdirSync(OUT).filter(n => /^h\d+$/.test(n)).map(n => Number(n.slice(1)));
-const hN = 'h' + ((existing.length ? Math.max(...existing) : 0) + 1);
+const hN = opt('rev', '') || ('h' + ((existing.length ? Math.max(...existing) : 0) + 1)); // --rev h4 when building away from the project folder
 
 const browser = await launch({ chrome: opt('chrome', '') });
 try {

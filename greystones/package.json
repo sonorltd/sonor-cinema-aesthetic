@@ -1,7 +1,6 @@
 {
   "name": "sonor-cinema-aesthetic-greystones-tools",
   "private": true,
-  "description": "Headless tools beside the Nano Banana runner: handoff-headless.mjs (render handoff packages), b546-apply-1392.mjs (one-off canon write). Playwright drives the installed Google Chrome on the Mac (channel), no browser download.",
   "type": "module",
-  "dependencies": { "playwright": "^1.47.0" }
+  "description": "Headless tools beside the Nano Banana runner — handoff-headless.mjs (render handoff packages), b546-apply-1392.mjs (one-off canon write), cdp.mjs (zero-dependency Chrome DevTools driver). NO npm packages: the Mac's npm sits behind a TLS-intercepting proxy, so everything runs on Node 22 built-ins + the installed Google Chrome."
 }

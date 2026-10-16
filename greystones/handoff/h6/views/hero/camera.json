@@ -1,0 +1,22 @@
+{
+  "slot": "hero",
+  "job": "screen wall from the rear of the room",
+  "frame": "CT world mm [x, y, z]: x across (0 = left wall facing the screen), y along (0 = screen end), z up",
+  "position_mm": [
+    2000,
+    5750,
+    1750
+  ],
+  "target_mm": [
+    2000,
+    0,
+    1250
+  ],
+  "fov_deg": 60,
+  "aspect": "16:9",
+  "px": [
+    1920,
+    1080
+  ],
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

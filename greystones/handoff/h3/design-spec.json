@@ -1,0 +1,252 @@
+{
+  "schema": "sonor-render-handoff/design-spec v1",
+  "generated_at": "2026-10-16T17:03:20.080Z",
+  "generator": "Cinema Design v7.26.0 · 28-render-handoff 1.1.1",
+  "project_number": "1392",
+  "handoff_revision": "h3",
+  "design_revision": {
+    "design_version": 6,
+    "ct_version": "1.56.0",
+    "ct_saved_at": null
+  },
+  "coordinate_frame": {
+    "units": "mm",
+    "origin": "left-front corner of the structural shell as you face the screen",
+    "x": "across the room (0 = left wall facing the screen)",
+    "y": "along the room (0 = front/screen end, d = rear wall)",
+    "z": "up from finished floor",
+    "screen_wall_face_y": 0,
+    "wall_x_convention": "CT wall placements are stored as seen by a person facing that wall; converted to world x/y here"
+  },
+  "rooms": [
+    {
+      "id": "cinema",
+      "shell_mm": {
+        "w": 4000,
+        "d": 6000,
+        "h": 2700
+      },
+      "built_mm": {
+        "w": 4000,
+        "d": 6000,
+        "h": 2700
+      },
+      "shell_polygon": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 4000,
+          "y": 0
+        },
+        {
+          "x": 4000,
+          "y": 6000
+        },
+        {
+          "x": 0,
+          "y": 6000
+        }
+      ],
+      "screen_wall_face_y": 0,
+      "treatment_depth_mm": {
+        "screen": 0,
+        "side": 0,
+        "rear": 0,
+        "ceiling": 0
+      },
+      "listening_area": null
+    }
+  ],
+  "walls": [
+    {
+      "id": "front",
+      "role": "screen wall",
+      "finish": "stretched fabric, full width, nothing but the screen",
+      "y": 0
+    },
+    {
+      "id": "rear",
+      "role": "rear wall",
+      "y": 6000
+    },
+    {
+      "id": "left",
+      "role": "left wall (facing the screen)",
+      "x": 0
+    },
+    {
+      "id": "right",
+      "role": "right wall (facing the screen)",
+      "x": 4000
+    }
+  ],
+  "openings": [
+    {
+      "wall": "left",
+      "type": "opening",
+      "h": 2300,
+      "z0": 0,
+      "w": 2400,
+      "x0": 0,
+      "x1": 0,
+      "y0": 1800,
+      "y1": 4200
+    }
+  ],
+  "screen": {
+    "display_mode": "pj-150",
+    "type": "projector",
+    "diagonal_in": 145,
+    "w": 3200,
+    "h": 1800,
+    "bottom_from_floor": 500,
+    "centre": {
+      "x": 2000,
+      "y": 0,
+      "z": 1400
+    },
+    "screen_wall_depth": 300
+  },
+  "seating": {
+    "shape": "u",
+    "type": "sofa-u",
+    "colour": "silver-grey",
+    "material": "fabric",
+    "back_w": 3200,
+    "return_l": 2200,
+    "depth": 900,
+    "seat_h": 450,
+    "back_h": 780,
+    "mlp_from_screen_face": 5000,
+    "layout": [
+      {
+        "row": 1,
+        "floor_z": 0,
+        "ear_y": 5500,
+        "seats": [
+          {
+            "x": 2000,
+            "y_back": 5950,
+            "w": 3200,
+            "depth": 900,
+            "kind": "back"
+          },
+          {
+            "x": 850,
+            "y_back": 5050,
+            "w": 900,
+            "depth": 1300,
+            "kind": "return-left"
+          },
+          {
+            "x": 3150,
+            "y_back": 5050,
+            "w": 900,
+            "depth": 1300,
+            "kind": "return-right"
+          }
+        ]
+      }
+    ]
+  },
+  "tiers_steps": [],
+  "other_objects": [
+    {
+      "type": "projector",
+      "x": 2000,
+      "y": 5850,
+      "z": 2450,
+      "throw_mm": 5850
+    }
+  ],
+  "audio": {
+    "atmos_config": "5.1.4",
+    "sub_count": 2,
+    "visible": false,
+    "speakers": []
+  },
+  "ceiling": {
+    "coffer": null,
+    "star_ceiling": null
+  },
+  "lighting": {
+    "fixtures": [],
+    "coffer_led": false
+  },
+  "finishes": {
+    "source": "Cinema Aesthetic saved scheme — fill from renders/<project>/nano-banana-prompts-r<prev>.md ROOM CANON",
+    "paint": null,
+    "fabric": null,
+    "carpet": null,
+    "joinery": null
+  },
+  "site_changes": [],
+  "facts": [
+    {
+      "id": "F1",
+      "text": "Room shell from Cinema Takeoff polygon; screen wall is built out flat at y=0 mm (service recess behind it).",
+      "source": "ct_state.room.polygon",
+      "confidence": "modelled"
+    },
+    {
+      "id": "O1",
+      "text": "opening on left wall, world x 0–0 mm, y 1800–4200, 2300 mm high.",
+      "source": "ct_state.placements.left",
+      "confidence": "modelled"
+    },
+    {
+      "id": "P1",
+      "text": "Projector ceiling-mounted at world y=5850 mm, centred x=2000 (Takeoff throw as modelled: 5850 mm).",
+      "source": "ct_state.metadata.projector",
+      "confidence": "modelled"
+    }
+  ],
+  "views": [
+    {
+      "slot": "hero",
+      "job": "screen wall from the rear of the room",
+      "geometry": "views/hero/geometry.png",
+      "camera": "views/hero/camera.json"
+    },
+    {
+      "slot": "wallRear",
+      "job": "seating & tier — from the screen looking back",
+      "geometry": "views/wallRear/geometry.png",
+      "camera": "views/wallRear/camera.json"
+    },
+    {
+      "slot": "wallLeft",
+      "job": "side elevation — tier & projector line",
+      "geometry": "views/wallLeft/geometry.png",
+      "camera": "views/wallLeft/camera.json"
+    },
+    {
+      "slot": "detail",
+      "job": "ceiling detail — coffer / LED",
+      "geometry": "views/detail/geometry.png",
+      "camera": "views/detail/camera.json"
+    },
+    {
+      "slot": "seat",
+      "job": "one seat close-up",
+      "geometry": "views/seat/geometry.png",
+      "camera": "views/seat/camera.json"
+    },
+    {
+      "slot": "wallRear-alt",
+      "job": "rear corner — door & niches",
+      "geometry": "views/wallRear-alt/geometry.png",
+      "camera": "views/wallRear-alt/camera.json"
+    }
+  ],
+  "references": {
+    "site": "../../site-photos/",
+    "products": null,
+    "finishes": null,
+    "approved_hero": null,
+    "layout": "floorplan-canon.png",
+    "elevations": "elevations/"
+  }
+}

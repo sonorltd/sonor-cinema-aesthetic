@@ -1,0 +1,22 @@
+{
+  "slot": "wallRear-alt",
+  "job": "rear corner — door & niches",
+  "frame": "CT world mm [x, y, z]: x across (0 = left wall facing the screen), y along (0 = screen end), z up",
+  "position_mm": [
+    800,
+    2520,
+    1650
+  ],
+  "target_mm": [
+    3200,
+    6000,
+    1100
+  ],
+  "fov_deg": 58,
+  "aspect": "16:9",
+  "px": [
+    1920,
+    1080
+  ],
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

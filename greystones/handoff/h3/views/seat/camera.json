@@ -1,0 +1,22 @@
+{
+  "slot": "seat",
+  "job": "one seat close-up",
+  "frame": "CT world mm [x, y, z]: x across (0 = left wall facing the screen), y along (0 = screen end), z up",
+  "position_mm": [
+    1750,
+    null,
+    1250
+  ],
+  "target_mm": [
+    850,
+    null,
+    600
+  ],
+  "fov_deg": 42,
+  "aspect": "16:9",
+  "px": [
+    1920,
+    1080
+  ],
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

@@ -1,0 +1,527 @@
+{
+  "schema": "sonor-render-handoff/design-spec v1",
+  "generated_at": "2026-10-16T22:24:46.442Z",
+  "generator": "Cinema Design v7.28.0 · 28-render-handoff 1.3.1",
+  "project_number": "1392",
+  "handoff_revision": "h8",
+  "design_revision": {
+    "design_version": 14,
+    "ct_version": "1.58.0",
+    "ct_saved_at": "2026-10-16T22:24:44.852942+00:00",
+    "saved_at_source": "cinema_designs.updated_at (row)"
+  },
+  "ids": {
+    "room": "RM1",
+    "screen": "SCR1",
+    "projector": "PJ1",
+    "openings": [
+      "OP1"
+    ],
+    "seating": [
+      "SOFA1",
+      "SOFA1-BACK",
+      "SOFA1-RL",
+      "SOFA1-RR"
+    ],
+    "spots": [
+      "SP-L1",
+      "SP-L2",
+      "SP-R1",
+      "SP-R2",
+      "SP-F1",
+      "SP-F2",
+      "SP-B1",
+      "SP-B2"
+    ],
+    "note": "stable across hN for the same project; cameras list the ids inside their frustum (views/<slot>/camera.json visible_ids)"
+  },
+  "coordinate_frame": {
+    "units": "mm",
+    "origin": "left-front corner of the structural shell as you face the screen",
+    "x": "across the room (0 = left wall facing the screen)",
+    "y": "along the room (0 = front/screen end, d = rear wall)",
+    "z": "up from finished floor",
+    "screen_wall_face_y": 300,
+    "wall_x_convention": "CT wall placements are stored as seen by a person facing that wall; converted to world x/y here"
+  },
+  "rooms": [
+    {
+      "id": "RM1",
+      "role": "cinema",
+      "shell_mm": {
+        "w": 4000,
+        "d": 6000,
+        "h": 2700
+      },
+      "built_mm": {
+        "w": 4000,
+        "d": 5700,
+        "h": 2700
+      },
+      "shell_polygon": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 4000,
+          "y": 0
+        },
+        {
+          "x": 4000,
+          "y": 6000
+        },
+        {
+          "x": 0,
+          "y": 6000
+        }
+      ],
+      "screen_wall_face_y": 300,
+      "screen_wall_face_source": "ct_state.room.screenWallDepth (screen-wall void)",
+      "treatment_depth_mm": {
+        "screen": 0,
+        "side": 0,
+        "rear": 0,
+        "ceiling": 0
+      },
+      "listening_area": null
+    }
+  ],
+  "walls": [
+    {
+      "id": "front",
+      "role": "screen wall",
+      "finish": "stretched fabric, full width, nothing but the screen",
+      "y": 300
+    },
+    {
+      "id": "rear",
+      "role": "rear wall",
+      "y": 6000
+    },
+    {
+      "id": "left",
+      "role": "left wall (facing the screen)",
+      "x": 0
+    },
+    {
+      "id": "right",
+      "role": "right wall (facing the screen)",
+      "x": 4000
+    }
+  ],
+  "openings": [
+    {
+      "wall": "left",
+      "type": "opening",
+      "h": 2300,
+      "z0": 0,
+      "w": 2400,
+      "x0": 0,
+      "x1": 0,
+      "y0": 1800,
+      "y1": 4200,
+      "id": "OP1",
+      "ct_id": "b546-opening-1792169756990",
+      "facing": "+x (into the room)",
+      "status": "position modelled in Takeoff; dimensions not surveyed (assumed)"
+    }
+  ],
+  "screen": {
+    "id": "SCR1",
+    "wall": "front",
+    "facing": "+y (into the room)",
+    "cd_display_preset": "pj-150",
+    "source": "takeoff (ct_state.metadata.screen)",
+    "type": "projector",
+    "diagonal_in": 145,
+    "w": 3200,
+    "h": 1800,
+    "bottom_from_floor": 500,
+    "centre": {
+      "x": 2000,
+      "y": 300,
+      "z": 1400
+    },
+    "screen_wall_depth": 300
+  },
+  "seating": {
+    "shape": "u",
+    "type": "sofa-u",
+    "colour": "silver-grey",
+    "material": "fabric",
+    "back_w": 3200,
+    "return_l": 2200,
+    "depth": 900,
+    "seat_h": 450,
+    "back_h": 780,
+    "mlp_from_screen_face": 5000,
+    "id": "SOFA1",
+    "facing": "-y (toward the screen)",
+    "footprint": {
+      "x0": 400,
+      "x1": 3600,
+      "y0": 3750,
+      "y1": 5950
+    },
+    "layout": [
+      {
+        "row": 1,
+        "floor_z": 0,
+        "ear_y": 5500,
+        "seats": [
+          {
+            "id": "SOFA1-BACK",
+            "x": 2000,
+            "y_back": 5950,
+            "w": 3200,
+            "depth": 900,
+            "kind": "back",
+            "footprint": {
+              "x0": 400,
+              "x1": 3600,
+              "y0": 5050,
+              "y1": 5950
+            }
+          },
+          {
+            "id": "SOFA1-RL",
+            "x": 850,
+            "y_back": 5050,
+            "w": 900,
+            "depth": 1300,
+            "kind": "return-left",
+            "footprint": {
+              "x0": 400,
+              "x1": 1300,
+              "y0": 3750,
+              "y1": 5050
+            }
+          },
+          {
+            "id": "SOFA1-RR",
+            "x": 3150,
+            "y_back": 5050,
+            "w": 900,
+            "depth": 1300,
+            "kind": "return-right",
+            "footprint": {
+              "x0": 2700,
+              "x1": 3600,
+              "y0": 3750,
+              "y1": 5050
+            }
+          }
+        ]
+      }
+    ],
+    "listening_datum": {
+      "physical_ear_y": 5500,
+      "physical_source": "derived — centre of the sofa back-run seat (the geometry the renders follow)",
+      "takeoff_mlp_from_screen_face": 5000,
+      "takeoff_source": "ct_state.metadata.seating.mlpDist (Video-tab calc input; not yet re-entered for the sofa)",
+      "rule": "renders and drawings use physical_ear_y; the Takeoff MLP is the sightline/acoustic calc input and is listed only so the two are never confused"
+    }
+  },
+  "tiers_steps": [],
+  "other_objects": [
+    {
+      "id": "PJ1",
+      "type": "projector",
+      "x": 2000,
+      "y": 5700,
+      "z": 2250,
+      "facing": "-y (toward the screen)",
+      "footprint": {
+        "x0": 1775,
+        "x1": 2225,
+        "y0": 5450,
+        "y1": 5950
+      },
+      "throw_mm": 5400,
+      "throw_mm_takeoff": 5700,
+      "mount": "under-rear-bulkhead",
+      "mount_text": "tight to the underside of the rear bulkhead, minimal bracket, no drop pole; optical centreline on the screen centreline",
+      "status": "assumed — lens z until the projector model is chosen"
+    }
+  ],
+  "audio": {
+    "atmos_config": "5.1.4",
+    "sub_count": 1,
+    "visible": false,
+    "speakers": []
+  },
+  "ceiling": {
+    "coffer": {
+      "construction": "continuous lower perimeter bulkhead around a higher flat central ceiling",
+      "ring_mm": {
+        "front": 600,
+        "rear": 600,
+        "left": 600,
+        "right": 600
+      },
+      "drop_mm": 300,
+      "band_underside_z": 2400,
+      "centre_ceiling_z": 2700,
+      "led_cove": true,
+      "led_position": "inner reveal, concealed, washing UP onto the higher centre; band meets every wall solidly (no outer gap, no wall wash)",
+      "star_ceiling": false,
+      "fixtures": {
+        "front": {
+          "downlights": 2,
+          "largeCutouts": 0
+        },
+        "rear": {
+          "downlights": 2,
+          "largeCutouts": 0
+        },
+        "left": {
+          "downlights": 2,
+          "largeCutouts": 0
+        },
+        "right": {
+          "downlights": 2,
+          "largeCutouts": 0
+        }
+      },
+      "status": "assumed — planning defaults (600 band / 300 drop); confirm on survey"
+    },
+    "star_ceiling": null
+  },
+  "lighting": {
+    "fixtures": [
+      {
+        "id": "SP-L1",
+        "type": "recessed-spot",
+        "side": "left",
+        "x": 300,
+        "y": 2400,
+        "z": 2400,
+        "facing": "-z (down)",
+        "footprint": {
+          "x0": 255,
+          "x1": 345,
+          "y0": 2355,
+          "y1": 2445
+        },
+        "kelvin": 2700,
+        "status": "assumed — count per Takeoff coffer defaults"
+      },
+      {
+        "id": "SP-L2",
+        "type": "recessed-spot",
+        "side": "left",
+        "x": 300,
+        "y": 3900,
+        "z": 2400,
+        "facing": "-z (down)",
+        "footprint": {
+          "x0": 255,
+          "x1": 345,
+          "y0": 3855,
+          "y1": 3945
+        },
+        "kelvin": 2700,
+        "status": "assumed — count per Takeoff coffer defaults"
+      },
+      {
+        "id": "SP-R1",
+        "type": "recessed-spot",
+        "side": "right",
+        "x": 3700,
+        "y": 2400,
+        "z": 2400,
+        "facing": "-z (down)",
+        "footprint": {
+          "x0": 3655,
+          "x1": 3745,
+          "y0": 2355,
+          "y1": 2445
+        },
+        "kelvin": 2700,
+        "status": "assumed — count per Takeoff coffer defaults"
+      },
+      {
+        "id": "SP-R2",
+        "type": "recessed-spot",
+        "side": "right",
+        "x": 3700,
+        "y": 3900,
+        "z": 2400,
+        "facing": "-z (down)",
+        "footprint": {
+          "x0": 3655,
+          "x1": 3745,
+          "y0": 3855,
+          "y1": 3945
+        },
+        "kelvin": 2700,
+        "status": "assumed — count per Takeoff coffer defaults"
+      },
+      {
+        "id": "SP-F1",
+        "type": "recessed-spot",
+        "side": "front",
+        "x": 1533,
+        "y": 600,
+        "z": 2400,
+        "facing": "-z (down)",
+        "footprint": {
+          "x0": 1488,
+          "x1": 1578,
+          "y0": 555,
+          "y1": 645
+        },
+        "kelvin": 2700,
+        "status": "assumed — count per Takeoff coffer defaults"
+      },
+      {
+        "id": "SP-F2",
+        "type": "recessed-spot",
+        "side": "front",
+        "x": 2467,
+        "y": 600,
+        "z": 2400,
+        "facing": "-z (down)",
+        "footprint": {
+          "x0": 2422,
+          "x1": 2512,
+          "y0": 555,
+          "y1": 645
+        },
+        "kelvin": 2700,
+        "status": "assumed — count per Takeoff coffer defaults"
+      },
+      {
+        "id": "SP-B1",
+        "type": "recessed-spot",
+        "side": "rear",
+        "x": 1533,
+        "y": 5700,
+        "z": 2400,
+        "facing": "-z (down)",
+        "footprint": {
+          "x0": 1488,
+          "x1": 1578,
+          "y0": 5655,
+          "y1": 5745
+        },
+        "kelvin": 2700,
+        "status": "assumed — count per Takeoff coffer defaults"
+      },
+      {
+        "id": "SP-B2",
+        "type": "recessed-spot",
+        "side": "rear",
+        "x": 2467,
+        "y": 5700,
+        "z": 2400,
+        "facing": "-z (down)",
+        "footprint": {
+          "x0": 2422,
+          "x1": 2512,
+          "y0": 5655,
+          "y1": 5745
+        },
+        "kelvin": 2700,
+        "status": "assumed — count per Takeoff coffer defaults"
+      }
+    ],
+    "coffer_led": true,
+    "led_position": "inner reveal, concealed, washing UP onto the higher centre; band meets every wall solidly (no outer gap, no wall wash)"
+  },
+  "finishes": {
+    "source": "review/<WQ>/canon.md (GPT maintains the finish lines; seeded by canon-seed.md in h1) — the apps hold geometry only",
+    "paint": null,
+    "fabric": null,
+    "carpet": null,
+    "joinery": null,
+    "screen_halo": "per canon.md (default ON unless the canon says otherwise)"
+  },
+  "site_changes": [],
+  "facts": [
+    {
+      "id": "F1",
+      "text": "Room shell from Cinema Takeoff polygon 4000 × 6000 × 2700; screen wall built out flat at y=300 mm (ct_state.room.screenWallDepth (screen-wall void)) — built depth 5700 mm; every y in this package measures from the structural front wall (y=0).",
+      "source": "ct_state.room.polygon + room.screenWallDepth",
+      "confidence": "modelled"
+    },
+    {
+      "id": "O1",
+      "ref": "OP1",
+      "text": "opening OP1 on left wall, world x 0–0 mm, y 1800–4200, 2400 wide × 2300 mm high.",
+      "source": "ct_state.placements.left",
+      "confidence": "modelled position; dimensions assumed (not surveyed)"
+    },
+    {
+      "id": "P1",
+      "text": "Projector tight to the underside of the rear bulkhead, minimal bracket, no drop pole; optical centreline on the screen centreline (world x=2000, y=5700, z=2250 mm; Takeoff throw as modelled: 5400 mm).",
+      "source": "ct_state.metadata.projector",
+      "confidence": "assumed"
+    },
+    {
+      "id": "C1",
+      "text": "Ceiling: continuous lower perimeter bulkhead around a higher flat central ceiling — band 600/600/600/600 mm (L/R/front/rear), drop 300 mm (underside z=2400, centre z=2700); concealed warm LED at the inner reveal washing up; no stars.",
+      "source": "ct_state.metadata.coffer",
+      "confidence": "assumed"
+    },
+    {
+      "id": "C2",
+      "text": "8 recessed spots in the band underside: SP-L1 (300,2400), SP-L2 (300,3900), SP-R1 (3700,2400), SP-R2 (3700,3900), SP-F1 (1533,600), SP-F2 (2467,600), SP-B1 (1533,5700), SP-B2 (2467,5700).",
+      "source": "ct_state.metadata.coffer.fixtures",
+      "confidence": "assumed"
+    }
+  ],
+  "views": [
+    {
+      "slot": "hero",
+      "job": "screen wall from the rear of the room",
+      "geometry": "views/hero/geometry.png",
+      "camera": "views/hero/camera.json"
+    },
+    {
+      "slot": "wallRear",
+      "job": "seating & tier — from the screen looking back",
+      "geometry": "views/wallRear/geometry.png",
+      "camera": "views/wallRear/camera.json"
+    },
+    {
+      "slot": "wallLeft",
+      "job": "side elevation — tier & projector line",
+      "geometry": "views/wallLeft/geometry.png",
+      "camera": "views/wallLeft/camera.json"
+    },
+    {
+      "slot": "detail",
+      "job": "ceiling detail — coffer / LED",
+      "geometry": "views/detail/geometry.png",
+      "camera": "views/detail/camera.json"
+    },
+    {
+      "slot": "seat",
+      "job": "one seat close-up",
+      "geometry": "views/seat/geometry.png",
+      "camera": "views/seat/camera.json"
+    },
+    {
+      "slot": "wallRear-alt",
+      "job": "rear corner — door & niches",
+      "geometry": "views/wallRear-alt/geometry.png",
+      "camera": "views/wallRear-alt/camera.json"
+    },
+    {
+      "slot": "cover",
+      "job": "document cover — A4 portrait from behind the sofa: screen wall + bulkhead in the top 60 %, carpet-led lower third (the PDF fades it to black for the title); only the sofa-return corners show at the bottom edges",
+      "geometry": "views/cover/geometry.png",
+      "camera": "views/cover/camera.json"
+    }
+  ],
+  "references": {
+    "site": "../../site-photos/",
+    "products": null,
+    "finishes": null,
+    "approved_hero": null,
+    "layout": "floorplan-canon.png",
+    "elevations": "elevations/"
+  }
+}

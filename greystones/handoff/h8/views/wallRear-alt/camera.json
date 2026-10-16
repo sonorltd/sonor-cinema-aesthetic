@@ -1,0 +1,32 @@
+{
+  "slot": "wallRear-alt",
+  "job": "rear corner — door & niches",
+  "frame": "CT world mm [x, y, z]: x across (0 = left wall facing the screen), y along (0 = screen end), z up",
+  "position_mm": [
+    800,
+    2694,
+    1650
+  ],
+  "target_mm": [
+    3200,
+    6000,
+    1100
+  ],
+  "fov_deg": 58,
+  "aspect": "16:9",
+  "px": [
+    1920,
+    1080
+  ],
+  "visible_ids": [
+    "SP-R2",
+    "SP-B1",
+    "SP-B2",
+    "SOFA1-BACK",
+    "SOFA1-RL",
+    "SOFA1-RR",
+    "PJ1"
+  ],
+  "visible_note": "ids whose bounding box enters the frustum; occlusion not tested — an id listed here may still be hidden behind another object",
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

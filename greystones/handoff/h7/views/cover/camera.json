@@ -1,0 +1,32 @@
+{
+  "slot": "cover",
+  "job": "document cover — A4 portrait from behind the sofa: screen wall + bulkhead in the top 60 %, carpet-led lower third (the PDF fades it to black for the title); only the sofa-return corners show at the bottom edges",
+  "frame": "CT world mm [x, y, z]: x across (0 = left wall facing the screen), y along (0 = screen end), z up",
+  "position_mm": [
+    2000,
+    5550,
+    1350
+  ],
+  "target_mm": [
+    2000,
+    0,
+    1500
+  ],
+  "fov_deg": 70,
+  "aspect": "A4 portrait (1:1.414)",
+  "px": [
+    1448,
+    2048
+  ],
+  "visible_ids": [
+    "SCR1",
+    "SP-L1",
+    "SP-R1",
+    "SP-F1",
+    "SP-F2",
+    "SOFA1-RL",
+    "SOFA1-RR"
+  ],
+  "visible_note": "ids whose bounding box enters the frustum; occlusion not tested — an id listed here may still be hidden behind another object",
+  "style": "white clay, dark edges, soft neutral shading, contact shadows (exchange 002)"
+}

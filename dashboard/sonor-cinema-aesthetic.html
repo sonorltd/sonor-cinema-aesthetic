@@ -354,13 +354,14 @@
   </div>
 
   <script>
-    const APP_VERSION = '0.12.0';
+    const APP_VERSION = '0.12.1';
     document.addEventListener('DOMContentLoaded', function(){ var v = document.getElementById('hdrVer'); if (v) v.textContent = 'v' + APP_VERSION; });
     // one-line swappable hero image (see aesthetic-config.js → heroImage; null = branded gradient)
     (function(){ var cfg = window.__AESTHETIC_CONFIG__ || {}; var el = document.getElementById('heroBg');
       if (el && cfg.heroImage) { el.classList.remove('grad'); el.style.backgroundImage = "url('" + cfg.heroImage + "')"; } })();
     SonorShell.mount({ appKey:'cinema-aesthetic', appName:'Cinema Aesthetic', repo:'sonor-cinema-aesthetic', version:APP_VERSION, faviconHref:'../data/favicon.svg', assetBase:'../data/', supabase:false, palette:{ self:'cinema-aesthetic' } });
-    AestheticApp.boot();
+    // S-4.3 self-report: the shell runs supabase:false here, so the app reports its own version once the catalogue load has made the Supabase client
+    (function (rep) { Promise.resolve(AestheticApp.boot()).then(rep, rep); })(function () { var d = window.__AESTHETIC_DB__; if (d && d.versions && d.versions.report) d.versions.report('cinema-aesthetic', APP_VERSION, 'Cinema Aesthetic', 'sonor-cinema-aesthetic').catch(function (e) { console.warn('[cinema-aesthetic] version report', e && e.message); }); });
   </script>
 </body>
 </html>

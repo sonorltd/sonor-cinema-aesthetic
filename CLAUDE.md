@@ -1,6 +1,8 @@
-# Cinema Aesthetic — Claude Code Context (v0.12.0)
+# Cinema Aesthetic — Claude Code Context (v0.12.1)
 
 > **Active theme: locked custom / slate canvas** — client-facing surface, `data-theme-lock` (sonor-platform §2 exemption); the cross-app ◐ cookie never flips it.
+
+> **v0.12.1 (2026-10-17) — version self-report.** The shell mounts with `supabase:false`, so nothing wrote `app_versions` on boot; the dashboard now calls `db.versions.report('cinema-aesthetic', APP_VERSION, …)` once after `boot()` (the catalogue load makes the SonorDB client). No feature change.
 
 > **v0.12.0 (2026-08-20):** 📂 Folder pill — new app-local module `data/aesthetic-folder-link.js` v0.1.0 injects an
 > "📂 Folder" pill beside the header version when the active project's `projects.metadata.workspace_folder` is set

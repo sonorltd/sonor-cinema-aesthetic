@@ -242,6 +242,28 @@
     };
   }
 
+  // v0.13.1 — a dotted label row with its hint MEASURED: the hint sits right-aligned on the label's line only when it
+  // clears the label by 18 pt, else it wraps under the label (full width) and the row grows — never over the label.
+  function labelHintRow(P, F, lx, y, label, hint, rule) {
+    var M = lx.M, A4 = lx.A4, COL = lx.COL, x0 = M + 14, right = A4.w - M, extra = 0;
+    P.dot(M + 3, y - 4, 2.2, COL.GOLD);
+    var lab = lx.wrap(String(label), F.b, 11, right - x0);
+    lab.forEach(function (ln, li) { P.text(ln, x0, y - 9 + li * 14, 11, F.b, COL.INK); });
+    extra += (lab.length - 1) * 14;
+    if (hint) {
+      hint = String(hint);
+      var lw = F.b.widthOfTextAtSize(lab[lab.length - 1], 11), hw = F.r.widthOfTextAtSize(hint, 9);
+      if (lab.length === 1 && x0 + lw + 18 + hw <= right) P.right(hint, right, y - 8, 9, F.r, COL.MUT);
+      else {
+        var hl = lx.wrap(hint, F.r, 9, right - x0);
+        hl.forEach(function (ln, li) { P.text(ln, x0, y - 9 + extra + 15 + li * 12, 9, F.r, COL.MUT); });
+        extra += 15 + (hl.length - 1) * 12;
+      }
+    }
+    if (rule) P.hline(M, right, y + 7 + extra, COL.LINE, 0.5, 0.6);
+    return y + 22 + extra;
+  }
+
   function secLighting(m) {
     if ((!m.fittings || !m.fittings.length) && (!m.scenes || !m.scenes.length)) return null;
     var lx = L();
@@ -256,16 +278,13 @@
       var fitRows = (m.fittings || []).slice();
       if (m.sconces) fitRows.push({ label: 'Wall lights / sconces', hint: 'TBC — shortlist at design development' + (m.sconces.notes ? ' · ' + m.sconces.notes : '') });
       fitRows.forEach(function (f, i, arr) {
-        P.dot(M + 3, y - 4, 2.2, COL.GOLD);
-        P.text(f.label + (f.qty ? '  ·  ' + f.qty : ''), M + 14, y - 9, 11, F.b, COL.INK);
-        if (f.hint) P.right(f.hint, A4.w - M, y - 8, 9, F.r, COL.MUT);
-        if (i < arr.length - 1) P.hline(M, A4.w - M, y + 7, COL.LINE, 0.5, 0.6);
-        y += 22;
+        y = labelHintRow(P, F, lx, y, f.label + (f.qty ? '  ·  ' + f.qty : ''), f.hint, i < arr.length - 1);
       });
       if (m.downlightGrade) {
         y += 4;
-        P.text('Downlight grade: ' + m.downlightGrade.label + ' (' + m.downlightGrade.tier + ') — ' + m.downlightGrade.note, M, y - 4, 9, F.r, COL.MUT, { maxWidth: A4.w - M * 2 });
-        y += 16;
+        var dg = lx.wrap('Downlight grade: ' + m.downlightGrade.label + ' (' + m.downlightGrade.tier + ') — ' + m.downlightGrade.note, F.r, 9, A4.w - M * 2);
+        dg.forEach(function (ln, li) { P.text(ln, M, y - 4 + li * 12, 9, F.r, COL.MUT); });
+        y += 16 + (dg.length - 1) * 12;
       }
       y += 14;
       P.tracked('SCENES', M, y, 6.5, F.r, COL.MUT, 1.5);
@@ -295,11 +314,7 @@
       P.hline(M, A4.w - M, y + 11, COL.GOLD, 0.8, 0.75);
       y += 27;
       m.led.zones.forEach(function (z, i, arr) {
-        P.dot(M + 3, y - 4, 2.2, COL.GOLD);
-        P.text(z.label + (z.label === 'Ceiling Cove' && m.led.covePower ? '  ·  ' + m.led.covePower + ' W/m' : ''), M + 14, y - 9, 11, F.b, COL.INK);
-        if (z.hint) P.right(z.hint, A4.w - M, y - 8, 9, F.r, COL.MUT);
-        if (i < arr.length - 1) P.hline(M, A4.w - M, y + 7, COL.LINE, 0.5, 0.6);
-        y += 22;
+        y = labelHintRow(P, F, lx, y, z.label + (z.label === 'Ceiling Cove' && m.led.covePower ? '  ·  ' + m.led.covePower + ' W/m' : ''), z.hint, i < arr.length - 1);
       });
       y += 14;
       P.text('All circuits individually dimmed via the Rako lighting scenes.', M, y, 9.5, F.r, COL.MUT);

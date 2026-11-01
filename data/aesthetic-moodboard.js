@@ -446,7 +446,9 @@
   }
 
   // ── open / close ──────────────────────────────────────────────────────────────
-  function open(opts) {
+  // v0.13.1 — the board state is loaded on its own (no overlay), so buildPdf works without the board having been opened
+  function load(opts) {
+    opts = opts || {};
     state = {
       model: opts.model || {},
       board: opts.board ? JSON.parse(JSON.stringify(opts.board)) : {},
@@ -458,7 +460,10 @@
     state._defaults = defaults(state.model);
     state._auto = autoDetect(state.model);
     state.board.ref = state.board.ref || state._defaults.ref;
-
+    return state;
+  }
+  function open(opts) {
+    load(opts);
     close();
     var ov = document.createElement('div');
     ov.id = 'amb-overlay';
@@ -514,7 +519,17 @@
     }).replace(/\s{2,}/g, ' ').trim();
   }
   function arr(key) { var a = text(key) || []; return Array.isArray(a) ? a : String(a).split('\n'); }
-  async function buildPdf(paper) {
+  // opts (optional) = the same options open() takes; with none and no board open, the app's own board is loaded
+  // (AestheticApp.moodBoardOptions() — the project's saved cfg.moodboard + the proposal model)
+  function ensureState(opts) {
+    if (opts) return load(opts);
+    if (state && state.board) return state;
+    var app = global.AestheticApp, o = app && typeof app.moodBoardOptions === 'function' ? app.moodBoardOptions() : null;
+    if (!o) throw new Error('No mood board to export - select a project first');
+    return load(o);
+  }
+  async function buildPdf(paper, opts) {
+    ensureState(opts);
     var PL = global.PDFLib, L = global.SonorPdfLuxury;
     if (!PL || !L) throw new Error('pdf-lib / SonorPdfLuxury not loaded');
     var base = (function () { var s = document.querySelector('script[src*="aesthetic-moodboard.js"]'); return s ? s.src.replace(/aesthetic-moodboard\.js.*$/, '') : '../data/'; })();
@@ -650,5 +665,5 @@
     };
   }
 
-  global.AestheticMoodBoard = { open: open, close: close, makeRef: makeRef, buildPdf: function (paper) { return buildPdf(paper || 'A3'); } };
+  global.AestheticMoodBoard = { open: open, close: close, load: load, makeRef: makeRef, buildPdf: function (paper, opts) { return buildPdf(paper || 'A3', opts); } };
 })(window);

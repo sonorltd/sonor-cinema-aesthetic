@@ -1115,9 +1115,9 @@
   // Editable A3 mood board beside the proposal PDF. Module: aesthetic-moodboard.js.
   // Board state rides in aesthetic_configs.config.moodboard — per-project +
   // versioned via the standard saveConfig() path (whole cfg is the payload).
-  async function openMoodBoard() {
-    if (!global.AestheticMoodBoard) { console.warn('[aesthetic] moodboard module not loaded'); return; }
-    global.AestheticMoodBoard.open({
+  // v0.13.1 — the board's options in one place: openMoodBoard() and AestheticMoodBoard.buildPdf() (no overlay) both use it
+  function moodBoardOptions() {
+    return {
       model: pdfModel(),                 // same data that drives the proposal PDF
       board: cfg.moodboard || {},        // persisted board state (images + text + sections + ref)
       db: dbc(),                         // enables Supabase storage image upload
@@ -1127,7 +1127,11 @@
         cfg.moodboard = board;
         await saveConfig();              // same save path + app_version stamp as everything else
       }
-    });
+    };
+  }
+  async function openMoodBoard() {
+    if (!global.AestheticMoodBoard) { console.warn('[aesthetic] moodboard module not loaded'); return; }
+    global.AestheticMoodBoard.open(moodBoardOptions());
   }
 
   async function savePdf() {
@@ -1146,7 +1150,7 @@
     setDesign: setDesign, toggleZone: toggleZone, toggleSundry: toggleSundry, jumpRefresh: jumpRefresh,
     setOption: setOption, toggleOption: toggleOption,
     useScheme: useScheme, useSeating: useSeating, openFromOverview: openFromOverview,
-    openMoodBoard: openMoodBoard,
+    openMoodBoard: openMoodBoard, moodBoardOptions: moodBoardOptions,
     _renderOverview: renderOverview,   // harness hook (headless overview render)
     _debug: function () { return { cfg: cfg, ctx: ctx }; }   // harness hook (headless render tests)
   };

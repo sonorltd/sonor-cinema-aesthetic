@@ -9,7 +9,7 @@ import { launch } from './cdp.mjs';
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf('--' + n); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
 const PID = opt('pid', 'a76fc4c2-3253-4ce7-9bf6-55ec2d34e666');
-const APP = 'https://sonorltd.github.io/sonor-cinema/dashboard/sonor-cinema.html';
+const APP = 'https://apps.sonor.co.uk/sonor-cinema/dashboard/sonor-cinema.html';
 const DRY = argv.includes('--dry');
 const CANON = {
   coffer: { enabled: true, ring: { front: 600, rear: 600, left: 600, right: 600 }, dropHeight: 300, ledCove: { enabled: true, powerWPerM: 14 }, starCeiling: false, star: { enabled: false },

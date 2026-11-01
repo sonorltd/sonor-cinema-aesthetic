@@ -14,7 +14,7 @@ const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf('--' + n); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
 const PID = opt('pid', ''), DIR = path.resolve(opt('dir', '')), SET = opt('set', 'lab ' + path.basename(DIR)), COVER = opt('cover', 'cover').toLowerCase();
 const DRY = argv.includes('--dry'), ALL = argv.includes('--all');
-const APP = 'https://sonorltd.github.io/sonor-cinema/dashboard/sonor-cinema.html';
+const APP = 'https://apps.sonor.co.uk/sonor-cinema/dashboard/sonor-cinema.html';
 if (!PID || !DIR) { console.error('--pid and --dir required'); process.exit(2); }
 const files = fs.readdirSync(DIR).filter(n => /\.(png|jpe?g)$/i.test(n) && (ALL || !/--(gpt|nb)\./i.test(n)) && !/plan-styled/i.test(n)).sort();
 if (!files.length) { console.error('no renders in', DIR); process.exit(2); }

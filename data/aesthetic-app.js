@@ -15,7 +15,7 @@
   var CLIENT = !!global.__AESTHETIC_CLIENT__;
   // NEUTRAL project surfaces (Bryn: "general project no matter which app —
   // neutrally located like brief"): trades lives in sonor-project-master.
-  var TRADES_URL = 'https://sonorltd.github.io/sonor-project-master/trades.html?pid=';
+  var TRADES_URL = 'https://apps.sonor.co.uk/sonor-project-master/trades.html?pid=';
   global.TRADES_URL = TRADES_URL;
 
   var cfg = {

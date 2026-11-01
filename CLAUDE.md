@@ -17,7 +17,7 @@
 > **Spine version: 1.3** (SONOR-APP-SPINE.md — SonorShell-mounted like Seating; declaration reconciled 2026-09-30)
 > Inherits: `../CLAUDE.md` (master brand rules + cross-project references)
 > Brand source: `../Branding - CORE/brand-core.xml`
-> Repo: `sonor-cinema-aesthetic` · Pages: https://sonorltd.github.io/sonor-cinema-aesthetic/
+> Repo: `sonor-cinema-aesthetic` · Pages: https://apps.sonor.co.uk/sonor-cinema-aesthetic/
 
 > **⚠ READ `/SEATING-SSOT-CONTRACT.md` before touching anything that reads seating data.**
 > This app is a READ-ONLY consumer of `seating_configs` (project seat context) and follows
@@ -278,7 +278,7 @@ render-and-eyeball before shipping).
   sonor_merge_project_metadata. Two print modes: "Print for trades" (blank sum
   boxes + signature block — hand to the builder) and "Print priced" (internal).
   Links: landing overview note + Summary actions ("Trades list ↗"). Hosted:
-  https://sonorltd.github.io/sonor-cinema-aesthetic/dashboard/sonor-trades.html?project=<id>
+  https://apps.sonor.co.uk/sonor-cinema-aesthetic/dashboard/sonor-trades.html?project=<id>
   ASKS logged: PM brief page + Master Hub + CD could link the same URL.
 - v0.11.1 (2026-07-30) — **TRADES relocated to the NEUTRAL home + room meta-tags.**
   Bryn: "general project no matter which app — neutrally located like brief" +
@@ -287,7 +287,7 @@ render-and-eyeball before shipping).
   brief.html pattern: self-contained, inline anon REST, ?pid= deep link,
   project picker fallback) — dashboard/sonor-trades.html retired to _to_delete
   same day it was born. App links + shared bar point at
-  https://sonorltd.github.io/sonor-project-master/trades.html?pid=<id>.
+  https://apps.sonor.co.uk/sonor-project-master/trades.html?pid=<id>.
   (2) PROJECT-ROOM TAG v1 (meta-tag convention): {floor_id, floor_code, name}
   taken VERBATIM from takeoffs_floors.content.areas[] — the same room identity
   RFI clouds resolve to. Trades areas carry a room-tag select (1387 seeded:
@@ -298,3 +298,5 @@ render-and-eyeball before shipping).
   synced 22 apps): 🔨 Trades link beside 📄 Brief, gated on metadata.trades —
   reachable from EVERY app's project bar. NOTE Takeoffs areas carry no ids —
   ask logged for stable area ids; renames orphan tags (page shows '(missing)').
+
+- 2026-11-01 — links → apps.sonor.co.uk (github.io retired)

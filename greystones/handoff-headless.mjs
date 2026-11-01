@@ -6,7 +6,7 @@
 // path as the 📦 Handoff pill — and writes the package to <out>/hN/. hN = next free revision in <out> (append-only).
 //
 //   node handoff-headless.mjs --pid <project uuid> --out "<…>/greystones/handoff" [--module path/to/28-render-handoff.js]
-//     [--app https://sonorltd.github.io/sonor-cinema/dashboard/sonor-cinema.html] [--facts "retained: …;removed: …"] [--rev h4]
+//     [--app https://apps.sonor.co.uk/sonor-cinema/dashboard/sonor-cinema.html] [--facts "retained: …;removed: …"] [--rev h4]
 //     [--chrome "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
 //
 // --module injects a local copy of the module AFTER the page loads (a newer module against the deployed app).
@@ -19,7 +19,7 @@ import { launch } from './cdp.mjs';
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf('--' + n); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
 const PID = opt('pid', ''), OUT = path.resolve(opt('out', './handoff')), MODULE = opt('module', ''), FACTS = opt('facts', '');
-const APP = opt('app', 'https://sonorltd.github.io/sonor-cinema/dashboard/sonor-cinema.html');
+const APP = opt('app', 'https://apps.sonor.co.uk/sonor-cinema/dashboard/sonor-cinema.html');
 if (!PID) { console.error('--pid <project uuid> required'); process.exit(2); }
 
 fs.mkdirSync(OUT, { recursive: true });

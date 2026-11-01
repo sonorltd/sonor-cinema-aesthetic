@@ -14,7 +14,7 @@
 //     aesthetic_configs.config.moodboard alongside the rest of the board config —
 //     so it is per-project and versioned exactly like everything else in the app
 //   • Images upload to the shared `seating-assets` bucket (data-URL fallback)
-//   • Export = A3 landscape print of the board only (clean PDF via the browser)
+//   • Export = a real pdf-lib PDF of the board (v0.13.0): A3 landscape default, A4 option, gold-framed pictures, rear page
 //
 // Public API (call from AestheticApp — it owns pdfModel/dbc/cfg closures):
 //   AestheticMoodBoard.open({ model, board, db, projectId, appVersion, onSave })
@@ -502,7 +502,153 @@
     }
     setTimeout(function () { if (btn) { btn.textContent = 'Save concept'; btn.disabled = false; } }, 1600);
   }
-  function exportPdf() { window.print(); }
+  // ── PDF (v0.13.0, 2026-11-01 — Bryn: "make all exports work in the best pdf version") ─────────────────────
+  // Was window.print() of the overlay. Now a REAL pdf-lib PDF of the board on the shared chrome (data/sonor-pdf-luxury.js,
+  // neutral white paper): the board as ONE proper sheet — header, hero (+ layout plan), the four wall views, the
+  // specification / lighting / scope bands, the detail row and the not-specified line — every picture cover-cropped inside
+  // the house thin gold frame — then the rear contact page (CEDIA bottom right). A3 landscape by default, A4 landscape
+  // option (the same sheet at 1/√2, proper pages). Text is what is on the board (edits included).
+  function pdfSafe(s) {
+    return String(s == null ? '' : s).replace(/[^\x20-\x7E£°]/g, function (c) {
+      return ({ '²': '2', '×': 'x', '–': '-', '—': '-', '·': '-', '…': '...', '’': "'", '‘': "'", '“': '"', '”': '"', '•': '-', 'é': 'e' })[c] || '';
+    }).replace(/\s{2,}/g, ' ').trim();
+  }
+  function arr(key) { var a = text(key) || []; return Array.isArray(a) ? a : String(a).split('\n'); }
+  async function buildPdf(paper) {
+    var PL = global.PDFLib, L = global.SonorPdfLuxury;
+    if (!PL || !L) throw new Error('pdf-lib / SonorPdfLuxury not loaded');
+    var base = (function () { var s = document.querySelector('script[src*="aesthetic-moodboard.js"]'); return s ? s.src.replace(/aesthetic-moodboard\.js.*$/, '') : '../data/'; })();
+    var CAN = L.SHEETS['A3-landscape'], SCALE = paper === 'A4' ? Math.SQRT1_2 : 1;
+    var prevSheet = L.sheet(), prevTheme = L.theme();
+    L.sheet({ w: CAN.w, h: CAN.h }); L.theme('neutral'); L.footerMode('minimal', pdfSafe(text('project') || text('heading')));
+    var W = CAN.w, H = CAN.h, M = 40, COL = L.COL;
+    try {
+      var doc = await PL.PDFDocument.create();
+      var F = await L.makeFonts(doc, base);
+      var cedia = null; try { cedia = await L.loadImage(doc, base + 'cedia-member-stacked.png'); } catch (e) {}
+      var cache = {};
+      async function img(slot) { var u = imgUrl(slot); if (!u) return null; if (cache[u] !== undefined) return cache[u]; try { cache[u] = await L.loadImage(doc, u); } catch (e) { console.warn('[moodboard pdf] image', slot, e); cache[u] = null; } return cache[u]; }
+      var slots = Object.keys(SLOTS), imgs = {};
+      for (var i = 0; i < slots.length; i++) imgs[slots[i]] = await img(slots[i]);
 
-  global.AestheticMoodBoard = { open: open, close: close, makeRef: makeRef };
+      var page = doc.addPage([W * SCALE, H * SCALE]);
+      if (SCALE !== 1) page.pushOperators(PL.pushGraphicsState(), PL.scale(SCALE, SCALE));
+      var P = L.mk(page, doc); P.rect(0, 0, W, H, COL.CREAM);
+      function T(s, x, top, size, font, c) { P.text(pdfSafe(s), x, top, size, font || F.r, c || COL.INK); }
+      function fit(s, font, size, w) { s = pdfSafe(s); if (font.widthOfTextAtSize(s, size) <= w) return s; while (s.length > 1 && font.widthOfTextAtSize(s + '...', size) > w) s = s.slice(0, -1); return s + '...'; }
+      // a picture cover-cropped into (x, top, w, h) inside the thin gold frame
+      function frame(slot, x, top, w, h, label) {
+        var im = imgs[slot];
+        if (im) {
+          var s = Math.max(w / im.width, h / im.height), dw = im.width * s, dh = im.height * s, y = H - top - h;
+          page.pushOperators(PL.pushGraphicsState(), PL.moveTo(x, y), PL.lineTo(x + w, y), PL.lineTo(x + w, y + h), PL.lineTo(x, y + h), PL.closePath(), PL.clip(), PL.endPath());
+          page.drawImage(im, { x: x + (w - dw) / 2, y: y + (h - dh) / 2, width: dw, height: dh });
+          page.pushOperators(PL.popGraphicsState());
+        } else {
+          P.rect(x, top, w, h, [240, 239, 236]);
+          var lab = fit(label || (SLOTS[slot] || {}).label || 'Image to follow', F.r, 7, w - 12);
+          P.text(lab, x + (w - F.r.widthOfTextAtSize(lab, 7)) / 2, top + h / 2 - 4, 7, F.r, COL.MUT);
+        }
+        P.rectB(x, top, w, h, COL.GOLD, 0.7);
+      }
+      function eyebrow(s, x, top) { P.tracked(pdfSafe(s).toUpperCase(), x, top, 6.8, F.r, COL.GOLD, 1.8); }
+      function bulletsAt(key, x, top, w, maxBottom, size) {
+        size = size || 8; var y = top;
+        arr(key).forEach(function (t) { if (!t) return; L.wrap(pdfSafe(t), F.r, size, w - 10).forEach(function (ln, li) { if (y + size > maxBottom) return; if (li === 0) P.dot(x + 2, y + size * 0.55, 1.4, COL.GOLD); P.text(ln, x + 9, y, size, F.r, COL.INK2); y += size + 3.4; }); y += 1.5; });
+        return y;
+      }
+
+      // ── header ──
+      P.text(fit(text('heading') || 'Bespoke cinema design concept', F.b, 22, W - M * 2 - 300), M, 34, 22, F.b, COL.INK);
+      P.tracked('ROOM SIZE', M, 66, 6.8, F.r, COL.MUT, 1.6); T(text('room') || '', M + 60, 65.5, 8.5, F.r, COL.INK2);
+      P.tracked(fit(text('subheading') || '', F.r, 8, W - M * 2 - 300).toUpperCase(), M, 82, 8, F.r, COL.GOLD, 2.2);
+      P.logo(W - M - 120, 36, 22, COL.GOLD); P.tracked('SONOR', W - M - 93, 40.5, 14, F.b, COL.INK, 3.6);
+      P.trackedRight(pdfSafe(text('ref') || state.board.ref || ''), W - M, 66, 7, F.r, COL.MUT, 1.4);
+      var proj = [text('project'), text('client')].filter(Boolean).join('  -  ');
+      if (proj) P.trackedRight(fit(proj, F.r, 7, 300).toUpperCase(), W - M, 82, 7, F.r, COL.LABEL, 1.4);
+      P.hline(M, W - M, 100, COL.GOLD, 0.6, 0.8);
+
+      // ── rows (adaptive — only what the board shows) ──
+      var top = 114, bottom = H - 46, GAP = 12;
+      var showWalls = effective('walls');
+      var bands = ['spec', 'lighting', 'scope', 'riser'].filter(effective);
+      var dets = ['seating', 'curtain', 'shelves', 'palette'].filter(effective);
+      var notesOn = effective('notes') && (text('notesLine') || '').length;
+      var wallsH = showWalls ? 128 : 0, bandsH = bands.length ? 104 : 0, detH = dets.length ? 104 : 0, notesH = notesOn ? 20 : 0;
+      var fixed = (showWalls ? wallsH + 16 + GAP : 0) + (bands.length ? bandsH + GAP : 0) + (dets.length ? detH + GAP : 0) + notesH;
+      var heroH = Math.max(180, bottom - top - fixed);
+      var showPlan = effective('plan'), planW = showPlan ? 360 : 0;
+      frame('hero', M, top, W - M * 2 - (showPlan ? planW + 14 : 0), heroH, 'Main render - front / TV wall');
+      if (showPlan) { eyebrow('Layout plan - top view', W - M - planW, top); frame('plan', W - M - planW, top + 14, planW, heroH - 14, 'Layout plan - top view'); }
+      var y = top + heroH + GAP;
+      if (showWalls) {
+        var ww = (W - M * 2 - 3 * 12) / 4;
+        ['wallFront', 'wallLeft', 'wallRear', 'wallRight'].forEach(function (k, i) { var x = M + i * (ww + 12); frame(k, x, y, ww, wallsH); T(SLOTS[k].label, x, y + wallsH + 4, 7, F.r, COL.MUT); });
+        y += wallsH + 16 + GAP;
+      }
+      if (bands.length) {
+        var bw = (W - M * 2 - (bands.length - 1) * 18) / bands.length;
+        bands.forEach(function (k, i) {
+          var x = M + i * (bw + 18); P.hline(x, x + bw, y, COL.LINE, 0.6);
+          if (k === 'riser') { eyebrow('Riser detail - side view', x, y + 8); frame('riser', x, y + 22, bw, bandsH - 24, 'Riser section'); return; }
+          eyebrow({ spec: 'Specification', lighting: 'Lighting plan', scope: 'Design scope' }[k], x, y + 8);
+          bulletsAt(k, x, y + 24, bw, y + bandsH, 8);
+        });
+        y += bandsH + GAP;
+      }
+      if (dets.length) {
+        var dw2 = (W - M * 2 - (dets.length - 1) * 18) / dets.length, ih = detH - 24;
+        dets.forEach(function (k, i) {
+          var x = M + i * (dw2 + 18); P.hline(x, x + dw2, y, COL.LINE, 0.6);
+          eyebrow({ seating: 'Seating detail', curtain: 'Curtain detail', shelves: 'Shelves / recess', palette: 'Colour palette' }[k], x, y + 8);
+          var t0 = y + 22;
+          if (k === 'seating') { frame('seat', x, t0, 96, ih, 'Seat'); bulletsAt('seatNotes', x + 106, t0 + 2, dw2 - 106, t0 + ih, 7.6); }
+          else if (k === 'curtain') { frame('curtain', x, t0, 60, ih, 'Curtain'); bulletsAt('curtainNotes', x + 70, t0 + 2, dw2 - 70, t0 + ih, 7.6); }
+          else if (k === 'shelves') { frame('shelf1', x, t0, 52, ih, ' '); frame('shelf2', x + 58, t0, 52, ih, ' '); bulletsAt('shelfNotes', x + 120, t0 + 2, dw2 - 120, t0 + ih, 7.6); }
+          else {
+            var pal = (state.model && state.model.palette && state.model.palette.swatches) || [];
+            if (!pal.length) pal = [{ name: 'Slate Grey', hex: '#4b4d4f' }, { name: 'Cinema Black', hex: '#1c1b1a' }, { name: 'Warm Taupe', hex: '#8a7d6a' }, { name: 'Stone', hex: '#b8b0a2' }];
+            pal = pal.slice(0, 6); var sw = (dw2 - (pal.length - 1) * 8) / pal.length;
+            pal.forEach(function (p, j) { var sx = x + j * (sw + 8); P.rect(sx, t0, sw, ih - 18, L.hexRgb(p.hex)); P.rectB(sx, t0, sw, ih - 18, COL.LINE, 0.5); P.tracked(fit(p.name, F.r, 6, sw).toUpperCase(), sx, t0 + ih - 12, 6, F.r, COL.MUT, 0.8); });
+          }
+        });
+        y += detH + GAP;
+      }
+      if (notesOn) { P.tracked('NOT IN THIS SPECIFICATION', M, y + 2, 6.8, F.b, COL.GOLD, 1.6); T(fit(text('notesLine'), F.r, 7.6, W - M * 2 - 150), M + 140, y + 1.5, 7.6, F.r, COL.MUT); }
+      L.pageFoot(P, F, { pageNo: 1 });
+      if (SCALE !== 1) page.pushOperators(PL.popGraphicsState());
+
+      // ── rear page ──
+      var rp = doc.addPage([W * SCALE, H * SCALE]);
+      if (SCALE !== 1) rp.pushOperators(PL.pushGraphicsState(), PL.scale(SCALE, SCALE));
+      L.rearPage(L.mk(rp, doc), F, { cediaImg: cedia });
+      if (SCALE !== 1) rp.pushOperators(PL.popGraphicsState());
+      doc.setTitle(pdfSafe('Bespoke cinema design concept - ' + (text('project') || '') + ' ' + (state.board.ref || ''))); doc.setAuthor('Sonor Ltd');
+      return await doc.save();
+    } finally { L.sheet(prevSheet); L.theme(prevTheme); }
+  }
+  function exportPdf() {
+    var old = document.getElementById('amb-xp'); if (old) { old.remove(); return; }
+    var pref = 'A3'; try { pref = localStorage.getItem('sonor_moodboard_paper') || 'A3'; } catch (e) {}
+    var el = document.createElement('div'); el.id = 'amb-xp';
+    el.style.cssText = 'position:fixed;top:56px;right:24px;z-index:100001;background:#26272b;color:#e9e7e3;border:1px solid #45464b;border-radius:12px;padding:14px 16px;box-shadow:0 18px 50px rgba(0,0,0,.55);font:12.5px system-ui,sans-serif;min-width:250px';
+    el.innerHTML = '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9a988f;margin-bottom:6px">Paper — landscape</div>' +
+      ['A3', 'A4'].map(function (p) { return '<label style="display:flex;gap:8px;align-items:center;padding:3px 0;cursor:pointer"><input type="radio" name="ambPaper" value="' + p + '"' + (pref === p ? ' checked' : '') + ' style="accent-color:' + GOLD + '"> ' + p + (p === 'A3' ? ' (default)' : '') + '</label>'; }).join('') +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px"><span id="amb-xp-note" style="color:#9a988f;font-size:11px"></span><button id="amb-xp-go" style="background:' + GOLD + ';color:#111;border:0;border-radius:7px;padding:6px 14px;font-weight:600;cursor:pointer">Export PDF</button></div>';
+    document.body.appendChild(el);
+    el.querySelector('#amb-xp-go').onclick = async function () {
+      var paper = (el.querySelector('input[name=ambPaper]:checked') || {}).value || 'A3';
+      try { localStorage.setItem('sonor_moodboard_paper', paper); } catch (e) {}
+      var note = el.querySelector('#amb-xp-note'); note.textContent = 'Building…'; this.disabled = true;
+      try {
+        var bytes = await buildPdf(paper);
+        var nm = pdfSafe('Cinema design concept - ' + (text('project') || 'board') + ' - ' + (state.board.ref || '') + ' (' + paper + ' landscape)').replace(/[\\/:*?"<>|]+/g, '-') + '.pdf';
+        var u = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' })), a = document.createElement('a');
+        a.href = u; a.download = nm; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(u); }, 60000);
+        el.remove();
+      } catch (e) { console.error('[moodboard pdf]', e); note.textContent = 'Failed: ' + (e && e.message || e); this.disabled = false; }
+    };
+  }
+
+  global.AestheticMoodBoard = { open: open, close: close, makeRef: makeRef, buildPdf: function (paper) { return buildPdf(paper || 'A3'); } };
 })(window);

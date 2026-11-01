@@ -1,0 +1,11 @@
+const { chromium } = require('playwright'); const fs=require('fs'),path=require('path'),http=require('http');
+const [ROOT,NPM,OUT]=process.argv.slice(2);
+const srv=http.createServer((q,r)=>{const f=path.join(ROOT,decodeURIComponent(q.url.split('?')[0])); if(!fs.existsSync(f)||fs.statSync(f).isDirectory()){r.writeHead(404);return r.end();} r.writeHead(200,{'content-type':f.endsWith('.js')?'application/javascript':f.endsWith('.html')?'text/html':f.endsWith('.png')?'image/png':f.endsWith('.jpg')?'image/jpeg':'application/octet-stream'}); fs.createReadStream(f).pipe(r);}).listen(8831);
+(async()=>{const b=await chromium.launch();const pg=await b.newPage();pg.on('pageerror',e=>console.log('PAGEERR',e.message));
+await pg.route('**/*',r=>{const u=r.request().url(); if(u.includes('pdf-lib@1.17.1'))return r.fulfill({path:NPM+'/node_modules/pdf-lib/dist/pdf-lib.min.js'}); if(u.includes('fontkit@1.1.1'))return r.fulfill({path:NPM+'/node_modules/@pdf-lib/fontkit/dist/fontkit.umd.min.js'}); return r.continue();});
+await pg.goto('http://localhost:8831/t.html');
+for (const paper of ['A3','A4']) {
+const b64=await pg.evaluate(async(paper)=>{ AestheticMoodBoard.open({ model:{ title:'Greystones cinema', client:'Mr & Mrs Example', room:{w:6200,d:4800,h:2700}, styleLabel:'Sleek · acoustic · immersive', slots:[{name:'Spezia FR fabric',manufacturer:'Cineca',slot:'Walls'},{name:'Velvet curtain',slot:'Curtain'}], audio:{headline:'Dolby Atmos 7.2.4 — Sonance Extreme'}, video:{display:'4K laser projector, 135" AT screen'}, downlightGrade:{label:'Recessed downlights'}, ledZonesList:[{label:'Coffer cove'},{label:'Step lights'}], ceilingTreatment:{label:'Coffered with LED cove'}, riser:{id:'tier2',label:'Two tiers, 300 mm rise'}, palette:{swatches:[{name:'Slate',hex:'#4b4d4f'},{name:'Black',hex:'#1c1b1a'},{name:'Taupe',hex:'#8a7d6a'}]} }, board:{ images:{ hero:'hero.jpg', seat:'venice-double-seats.png', wallFront:'hero.jpg', wallLeft:'venice-double-seats.png' } } });
+ const bytes=await AestheticMoodBoard.buildPdf(paper); let s=''; for(let i=0;i<bytes.length;i+=32768) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+32768)); return btoa(s); }, paper);
+fs.writeFileSync(OUT+'/mb-'+paper+'.pdf',Buffer.from(b64,'base64')); console.log('wrote',paper);}
+await b.close();srv.close();})();

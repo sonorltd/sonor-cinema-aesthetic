@@ -1,7 +1,8 @@
-# Cinema Aesthetic — Claude Code Context (v0.12.2)
+# Cinema Aesthetic — Claude Code Context (v0.13.0)
 
 > **Active theme: locked custom / slate canvas** — client-facing surface, `data-theme-lock` (sonor-platform §2 exemption); the cross-app ◐ cookie never flips it.
 
+> **v0.13.0 (2026-11-01) — mood board "Export PDF ↓" is a REAL PDF** (Bryn: "make all exports work in the best pdf version"). Was `window.print()`; now `aesthetic-moodboard.js` buildPdf paints the board with pdf-lib on the shared chrome (`sonor-pdf-luxury.js`, neutral white paper, no cream): header + ref, hero (+ layout plan), the four wall views, spec / lighting / scope / riser bands, detail row, palette, not-specified line — every picture cover-cropped inside the thin gold frame — then the rear contact page (CEDIA bottom right). A3 landscape default, A4 landscape option (small paper picker on the button; same sheet at 1/√2). `AestheticMoodBoard.buildPdf(paper)` exposed for tests.
 > **v0.12.2 (2026-10-17) — consistency batch.** Shared masters synced (project-bar 1.14.0, kit 0.7.4 mirror, wq-sync 1.7.4, takeoffs-supabase RPC-first, wq-push 1.1.0), supabase-js pinned 2.45.4 + SRI, theme boot first in `<head>`, served kit + local mirror fallback, `aesthetic-config.js` version site caught up. `data-theme-lock` unchanged. No feature change.
 
 > **v0.12.1 (2026-10-17) — version self-report.** The shell mounts with `supabase:false`, so nothing wrote `app_versions` on boot; the dashboard now calls `db.versions.report('cinema-aesthetic', APP_VERSION, …)` once after `boot()` (the catalogue load makes the SonorDB client). No feature change.
